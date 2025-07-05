@@ -12,7 +12,12 @@
           "package_name": "com.example.tradeup"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "98977397255-3lb8sclb4u8nfmtc7bpb4vgqk8ggb6fh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBuvR2I-hytdJpm-G3pVV66ipt9ayfaGCk"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "98977397255-3lb8sclb4u8nfmtc7bpb4vgqk8ggb6fh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
