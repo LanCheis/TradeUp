@@ -73,6 +73,10 @@ class LoginActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.tvGoToRegister).setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
+
+        findViewById<TextView>(R.id.tvForgotPassword).setOnClickListener {
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

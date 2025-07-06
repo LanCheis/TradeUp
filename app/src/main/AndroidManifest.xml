@@ -21,10 +21,8 @@
         <!-- Auth Activities -->
         <activity android:name=".auth.LoginActivity" />
         <activity android:name=".auth.RegisterActivity" />
-
+        <activity android:name=".auth.ForgotPasswordActivity" />
         <!-- Home Activity -->
         <activity android:name=".home.HomeActivity" />
     </application>
-
-
 </manifest>
