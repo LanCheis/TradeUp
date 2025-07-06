@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "98977397255-atqr3pjm4217sg3ubklr5tg8geqilu7e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tradeup",
+            "certificate_hash": "6b64c60c9c7bacdbb3354a54a6d1c9cb2f68775f"
+          }
+        },
+        {
+          "client_id": "98977397255-jhgkki45lujjjvhfgeui3d3ir5ehagsr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tradeup",
+            "certificate_hash": "2d70949db6d0cacb0b82c441555abcee93951e36"
+          }
+        },
+        {
           "client_id": "98977397255-3lb8sclb4u8nfmtc7bpb4vgqk8ggb6fh.apps.googleusercontent.com",
           "client_type": 3
         }

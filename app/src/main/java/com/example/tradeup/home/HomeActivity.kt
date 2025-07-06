@@ -17,6 +17,7 @@ class HomeActivity : AppCompatActivity() {
         val user = FirebaseAuthHelper.getCurrentUser()
         val welcomeText = findViewById<TextView>(R.id.tvWelcome)
         val logoutBtn = findViewById<Button>(R.id.btnLogout)
+        val btnEditProfile = findViewById<Button>(R.id.btnEditProfile)
 
         welcomeText.text = "Welcome, ${user?.email ?: "Guest"}"
 
@@ -24,6 +25,11 @@ class HomeActivity : AppCompatActivity() {
             FirebaseAuthHelper.logout()
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
+        }
+
+        btnEditProfile.setOnClickListener {
+            // Mình đã import ProfileActivity ngay bên dưới
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
     }
 }

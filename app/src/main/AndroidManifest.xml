@@ -22,7 +22,14 @@
         <activity android:name=".auth.LoginActivity" />
         <activity android:name=".auth.RegisterActivity" />
         <activity android:name=".auth.ForgotPasswordActivity" />
-        <!-- Home Activity -->
+        <!-- Home Activities -->
         <activity android:name=".home.HomeActivity" />
+        <activity android:name=".home.ProfileActivity" />
+        <activity android:name=".profile.ProfileActivity" />
+
+        <!-- List Activities -->
+        <activity android:name=".listing.CreateListingActivity" />
+        <activity android:name=".listing.ListingDetailActivity" />
+
     </application>
 </manifest>

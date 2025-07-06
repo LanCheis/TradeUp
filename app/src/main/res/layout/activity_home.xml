@@ -1,21 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="24dp"
     android:gravity="center"
-    android:padding="24dp">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
+    <!-- Lời chào -->
     <TextView
         android:id="@+id/tvWelcome"
-        android:text="Welcome!"
-        android:textSize="20sp"
+        android:text="Welcome, Guest"
+        android:textSize="18sp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="wrap_content" />
 
+    <!-- Nút sửa hồ sơ -->
+    <Button
+        android:id="@+id/btnEditProfile"
+        android:text="Chỉnh sửa hồ sơ"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Nút đăng xuất -->
     <Button
         android:id="@+id/btnLogout"
         android:text="Logout"
-        android:layout_width="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
 </LinearLayout>

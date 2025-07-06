@@ -63,7 +63,9 @@ class LoginActivity : AppCompatActivity() {
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
+
         googleClient = GoogleSignIn.getClient(this, gso)
+
 
         googleBtn.setOnClickListener {
             val intent = googleClient.signInIntent
