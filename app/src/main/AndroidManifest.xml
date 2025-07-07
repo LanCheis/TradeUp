@@ -24,7 +24,6 @@
         <activity android:name=".auth.ForgotPasswordActivity" />
         <!-- Home Activities -->
         <activity android:name=".home.HomeActivity" />
-        <activity android:name=".home.ProfileActivity" />
         <activity android:name=".profile.ProfileActivity" />
 
         <!-- List Activities -->

@@ -1,5 +1,6 @@
 package com.example.tradeup.listing
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,35 +26,25 @@ class ListingAdapter(private val listings: List<Listing>) :
     }
 
     override fun onBindViewHolder(holder: ListingViewHolder, position: Int) {
-        val listing = listings[position]
-        holder.tvTitle.text = listing.title
-        holder.tvCategory.text = listing.category
+        val listingItem = listings[position]
+        holder.tvTitle.text = listingItem.title
+        holder.tvCategory.text = listingItem.category
+
         Glide.with(holder.itemView.context)
-            .load(listing.imageUrl)
+            .load(listingItem.imageUrl)
             .into(holder.ivImage)
 
-        override fun onBindViewHolder(holder: ListingViewHolder, position: Int) {
-            val listing = listings[position]
-            holder.tvTitle.text = listing.title
-            holder.tvCategory.text = listing.category
-
-            Glide.with(holder.itemView.context)
-                .load(listing.imageUrl)
-                .into(holder.ivImage)
-
-            // 👇 Bắt sự kiện click để mở chi tiết
-            holder.itemView.setOnClickListener {
-                val context = holder.itemView.context
-                val intent = Intent(context, ListingDetailActivity::class.java).apply {
-                    putExtra("imageUrl", listing.imageUrl)
-                    putExtra("title", listing.title)
-                    putExtra("category", listing.category)
-                    putExtra("description", listing.description)
-                }
-                context.startActivity(intent)
+        holder.itemView.setOnClickListener {
+            val context = holder.itemView.context
+            val intent = Intent(context, ListingDetailActivity::class.java).apply {
+                putExtra("listing_id", listingItem.id)
+                putExtra("imageUrl", listingItem.imageUrl)
+                putExtra("title", listingItem.title)
+                putExtra("category", listingItem.category)
+                putExtra("description", listingItem.description)
             }
+            context.startActivity(intent)
         }
-
     }
 
     override fun getItemCount(): Int = listings.size

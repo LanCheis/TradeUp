@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.tradeup.R
 import com.example.tradeup.auth.LoginActivity
 import com.example.tradeup.data.remote.FirebaseAuthHelper
+import com.example.tradeup.profile.ProfileActivity
 
 class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

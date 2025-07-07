@@ -108,6 +108,7 @@ class ProfileActivity : AppCompatActivity() {
                 tvEmail.text = "Email: ${it.email}"
                 etBirthday.setText(it.birthday)
                 etInterest.setText(it.interests)
+                etAddress = findViewById(R.id.etAddress)
                 val genderIndex = when (it.gender) {
                     "Nam" -> 0
                     "Nữ" -> 1

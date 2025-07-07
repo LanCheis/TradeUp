@@ -19,8 +19,8 @@ class CreateListingActivity : AppCompatActivity() {
     private lateinit var etDescription: EditText
     private lateinit var spCategory: Spinner
     private lateinit var ivPreview: ImageView
-    private lateinit var btnChooseImage: Button
-    private lateinit var btnPost: Button
+    private lateinit var btnPickImage: Button
+    private lateinit var btnSubmit: Button
 
     private var imageUri: Uri? = null
     private val PICK_IMAGE_REQUEST = 1
@@ -29,25 +29,28 @@ class CreateListingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_listing)
 
+        // Khởi tạo View
         etTitle = findViewById(R.id.etTitle)
         etDescription = findViewById(R.id.etDescription)
         spCategory = findViewById(R.id.spCategory)
         ivPreview = findViewById(R.id.ivPreview)
-        btnChooseImage = findViewById(R.id.btnChooseImage)
-        btnPost = findViewById(R.id.btnPost)
+        btnPickImage = findViewById(R.id.btnPickImage)
+        btnSubmit = findViewById(R.id.btnSubmit)
 
-        // Load categories
+        // Gán danh sách danh mục
         val categories = arrayOf("Đồ điện tử", "Thời trang", "Đồ gia dụng", "Khác")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
         spCategory.adapter = adapter
 
-        btnChooseImage.setOnClickListener {
+        // Chọn ảnh
+        btnPickImage.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
             startActivityForResult(intent, PICK_IMAGE_REQUEST)
         }
 
-        btnPost.setOnClickListener {
+        // Gửi bài đăng
+        btnSubmit.setOnClickListener {
             if (imageUri != null) {
                 uploadImageAndPost()
             } else {
@@ -83,8 +86,8 @@ class CreateListingActivity : AppCompatActivity() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val listing = Listing(
             id = UUID.randomUUID().toString(),
-            title = etTitle.text.toString(),
-            description = etDescription.text.toString(),
+            title = etTitle.text.toString().trim(),
+            description = etDescription.text.toString().trim(),
             category = spCategory.selectedItem.toString(),
             imageUrl = imageUrl,
             ownerUid = uid
