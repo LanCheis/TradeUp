@@ -99,12 +99,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Địa chỉ" />
+<!--EMAIL-->
         <TextView
             android:id="@+id/tvEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Email"
             android:textSize="16sp" />
+
 
         <!-- Sở thích -->
         <com.google.android.material.textfield.TextInputLayout

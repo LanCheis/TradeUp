@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.tradeup.R
 import com.example.tradeup.auth.LoginActivity
 import com.example.tradeup.data.remote.FirebaseAuthHelper
+import com.example.tradeup.listing.CreateListingActivity
+import com.example.tradeup.listing.ListingListActivity
 import com.example.tradeup.profile.ProfileActivity
 
 class HomeActivity : AppCompatActivity() {
@@ -15,6 +17,8 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+        val btnCreateListing = findViewById<Button>(R.id.btnCreateListing)
+        val btnViewListings = findViewById<Button>(R.id.btnViewListings)
         val user = FirebaseAuthHelper.getCurrentUser()
         val welcomeText = findViewById<TextView>(R.id.tvWelcome)
         val logoutBtn = findViewById<Button>(R.id.btnLogout)
@@ -26,6 +30,15 @@ class HomeActivity : AppCompatActivity() {
             FirebaseAuthHelper.logout()
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
+        }
+
+
+        btnCreateListing.setOnClickListener {
+            startActivity(Intent(this, CreateListingActivity::class.java))
+        }
+
+        btnViewListings.setOnClickListener {
+            startActivity(Intent(this, ListingListActivity::class.java)) // Nếu có
         }
 
         btnEditProfile.setOnClickListener {

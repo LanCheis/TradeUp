@@ -6,11 +6,18 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.example.tradeup.R
 import com.example.tradeup.data.model.Listing
+import com.example.tradeup.network.CloudinaryService
+import com.example.tradeup.network.CloudinaryUploadResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.*
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 
 class CreateListingActivity : AppCompatActivity() {
@@ -29,7 +36,7 @@ class CreateListingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_listing)
 
-        // Khởi tạo View
+        // Ánh xạ view
         etTitle = findViewById(R.id.etTitle)
         etDescription = findViewById(R.id.etDescription)
         spCategory = findViewById(R.id.spCategory)
@@ -37,24 +44,22 @@ class CreateListingActivity : AppCompatActivity() {
         btnPickImage = findViewById(R.id.btnPickImage)
         btnSubmit = findViewById(R.id.btnSubmit)
 
-        // Gán danh sách danh mục
+        // Spinner danh mục
         val categories = arrayOf("Đồ điện tử", "Thời trang", "Đồ gia dụng", "Khác")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
         spCategory.adapter = adapter
 
-        // Chọn ảnh
         btnPickImage.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
             startActivityForResult(intent, PICK_IMAGE_REQUEST)
         }
 
-        // Gửi bài đăng
         btnSubmit.setOnClickListener {
             if (imageUri != null) {
-                uploadImageAndPost()
+                uploadImageToCloudinary(imageUri!!)
             } else {
-                Toast.makeText(this, "Vui lòng chọn ảnh", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Vui lòng chọn ảnh!", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -63,27 +68,54 @@ class CreateListingActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             imageUri = data.data
-            ivPreview.setImageURI(imageUri)
+            Glide.with(this).load(imageUri).into(ivPreview)
         }
     }
 
-    private fun uploadImageAndPost() {
-        val fileRef = FirebaseStorage.getInstance()
-            .reference.child("listings/${UUID.randomUUID()}.jpg")
+    // ✅ Gửi ảnh lên Cloudinary
+    private fun uploadImageToCloudinary(uri: Uri) {
+        val inputStream = contentResolver.openInputStream(uri)
+        val bytes = inputStream?.readBytes() ?: return
+        val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), bytes)
+        val body = MultipartBody.Part.createFormData("file", "upload.jpg", requestFile)
 
-        fileRef.putFile(imageUri!!)
-            .addOnSuccessListener {
-                fileRef.downloadUrl.addOnSuccessListener { uri ->
-                    saveListing(uri.toString())
+        val preset = RequestBody.create("text/plain".toMediaTypeOrNull(), "android_unsigned")
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.cloudinary.com/v1_1/dovf2zc0u/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val service = retrofit.create(CloudinaryService::class.java)
+        val call = service.uploadImage(body, preset)
+
+        call.enqueue(object : Callback<CloudinaryUploadResponse> {
+            override fun onResponse(
+                call: Call<CloudinaryUploadResponse>,
+                response: Response<CloudinaryUploadResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val imageUrl = response.body()?.secure_url
+                    if (imageUrl != null) {
+                        saveListing(imageUrl)
+                    } else {
+                        Toast.makeText(this@CreateListingActivity, "Không nhận được URL ảnh!", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this@CreateListingActivity, "Tải ảnh thất bại!", Toast.LENGTH_SHORT).show()
                 }
             }
-            .addOnFailureListener {
-                Toast.makeText(this, "Lỗi tải ảnh: ${it.message}", Toast.LENGTH_SHORT).show()
+
+            override fun onFailure(call: Call<CloudinaryUploadResponse>, t: Throwable) {
+                Toast.makeText(this@CreateListingActivity, "Lỗi: ${t.message}", Toast.LENGTH_SHORT).show()
             }
+        })
     }
 
+    // ✅ Lưu bài đăng sau khi có URL ảnh
     private fun saveListing(imageUrl: String) {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
         val listing = Listing(
             id = UUID.randomUUID().toString(),
             title = etTitle.text.toString().trim(),

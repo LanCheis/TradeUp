@@ -7,5 +7,6 @@
     <color name="md_theme_onPrimary">#FFFFFF</color>
     <color name="md_theme_primaryContainer">#EADDFF</color>
     <color name="md_theme_onPrimaryContainer">#21005D</color>
+    <color name="teal_700">#018786</color>
 
 </resources>

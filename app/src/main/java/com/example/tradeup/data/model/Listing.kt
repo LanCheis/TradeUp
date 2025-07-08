@@ -9,3 +9,4 @@ data class Listing(
     val ownerUid: String = "",
     val timestamp: Long = System.currentTimeMillis()
 )
+

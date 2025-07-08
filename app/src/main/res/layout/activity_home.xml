@@ -1,33 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="#FDFDFD"
+    android:gravity="center_horizontal">
 
-    <!-- Lời chào -->
+    <!-- Welcome Text -->
     <TextView
         android:id="@+id/tvWelcome"
-        android:text="Welcome, Guest"
-        android:textSize="18sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Welcome!"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="32dp" />
 
-    <!-- Nút sửa hồ sơ -->
+    <!-- Edit Profile Button -->
     <Button
         android:id="@+id/btnEditProfile"
-        android:text="Chỉnh sửa hồ sơ"
-        android:layout_marginTop="16dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="👤 Hồ sơ cá nhân"
+        android:drawableStart="@android:drawable/ic_menu_edit"
+        android:paddingVertical="12dp"
+        android:layout_marginBottom="12dp" />
 
-    <!-- Nút đăng xuất -->
+    <!-- Tạo Bài Đăng -->
+    <Button
+        android:id="@+id/btnCreateListing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="📷 Tạo bài đăng"
+        android:drawableStart="@android:drawable/ic_menu_add"
+        android:paddingVertical="12dp"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Danh sách bài đăng -->
+    <Button
+        android:id="@+id/btnViewListings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🛒 Bài đăng của tôi"
+        android:drawableStart="@android:drawable/ic_menu_agenda"
+        android:paddingVertical="12dp"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Logout -->
     <Button
         android:id="@+id/btnLogout"
-        android:text="Logout"
-        android:layout_marginTop="16dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="wrap_content"
+        android:text="🚪 Đăng xuất"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#D32F2F"
+        android:paddingVertical="12dp" />
 </LinearLayout>
