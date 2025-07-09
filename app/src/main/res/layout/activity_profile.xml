@@ -1,133 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
 
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <!-- Họ và tên -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Họ và tên"
-            style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense">
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="12dp"
+            android:contentDescription="Ảnh đại diện" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Username -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Tên người dùng"
-            style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense"
-            android:layout_marginTop="8dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etUsername"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Số điện thoại -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Số điện thoại"
-            style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense"
-            android:layout_marginTop="8dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPhone"
-                android:inputType="phone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Bio -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Giới thiệu bản thân"
-            style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense"
-            android:layout_marginTop="8dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etBio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Giới tính -->
+        <!--email-->
         <TextView
+            android:id="@+id/tvEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Giới tính"
+            android:text="Email:"
             android:textStyle="bold"
-            android:layout_marginTop="12dp" />
+            android:layout_marginBottom="12dp" />
 
-        <Spinner
-            android:id="@+id/spGender"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <!-- Ngày sinh -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ngày sinh"
-            android:textStyle="bold"
-            android:layout_marginTop="12dp" />
-
+        <!--họ và tên-->
         <EditText
-            android:id="@+id/etBirthday"
+            android:id="@+id/etName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="dd/mm/yyyy"
-            android:focusable="false"
-            android:inputType="none" />
+            android:hint="Họ và tên" />
+
+        <!--sđt-->
+        <EditText
+            android:id="@+id/etPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Số điện thoại" />
+
+        <!--địa chỉ-->
         <EditText
             android:id="@+id/etAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Địa chỉ" />
-<!--EMAIL-->
-        <TextView
-            android:id="@+id/tvEmail"
+
+        <!--thông tin về bản thân-->
+        <EditText
+            android:id="@+id/etBio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Email"
-            android:textSize="16sp" />
+            android:hint="Giới thiệu bản thân" />
 
-
-        <!-- Sở thích -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!--username-->
+        <EditText
+            android:id="@+id/etUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Sở thích"
-            android:layout_marginTop="8dp">
+            android:hint="Tên người dùng" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etInterest"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
+        <!--giới tính-->
+        <Spinner
+            android:id="@+id/spGender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-        <!-- Nút Lưu -->
-        <com.google.android.material.button.MaterialButton
+        <!--ngày sinh-->
+        <EditText
+            android:id="@+id/etBirthday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ngày sinh"
+            android:focusable="false" />
+
+        <!--sở thích-->
+        <EditText
+            android:id="@+id/etInterest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Sở thích" />
+
+        <Button
             android:id="@+id/btnSave"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Lưu thay đổi"
-            style="@style/Widget.Material3.Button"
-            android:layout_marginTop="24dp" />
+            android:text="Lưu thông tin"
+            android:layout_marginTop="16dp" />
+
     </LinearLayout>
 </ScrollView>
