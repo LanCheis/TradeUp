@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.tradeup.R
 import com.example.tradeup.data.model.Listing
 import com.example.tradeup.network.CloudinaryService
-import com.example.tradeup.network.CloudinaryUploadResponse
+import com.example.tradeup.network.CloudinaryResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -19,13 +19,15 @@ import okhttp3.RequestBody
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
+import retrofit2.Callback
+
 
 class CreateListingActivity : AppCompatActivity() {
 
     private lateinit var etTitle: EditText
     private lateinit var etDescription: EditText
     private lateinit var spCategory: Spinner
-    private lateinit var ivPreview: ImageView
+    private lateinit var ivListingImage: ImageView
     private lateinit var btnPickImage: Button
     private lateinit var btnSubmit: Button
 
@@ -40,7 +42,7 @@ class CreateListingActivity : AppCompatActivity() {
         etTitle = findViewById(R.id.etTitle)
         etDescription = findViewById(R.id.etDescription)
         spCategory = findViewById(R.id.spCategory)
-        ivPreview = findViewById(R.id.ivPreview)
+        ivListingImage = findViewById(R.id.ivListingImage)
         btnPickImage = findViewById(R.id.btnPickImage)
         btnSubmit = findViewById(R.id.btnSubmit)
 
@@ -66,18 +68,23 @@ class CreateListingActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             imageUri = data.data
-            Glide.with(this).load(imageUri).into(ivPreview)
+            imageUri?.let { uploadImageToCloudinary(it) } // calls function below
         }
     }
 
     // ✅ Gửi ảnh lên Cloudinary
     private fun uploadImageToCloudinary(uri: Uri) {
         val inputStream = contentResolver.openInputStream(uri)
-        val bytes = inputStream?.readBytes() ?: return
-        val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), bytes)
-        val body = MultipartBody.Part.createFormData("file", "upload.jpg", requestFile)
+        if (inputStream == null) {
+            Toast.makeText(this, "Không thể đọc ảnh đã chọn", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val imageBytes = inputStream.readBytes()
+        val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), imageBytes)
+        val multipart = MultipartBody.Part.createFormData("file", "upload.jpg", requestFile)
 
         val preset = RequestBody.create("text/plain".toMediaTypeOrNull(), "android_unsigned")
 
@@ -87,27 +94,20 @@ class CreateListingActivity : AppCompatActivity() {
             .build()
 
         val service = retrofit.create(CloudinaryService::class.java)
-        val call = service.uploadImage(body, preset)
 
-        call.enqueue(object : Callback<CloudinaryUploadResponse> {
-            override fun onResponse(
-                call: Call<CloudinaryUploadResponse>,
-                response: Response<CloudinaryUploadResponse>
-            ) {
+        service.uploadImage(multipart, preset).enqueue(object : Callback<CloudinaryResponse> {
+            override fun onResponse(call: Call<CloudinaryResponse>, response: Response<CloudinaryResponse>) {
                 if (response.isSuccessful) {
-                    val imageUrl = response.body()?.secure_url
-                    if (imageUrl != null) {
-                        saveListing(imageUrl)
-                    } else {
-                        Toast.makeText(this@CreateListingActivity, "Không nhận được URL ảnh!", Toast.LENGTH_SHORT).show()
-                    }
+                    val imageUrl = response.body()?.secureUrl
+                    Toast.makeText(this@CreateListingActivity, "Ảnh đã được tải lên", Toast.LENGTH_SHORT).show()
+                    imageUrl?.let { saveListing(it) }
                 } else {
-                    Toast.makeText(this@CreateListingActivity, "Tải ảnh thất bại!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@CreateListingActivity, "Tải ảnh thất bại", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onFailure(call: Call<CloudinaryUploadResponse>, t: Throwable) {
-                Toast.makeText(this@CreateListingActivity, "Lỗi: ${t.message}", Toast.LENGTH_SHORT).show()
+            override fun onFailure(call: Call<CloudinaryResponse>, t: Throwable) {
+                Toast.makeText(this@CreateListingActivity, "❌ Lỗi: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }

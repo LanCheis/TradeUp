@@ -7,13 +7,9 @@ import retrofit2.http.*
 
 interface CloudinaryService {
     @Multipart
-    @POST("image/upload")
+    @POST("v1_1/dovf2zc0u/image/upload")
     fun uploadImage(
         @Part file: MultipartBody.Part,
         @Part("upload_preset") preset: RequestBody
-    ): Call<CloudinaryUploadResponse>
+    ): Call<CloudinaryResponse> //very important line that doesn't make hell loose here
 }
-
-data class CloudinaryResponse(
-    val secureUrl: String
-)

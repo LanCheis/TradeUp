@@ -1,5 +1,8 @@
 package com.example.tradeup.network
 
+import com.google.gson.annotations.SerializedName
+
 data class CloudinaryResponse(
-    val secure_url: String
+    @SerializedName("secure_url")
+    val secureUrl: String
 )

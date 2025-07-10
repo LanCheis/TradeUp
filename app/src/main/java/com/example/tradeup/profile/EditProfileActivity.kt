@@ -7,15 +7,28 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+
 import com.bumptech.glide.Glide
 import com.example.tradeup.R
 import com.example.tradeup.data.model.User
 import com.example.tradeup.data.remote.UserRepository
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import okhttp3.*
-import retrofit2.*
+
+import com.example.tradeup.utils.FileUtils
+import com.example.tradeup.network.CloudinaryResponse
+import com.example.tradeup.network.CloudinaryService
+
+
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+
+import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import com.google.firebase.firestore.FirebaseFirestore
 import java.io.File
 import java.util.*
 
@@ -81,6 +94,7 @@ class EditProfileActivity : AppCompatActivity() {
     private fun uploadImageToCloudinary(uri: Uri) {
         val filePath = FileUtils.getFilePathFromUri(this, uri) ?: return
         val file = File(filePath)
+
         val requestBody = RequestBody.create("image/*".toMediaTypeOrNull(), file)
         val multipart = MultipartBody.Part.createFormData("file", file.name, requestBody)
         val preset = RequestBody.create("text/plain".toMediaTypeOrNull(), "android_unsigned")
@@ -91,16 +105,21 @@ class EditProfileActivity : AppCompatActivity() {
             .build()
 
         val cloudinary = retrofit.create(CloudinaryService::class.java)
+
+        // ✅ THIS IS THE enqueue BLOCK
         cloudinary.uploadImage(multipart, preset).enqueue(object : Callback<CloudinaryResponse> {
             override fun onResponse(call: Call<CloudinaryResponse>, response: Response<CloudinaryResponse>) {
                 if (response.isSuccessful) {
                     uploadedImageUrl = response.body()?.secureUrl
-                    Toast.makeText(this@EditProfileActivity, "Ảnh đã được tải lên", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@EditProfileActivity, "✅ Ảnh đã được tải lên", Toast.LENGTH_SHORT).show()
+                    Log.d("CloudinaryUpload", "✅ Image URL: $uploadedImageUrl")
+                } else {
+                    Log.e("CloudinaryUpload", "❌ response error: ${response.errorBody()?.string()}")
                 }
             }
 
             override fun onFailure(call: Call<CloudinaryResponse>, t: Throwable) {
-                Log.e("CloudinaryUpload", "Lỗi tải ảnh: ${t.message}")
+                Log.e("CloudinaryUpload", "❌ failure: ${t.message}")
             }
         })
     }

@@ -56,12 +56,12 @@
 
         <!-- Ảnh minh họa -->
         <ImageView
-            android:id="@+id/ivPreview"
+            android:id="@+id/ivListingImage"
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:layout_marginBottom="16dp"
             android:scaleType="centerCrop"
-            android:background="#E0E0E0"
-            android:layout_marginBottom="12dp" />
+            android:contentDescription="Ảnh sản phẩm" />
 
         <Button
             android:id="@+id/btnPickImage"
