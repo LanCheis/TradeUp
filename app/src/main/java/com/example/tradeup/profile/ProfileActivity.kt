@@ -1,27 +1,28 @@
 package com.example.tradeup.profile
 
-import com.example.tradeup.data.remote.UserRepository
-import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.example.tradeup.R
+import com.example.tradeup.data.remote.UserRepository
 import com.google.firebase.auth.FirebaseAuth
-import java.util.*
 
 class ProfileActivity : AppCompatActivity() {
 
-    private lateinit var etName: EditText
-    private lateinit var etPhone: EditText
-    private lateinit var etAddress: EditText
-    private lateinit var etBio: EditText
-    private lateinit var etUsername: EditText
+    private lateinit var ivAvatar: ImageView
+    private lateinit var tvName: TextView
+    private lateinit var tvPhone: TextView
+    private lateinit var tvAddress: TextView
+    private lateinit var tvBio: TextView
+    private lateinit var tvUsername: TextView
     private lateinit var tvEmail: TextView
-    private lateinit var spGender: Spinner
-    private lateinit var etBirthday: EditText
-    private lateinit var etInterest: EditText
-    private lateinit var btnSave: Button
+    private lateinit var tvGender: TextView
+    private lateinit var tvBirthday: TextView
+    private lateinit var tvInterest: TextView
+    private lateinit var btnEditProfile: Button
 
     private val currentUid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
@@ -29,94 +30,54 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        etName = findViewById(R.id.etName)
-        etPhone = findViewById(R.id.etPhone)
-        etAddress = findViewById(R.id.etAddress)
-        etBio = findViewById(R.id.etBio)
-        etUsername = findViewById(R.id.etUsername)
+        ivAvatar = findViewById(R.id.ivAvatar)
+        tvName = findViewById(R.id.tvName)
+        tvPhone = findViewById(R.id.tvPhone)
+        tvAddress = findViewById(R.id.tvAddress)
+        tvBio = findViewById(R.id.tvBio)
+        tvUsername = findViewById(R.id.tvUsername)
         tvEmail = findViewById(R.id.tvEmail)
-        spGender = findViewById(R.id.spGender)
-        etBirthday = findViewById(R.id.etBirthday)
-        etInterest = findViewById(R.id.etInterest)
-        btnSave = findViewById(R.id.btnSave)
+        tvGender = findViewById(R.id.tvGender)
+        tvBirthday = findViewById(R.id.tvBirthday)
+        tvInterest = findViewById(R.id.tvInterest)
+        btnEditProfile = findViewById(R.id.btnEditProfile)
 
-        val genders = arrayOf("Nam", "Nữ", "Khác")
-        val genderAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, genders)
-        spGender.adapter = genderAdapter
-
-        etBirthday.setOnClickListener {
-            showDatePicker()
-        }
-
-        btnSave.setOnClickListener {
-            saveProfile()
+        btnEditProfile.setOnClickListener {
+            startActivity(Intent(this, EditProfileActivity::class.java))
         }
 
         loadUser()
     }
 
-    private fun showDatePicker() {
-        val calendar = Calendar.getInstance()
-        val dialog = DatePickerDialog(
-            this,
-            { _, year, month, dayOfMonth ->
-                etBirthday.setText(String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year))
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-        dialog.show()
-    }
-
-    private fun saveProfile() {
-        Log.d("ProfileSave", "Bắt đầu lưu hồ sơ")
-
-        val user = com.example.tradeup.data.model.User(
-            uid = currentUid,
-            name = etName.text.toString(),
-            email = FirebaseAuth.getInstance().currentUser?.email ?: "",
-            phone = etPhone.text.toString(),
-            address = etAddress.text.toString(),
-            bio = etBio.text.toString(),
-            username = etUsername.text.toString(),
-            gender = spGender.selectedItem.toString(),
-            birthday = etBirthday.text.toString(),
-            interests = etInterest.text.toString(),
-            profileImageUrl = ""
-        )
-
-        com.example.tradeup.data.remote.UserRepository.saveUserProfile(user) { success, error ->
-            if (success) {
-                Log.d("ProfileSave", "✅ Lưu thành công")
-                Toast.makeText(this, "✅ Cập nhật hồ sơ thành công!", Toast.LENGTH_SHORT).show()
-                Toast.makeText(this, "📄 Thông tin giới thiệu (bio) đã được lưu!", Toast.LENGTH_SHORT).show()
-            } else {
-                Log.e("ProfileSave", "❌ Lỗi lưu hồ sơ: $error")
-                Toast.makeText(this, "❌ Lỗi: $error", Toast.LENGTH_SHORT).show()
-            }
-        }
+    override fun onResume() {
+        super.onResume()
+        loadUser()
     }
 
     private fun loadUser() {
-        com.example.tradeup.data.remote.UserRepository.getUserProfile(currentUid) { user ->
+        UserRepository.getUserProfile(currentUid) { user ->
             user?.let {
-                etName.setText(it.name)
-                etPhone.setText(it.phone)
-                etAddress.setText(it.address)
-                etBio.setText(it.bio)
-                etUsername.setText(it.username)
+                tvName.text = it.name
+                tvPhone.text = it.phone
+                tvAddress.text = it.address
+                tvBio.text = it.bio
+                tvUsername.text = it.username
                 tvEmail.text = "Email: ${it.email}"
-                etBirthday.setText(it.birthday)
-                etInterest.setText(it.interests)
-                etAddress = findViewById(R.id.etAddress)
-                val genderIndex = when (it.gender) {
-                    "Nam" -> 0
-                    "Nữ" -> 1
-                    "Khác" -> 2
-                    else -> 0
+                tvGender.text = it.gender
+                tvBirthday.text = it.birthday
+                tvInterest.text = it.interests
+
+                if (!it.profileImageUrl.isNullOrEmpty()) {
+                    Glide.with(this)
+                        .load(it.profileImageUrl)
+                        .placeholder(R.drawable.ic_person)
+                        .into(ivAvatar)
+                } else {
+                    ivAvatar.setImageResource(R.drawable.ic_person)
                 }
-                spGender.setSelection(genderIndex)
+            } ?: run {
+                Toast.makeText(this, "Không tìm thấy hồ sơ người dùng", Toast.LENGTH_SHORT).show()
+                Log.e("ProfileActivity", "User profile not found")
             }
         }
     }

@@ -13,81 +13,65 @@
             android:id="@+id/ivAvatar"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:layout_gravity="center"
             android:scaleType="centerCrop"
-            android:layout_marginBottom="12dp"
-            android:contentDescription="Ảnh đại diện" />
+            android:layout_marginBottom="16dp"
+            android:contentDescription="Ảnh đại diện"
+            android:src="@drawable/ic_person" />
 
-        <!--email-->
-        <TextView
-            android:id="@+id/tvEmail"
+        <TextView android:id="@+id/tvEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Email:"
             android:textStyle="bold"
             android:layout_marginBottom="12dp" />
 
-        <!--họ và tên-->
-        <EditText
-            android:id="@+id/etName"
+        <TextView android:id="@+id/tvName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Họ và tên" />
+            android:text="Họ và tên:" />
 
-        <!--sđt-->
-        <EditText
-            android:id="@+id/etPhone"
+        <TextView android:id="@+id/tvPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Số điện thoại" />
+            android:text="Số điện thoại:" />
 
-        <!--địa chỉ-->
-        <EditText
-            android:id="@+id/etAddress"
+        <TextView android:id="@+id/tvAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Địa chỉ" />
+            android:text="Địa chỉ:" />
 
-        <!--thông tin về bản thân-->
-        <EditText
-            android:id="@+id/etBio"
+        <TextView android:id="@+id/tvBio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Giới thiệu bản thân" />
+            android:text="Giới thiệu bản thân:" />
 
-        <!--username-->
-        <EditText
-            android:id="@+id/etUsername"
+        <TextView android:id="@+id/tvUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tên người dùng" />
+            android:text="Tên người dùng:" />
 
-        <!--giới tính-->
-        <Spinner
-            android:id="@+id/spGender"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <!--ngày sinh-->
-        <EditText
-            android:id="@+id/etBirthday"
+        <TextView android:id="@+id/tvGender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Ngày sinh"
-            android:focusable="false" />
+            android:text="Giới tính:" />
 
-        <!--sở thích-->
-        <EditText
-            android:id="@+id/etInterest"
+        <TextView android:id="@+id/tvBirthday"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Sở thích" />
+            android:text="Ngày sinh:" />
+
+        <TextView android:id="@+id/tvInterest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sở thích:" />
 
         <Button
-            android:id="@+id/btnSave"
+            android:id="@+id/btnEditProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Lưu thông tin"
-            android:layout_marginTop="16dp" />
+            android:text="Chỉnh sửa hồ sơ"
+            android:layout_marginTop="24dp" />
 
     </LinearLayout>
 </ScrollView>

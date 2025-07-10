@@ -13,3 +13,7 @@ interface CloudinaryService {
         @Part("upload_preset") preset: RequestBody
     ): Call<CloudinaryUploadResponse>
 }
+
+data class CloudinaryResponse(
+    val secureUrl: String
+)
