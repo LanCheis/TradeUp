@@ -1,48 +1,79 @@
 package com.example.tradeup.auth
 
-
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tradeup.R
 import com.example.tradeup.data.remote.FirebaseAuthHelper
 import com.example.tradeup.home.HomeActivity
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
 
 class LoginActivity : AppCompatActivity() {
 
     private val RC_SIGN_IN = 1001
     private lateinit var googleClient: GoogleSignInClient
 
+    private lateinit var emailField: EditText
+    private lateinit var passwordField: EditText
+    private lateinit var togglePasswordIcon: ImageView
+    private lateinit var loginBtn: Button
+    private lateinit var googleBtn: Button
+    private lateinit var errorText: TextView
+
+    private var isPasswordVisible = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        val emailField = findViewById<EditText>(R.id.etEmail)
-        val passwordField = findViewById<EditText>(R.id.etPassword)
-        val loginBtn = findViewById<Button>(R.id.btnLogin)
-        val googleBtn = findViewById<Button>(R.id.btnGoogle)
+        // View binding
+        emailField = findViewById(R.id.etEmail)
+        passwordField = findViewById(R.id.etPassword)
+        togglePasswordIcon = findViewById(R.id.ivTogglePassword)
+        loginBtn = findViewById(R.id.btnLogin)
+        googleBtn = findViewById(R.id.btnGoogle)
+        errorText = findViewById(R.id.tvError)
 
         loginBtn.isEnabled = false
+        errorText.visibility = View.GONE
+
+        // TextWatcher to enable login button only when fields are filled
         val watcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 loginBtn.isEnabled =
                     emailField.text.toString().isNotBlank() && passwordField.text.toString().isNotBlank()
+                errorText.visibility = View.GONE // clear error when typing
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }
 
         emailField.addTextChangedListener(watcher)
         passwordField.addTextChangedListener(watcher)
+
+        // Toggle password visibility
+        togglePasswordIcon.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+            if (isPasswordVisible) {
+                passwordField.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                togglePasswordIcon.setImageResource(R.drawable.ic_eye) // 👁
+            } else {
+                passwordField.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                togglePasswordIcon.setImageResource(R.drawable.ic_eye_off) // 👁‍🗨
+            }
+            passwordField.setSelection(passwordField.text.length)
+        }
 
         loginBtn.setOnClickListener {
             val email = emailField.text.toString()
@@ -53,25 +84,25 @@ class LoginActivity : AppCompatActivity() {
                     startActivity(Intent(this, HomeActivity::class.java))
                     finish()
                 } else {
-                    Toast.makeText(this, error ?: "Login failed", Toast.LENGTH_SHORT).show()
+                    errorText.text = error ?: "Lỗi không xác định khi đăng nhập"
+                    errorText.visibility = View.VISIBLE
                 }
             }
         }
 
-        // Google Sign-In
+        // Configure Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
-
         googleClient = GoogleSignIn.getClient(this, gso)
-
 
         googleBtn.setOnClickListener {
             val intent = googleClient.signInIntent
             startActivityForResult(intent, RC_SIGN_IN)
         }
 
+        // Navigation links
         findViewById<TextView>(R.id.tvGoToRegister).setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
@@ -95,11 +126,13 @@ class LoginActivity : AppCompatActivity() {
                         startActivity(Intent(this, HomeActivity::class.java))
                         finish()
                     } else {
-                        Toast.makeText(this, error ?: "Google login failed", Toast.LENGTH_SHORT).show()
+                        errorText.text = error ?: "Google đăng nhập thất bại"
+                        errorText.visibility = View.VISIBLE
                     }
                 }
             } catch (e: ApiException) {
-                Toast.makeText(this, "Google sign-in failed", Toast.LENGTH_SHORT).show()
+                errorText.text = "Google Sign-In thất bại: ${e.message}"
+                errorText.visibility = View.VISIBLE
             }
         }
     }
