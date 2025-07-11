@@ -20,6 +20,9 @@ import com.google.firebase.auth.GoogleAuthProvider
 
 class LoginActivity : AppCompatActivity() {
 
+    private var hasNavigated = false
+    private lateinit var progressBar: ProgressBar
+
     private val RC_SIGN_IN = 1001
     private lateinit var googleClient: GoogleSignInClient
 
@@ -35,6 +38,10 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        googleBtn = findViewById(R.id.btnGoogle)
+        errorText = findViewById(R.id.tvError)
+        progressBar = findViewById(R.id.progressBar)
 
         // View binding
         emailField = findViewById(R.id.etEmail)
@@ -98,8 +105,12 @@ class LoginActivity : AppCompatActivity() {
         googleClient = GoogleSignIn.getClient(this, gso)
 
         googleBtn.setOnClickListener {
-            val intent = googleClient.signInIntent
-            startActivityForResult(intent, RC_SIGN_IN)
+            if (!hasNavigated) {
+                googleBtn.isEnabled = false
+                progressBar.visibility = View.VISIBLE
+                val intent = googleClient.signInIntent
+                startActivityForResult(intent, RC_SIGN_IN)
+            }
         }
 
         // Navigation links
@@ -122,17 +133,24 @@ class LoginActivity : AppCompatActivity() {
                 val credential = GoogleAuthProvider.getCredential(account.idToken, null)
 
                 FirebaseAuthHelper.signInWithGoogleCredential(credential) { success, error ->
-                    if (success) {
+                    progressBar.visibility = View.GONE
+
+                    if (success && !hasNavigated) {
+                        hasNavigated = true
                         startActivity(Intent(this, HomeActivity::class.java))
                         finish()
-                    } else {
+                    } else if (!success) {
+                        googleBtn.isEnabled = true
                         errorText.text = error ?: "Google đăng nhập thất bại"
                         errorText.visibility = View.VISIBLE
                     }
                 }
             } catch (e: ApiException) {
+                progressBar.visibility = View.GONE
+                googleBtn.isEnabled = true
                 errorText.text = "Google Sign-In thất bại: ${e.message}"
                 errorText.visibility = View.VISIBLE
+
             }
         }
     }

@@ -94,4 +94,13 @@
         android:textColor="@color/purple_700"
         android:layout_marginTop="4dp" />
 
+    <!-- Progress Bar -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        style="?android:attr/progressBarStyle" />
 </LinearLayout>
