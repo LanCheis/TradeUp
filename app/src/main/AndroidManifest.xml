@@ -24,13 +24,13 @@
         <activity android:name=".auth.RegisterActivity" />
         <activity android:name=".auth.ForgotPasswordActivity" />
         <!-- Home Activities -->
-        <activity android:name=".home.HomeActivity" />
-        <activity android:name=".profile.ProfileActivity" />
+        <activity android:name=".home.HomeFragment" />
+        <activity android:name=".profile.ProfileFragment" />
 
         <!-- List Activities -->
         <activity android:name=".listing.CreateListingActivity" />
         <activity android:name=".listing.ListingDetailActivity" />
-        <activity android:name=".listing.ListingListActivity" />
+        <activity android:name=".listing.ListingsFragment" />
 
     </application>
 </manifest>

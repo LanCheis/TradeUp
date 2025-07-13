@@ -60,8 +60,10 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.0.0")       // Google Sign-In
     implementation("com.google.android.material:material:1.11.0")
     implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
+    implementation("com.google.firebase:firebase-firestore:24.9.0")
 
-        // Retrofit & OkHttp (for networking)
+
+    // Retrofit & OkHttp (for networking)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")

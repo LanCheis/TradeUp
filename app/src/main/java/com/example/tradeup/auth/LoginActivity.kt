@@ -10,7 +10,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tradeup.R
 import com.example.tradeup.data.remote.FirebaseAuthHelper
-import com.example.tradeup.home.HomeActivity
+import com.example.tradeup.home.HomeFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -88,7 +88,7 @@ class LoginActivity : AppCompatActivity() {
 
             FirebaseAuthHelper.loginWithEmail(email, password) { success, error ->
                 if (success) {
-                    startActivity(Intent(this, HomeActivity::class.java))
+                    startActivity(Intent(this, HomeFragment::class.java))
                     finish()
                 } else {
                     errorText.text = error ?: "Lỗi không xác định khi đăng nhập"
@@ -137,7 +137,7 @@ class LoginActivity : AppCompatActivity() {
 
                     if (success && !hasNavigated) {
                         hasNavigated = true
-                        startActivity(Intent(this, HomeActivity::class.java))
+                        startActivity(Intent(this, HomeFragment::class.java))
                         finish()
                     } else if (!success) {
                         googleBtn.isEnabled = true

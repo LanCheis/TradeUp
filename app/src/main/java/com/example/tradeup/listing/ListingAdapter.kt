@@ -21,31 +21,34 @@ class ListingAdapter(private val listings: List<Listing>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListingViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_listing, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_listing, parent, false)
         return ListingViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ListingViewHolder, position: Int) {
-        val listingItem = listings[position]
-        holder.tvTitle.text = listingItem.title
-        holder.tvCategory.text = listingItem.category
+        val listing = listings[position]
+
+        holder.tvTitle.text = listing.title
+        holder.tvCategory.text = listing.category
 
         Glide.with(holder.itemView.context)
-            .load(listingItem.imageUrl)
+            .load(listing.imageUrl)
+            .placeholder(R.drawable.ic_image_placeholder) // fallback
             .into(holder.ivImage)
 
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
             val intent = Intent(context, ListingDetailActivity::class.java).apply {
-                putExtra("listing_id", listingItem.id)
-                putExtra("imageUrl", listingItem.imageUrl)
-                putExtra("title", listingItem.title)
-                putExtra("category", listingItem.category)
-                putExtra("description", listingItem.description)
+                putExtra("listing_id", listing.id)
+                putExtra("title", listing.title)
+                putExtra("imageUrl", listing.imageUrl)
+                putExtra("category", listing.category)
+                putExtra("description", listing.description)
             }
             context.startActivity(intent)
         }
     }
 
-    override fun getItemCount(): Int = listings.size
+    override fun getItemCount() = listings.size
 }

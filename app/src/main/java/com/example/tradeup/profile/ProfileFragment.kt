@@ -10,7 +10,7 @@ import com.example.tradeup.R
 import com.example.tradeup.data.remote.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 
-class ProfileActivity : AppCompatActivity() {
+class ProfileFragment : AppCompatActivity() {
 
     private lateinit var ivAvatar: ImageView
     private lateinit var tvName: TextView
