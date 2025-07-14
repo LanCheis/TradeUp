@@ -16,7 +16,7 @@ class ListingListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_listing_list)
+        setContentView(R.layout.fragment_listings)
 
         rvListings = findViewById(R.id.rvListings)
         rvListings.layoutManager = LinearLayoutManager(this)

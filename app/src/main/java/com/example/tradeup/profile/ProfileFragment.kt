@@ -2,82 +2,84 @@ package com.example.tradeup.profile
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.tradeup.R
+import com.example.tradeup.auth.LoginActivity
+import com.example.tradeup.data.model.User
 import com.example.tradeup.data.remote.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 
-class ProfileFragment : AppCompatActivity() {
+class ProfileFragment : Fragment() {
 
     private lateinit var ivAvatar: ImageView
     private lateinit var tvName: TextView
+    private lateinit var tvEmail: TextView
     private lateinit var tvPhone: TextView
-    private lateinit var tvAddress: TextView
     private lateinit var tvBio: TextView
     private lateinit var tvUsername: TextView
-    private lateinit var tvEmail: TextView
-    private lateinit var tvGender: TextView
     private lateinit var tvBirthday: TextView
     private lateinit var tvInterest: TextView
+    private lateinit var btnLogout: Button
     private lateinit var btnEditProfile: Button
 
-    private val currentUid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return inflater.inflate(R.layout.fragment_profile, container, false)
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_profile)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        ivAvatar = findViewById(R.id.ivAvatar)
-        tvName = findViewById(R.id.tvName)
-        tvPhone = findViewById(R.id.tvPhone)
-        tvAddress = findViewById(R.id.tvAddress)
-        tvBio = findViewById(R.id.tvBio)
-        tvUsername = findViewById(R.id.tvUsername)
-        tvEmail = findViewById(R.id.tvEmail)
-        tvGender = findViewById(R.id.tvGender)
-        tvBirthday = findViewById(R.id.tvBirthday)
-        tvInterest = findViewById(R.id.tvInterest)
-        btnEditProfile = findViewById(R.id.btnEditProfile)
+        // Bind views
+        ivAvatar = view.findViewById(R.id.ivAvatar)
+        tvName = view.findViewById(R.id.tvName)
+        tvEmail = view.findViewById(R.id.tvEmail)
+        tvPhone = view.findViewById(R.id.tvPhone)
+        tvBio = view.findViewById(R.id.tvBio)
+        tvUsername = view.findViewById(R.id.tvUsername)
+        tvBirthday = view.findViewById(R.id.tvBirthday)
+        tvInterest = view.findViewById(R.id.tvInterest)
+        btnLogout = view.findViewById(R.id.btnLogout)
+        btnEditProfile = view.findViewById(R.id.btnEditProfile)
 
-        btnEditProfile.setOnClickListener {
-            startActivity(Intent(this, EditProfileActivity::class.java))
+        btnLogout.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            startActivity(Intent(requireContext(), LoginActivity::class.java))
+            requireActivity().finish()
         }
 
-        loadUser()
+        btnEditProfile.setOnClickListener {
+            startActivity(Intent(requireContext(), EditProfileActivity::class.java))
+        }
+
+        loadUserData()
     }
 
-    override fun onResume() {
-        super.onResume()
-        loadUser()
-    }
-
-    private fun loadUser() {
-        UserRepository.getUserProfile(currentUid) { user ->
+    private fun loadUserData() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        UserRepository.getUserProfile(uid) { user ->
             user?.let {
                 tvName.text = it.name
+                tvEmail.text = it.email
                 tvPhone.text = it.phone
-                tvAddress.text = it.address
                 tvBio.text = it.bio
                 tvUsername.text = it.username
-                tvEmail.text = "Email: ${it.email}"
-                tvGender.text = it.gender
                 tvBirthday.text = it.birthday
                 tvInterest.text = it.interests
 
-                if (!it.profileImageUrl.isNullOrEmpty()) {
-                    Glide.with(this)
-                        .load(it.profileImageUrl)
-                        .placeholder(R.drawable.ic_person)
-                        .into(ivAvatar)
-                } else {
-                    ivAvatar.setImageResource(R.drawable.ic_person)
-                }
+                Glide.with(requireContext())
+                    .load(it.profileImageUrl)
+                    .into(ivAvatar)
             } ?: run {
-                Toast.makeText(this, "Không tìm thấy hồ sơ người dùng", Toast.LENGTH_SHORT).show()
-                Log.e("ProfileActivity", "User profile not found")
+                Toast.makeText(requireContext(), "Không tải được hồ sơ", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- Internet Permission -->
+
+    <!-- Internet permission -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TradeUp">
+        android:theme="@style/Theme.TradeUp"
+        tools:targetApi="31">
 
         <!-- Main Launcher Activity -->
         <activity
@@ -23,14 +26,13 @@
         <activity android:name=".auth.LoginActivity" />
         <activity android:name=".auth.RegisterActivity" />
         <activity android:name=".auth.ForgotPasswordActivity" />
-        <!-- Home Activities -->
-        <activity android:name=".home.HomeFragment" />
-        <activity android:name=".profile.ProfileFragment" />
 
-        <!-- List Activities -->
+        <!-- Listing Activities -->
         <activity android:name=".listing.CreateListingActivity" />
         <activity android:name=".listing.ListingDetailActivity" />
-        <activity android:name=".listing.ListingsFragment" />
+
+        <!-- Note: Fragments like HomeFragment, ProfileFragment, ListingsFragment
+             must NOT be declared here. They are managed inside MainActivity. -->
 
     </application>
 </manifest>
