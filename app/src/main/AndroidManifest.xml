@@ -4,6 +4,7 @@
 
     <!-- Internet permission -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -31,8 +32,8 @@
         <activity android:name=".listing.CreateListingActivity" />
         <activity android:name=".listing.ListingDetailActivity" />
 
-        <!-- Note: Fragments like HomeFragment, ProfileFragment, ListingsFragment
-             must NOT be declared here. They are managed inside MainActivity. -->
+        <!-- Profile Activities -->
+        <activity android:name=".profile.EditProfileActivity" />
 
     </application>
 </manifest>

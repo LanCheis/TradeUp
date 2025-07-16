@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.tradeup.R
 import com.example.tradeup.auth.LoginActivity
-import com.example.tradeup.data.model.User
 import com.example.tradeup.data.remote.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 
@@ -38,7 +37,7 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Bind views
+        // Bind views from layout
         ivAvatar = view.findViewById(R.id.ivAvatar)
         tvName = view.findViewById(R.id.tvName)
         tvEmail = view.findViewById(R.id.tvEmail)
@@ -50,6 +49,10 @@ class ProfileFragment : Fragment() {
         btnLogout = view.findViewById(R.id.btnLogout)
         btnEditProfile = view.findViewById(R.id.btnEditProfile)
 
+        // Load data
+        loadUserData()
+
+        // Button actions
         btnLogout.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             startActivity(Intent(requireContext(), LoginActivity::class.java))
@@ -59,8 +62,6 @@ class ProfileFragment : Fragment() {
         btnEditProfile.setOnClickListener {
             startActivity(Intent(requireContext(), EditProfileActivity::class.java))
         }
-
-        loadUserData()
     }
 
     private fun loadUserData() {
@@ -68,12 +69,12 @@ class ProfileFragment : Fragment() {
         UserRepository.getUserProfile(uid) { user ->
             user?.let {
                 tvName.text = it.name
-                tvEmail.text = it.email
-                tvPhone.text = it.phone
-                tvBio.text = it.bio
-                tvUsername.text = it.username
-                tvBirthday.text = it.birthday
-                tvInterest.text = it.interests
+                tvEmail.text = "Email: ${it.email}"
+                tvPhone.text = "SĐT: ${it.phone}"
+                tvBio.text = "Giới thiệu: ${it.bio}"
+                tvUsername.text = "Username: ${it.username}"
+                tvBirthday.text = "Sinh nhật: ${it.birthday}"
+                tvInterest.text = "Sở thích: ${it.interests}"
 
                 Glide.with(requireContext())
                     .load(it.profileImageUrl)
