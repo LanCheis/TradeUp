@@ -47,6 +47,8 @@ class ProfileFragment : Fragment() {
         tvBirthday = view.findViewById(R.id.tvBirthday)
         tvInterest = view.findViewById(R.id.tvInterest)
         btnEditProfile = view.findViewById(R.id.btnEditProfile)
+        btnLogout = view.findViewById(R.id.btnLogout)
+        btnEditProfile = view.findViewById(R.id.btnEditProfile)
 
         // Load data
         loadUserData()
@@ -59,7 +61,10 @@ class ProfileFragment : Fragment() {
         }
 
         btnEditProfile.setOnClickListener {
-            startActivity(Intent(requireContext(), EditProfileFragment::class.java))
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, EditProfileFragment())
+                .addToBackStack(null)
+                .commit()
         }
     }
 
