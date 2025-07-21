@@ -3,7 +3,13 @@
     <string name="default_web_client_id">98977397255-3lb8s...apps.googleusercontent.com</string>
     <string name="welcome_user">Welcome %1$s</string>
 
-        <!--profile label-->
+    <!-- Navigation Labels -->
+    <string name="nav_home">Home</string>
+    <string name="nav_chat">Chat</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Profile Labels -->
     <string name="email_label">Email: %1$s</string>
     <string name="phone_label">SĐT: %1$s</string>
     <string name="bio_label">Giới thiệu: %1$s</string>
@@ -11,11 +17,37 @@
     <string name="birthday_label">Sinh nhật: %1$s</string>
     <string name="interest_label">Sở thích: %1$s</string>
 
-        <!--item card-->
+    <!-- Item Card -->
     <string name="add_to_favorites">Add to favorites</string>
     <string name="distance_icon_desc">Distance icon</string>
     <string name="seller_avatar_desc">Sellers avatar</string>
     <string name="item_image_desc">Image of the listed item</string>
 
+    <!-- Common Actions -->
+    <string name="search_hint">Search items...</string>
+    <string name="category_label">Category</string>
+    <string name="sort_label">Sort by</string>
+    <string name="price_label">Price</string>
+    <string name="location_label">Location</string>
+    <string name="condition_label">Condition</string>
+    <string name="negotiable_label">Negotiable</string>
 
+    <!-- Messages -->
+    <string name="no_items_found">No items found</string>
+    <string name="loading">Loading...</string>
+    <string name="send_message">Send</string>
+    <string name="type_message">Type a message...</string>
+
+    <!-- Buttons -->
+    <string name="create_listing">Create Listing</string>
+    <string name="select_image">Select Image</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Content Descriptions -->
+    <string name="search_icon_desc">Search</string>
+    <string name="chat_options_desc">Chat options</string>
+    <string name="attach_file_desc">Attach file</string>
+    <string name="user_avatar_desc">User avatar</string>
+    <string name="product_image_desc">Product image</string>
 </resources>

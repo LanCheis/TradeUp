@@ -83,4 +83,11 @@ dependencies {
     // Glide for image loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
+
+    // Add this if not present - for CircleImageView
+    implementation("de.hdodenhof:circleimageview:3.1.0")
+
+    // Make sure these are also present
+    implementation("androidx.cardview:cardview:1.0.0")
+    implementation("com.google.android.material:material:1.11.0")
 }

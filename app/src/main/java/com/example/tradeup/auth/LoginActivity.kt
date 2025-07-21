@@ -3,7 +3,6 @@ package com.example.tradeup.auth
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
-import android.text.InputType
 import android.text.TextWatcher
 import android.view.View
 import android.widget.*
@@ -19,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.GoogleAuthProvider
 
 class LoginActivity : AppCompatActivity() {
@@ -29,14 +29,11 @@ class LoginActivity : AppCompatActivity() {
     private val RC_SIGN_IN = 1001
     private lateinit var googleClient: GoogleSignInClient
 
-    private lateinit var emailField: EditText
-    private lateinit var passwordField: EditText
-    private lateinit var togglePasswordIcon: ImageView
+    private lateinit var emailField: TextInputEditText
+    private lateinit var passwordField: TextInputEditText
     private lateinit var loginBtn: Button
     private lateinit var googleBtn: Button
     private lateinit var errorText: TextView
-
-    private var isPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +48,6 @@ class LoginActivity : AppCompatActivity() {
     private fun initViews() {
         emailField = findViewById(R.id.etEmail)
         passwordField = findViewById(R.id.etPassword)
-        togglePasswordIcon = findViewById(R.id.ivTogglePassword)
         loginBtn = findViewById(R.id.btnLogin)
         googleBtn = findViewById(R.id.btnGoogle)
         errorText = findViewById(R.id.tvError)
@@ -78,18 +74,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
-        togglePasswordIcon.setOnClickListener {
-            isPasswordVisible = !isPasswordVisible
-            if (isPasswordVisible) {
-                passwordField.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                togglePasswordIcon.setImageResource(R.drawable.ic_eye)
-            } else {
-                passwordField.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                togglePasswordIcon.setImageResource(R.drawable.ic_eye_off)
-            }
-            passwordField.setSelection(passwordField.text.length)
-        }
-
         loginBtn.setOnClickListener {
             val email = emailField.text.toString()
             val password = passwordField.text.toString()
@@ -100,7 +84,7 @@ class LoginActivity : AppCompatActivity() {
                 if (success) {
                     checkUserProfileAndNavigate()
                 } else {
-                    errorText.text = error ?: "Lỗi không xác định khi đăng nhập"
+                    errorText.text = error ?: "Login failed"
                     errorText.visibility = View.VISIBLE
                 }
             }
@@ -149,30 +133,27 @@ class LoginActivity : AppCompatActivity() {
                         checkUserProfileAndNavigate()
                     } else if (!success) {
                         googleBtn.isEnabled = true
-                        errorText.text = error ?: "Google đăng nhập thất bại"
+                        errorText.text = error ?: "Google Sign-In failed"
                         errorText.visibility = View.VISIBLE
                     }
                 }
             } catch (e: ApiException) {
                 showLoading(false)
                 googleBtn.isEnabled = true
-                errorText.text = "Google Sign-In thất bại: ${e.message}"
+                errorText.text = "Google Sign-In failed: ${e.message}"
                 errorText.visibility = View.VISIBLE
             }
         }
     }
 
-    // ✅ NEW METHOD - Check profile and navigate accordingly
     private fun checkUserProfileAndNavigate() {
         val currentUser = FirebaseAuthHelper.getCurrentUser()
         if (currentUser != null) {
             UserRepository.getUserProfile(currentUser.uid) { user ->
                 if (user != null && isProfileComplete(user)) {
-                    // Profile is complete, go to main app
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
                 } else {
-                    // Profile incomplete or doesn't exist, go to setup
                     startActivity(Intent(this, SetupProfileActivity::class.java))
                     finish()
                 }
@@ -180,7 +161,6 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    // ✅ NEW METHOD - Check if profile has essential information
     private fun isProfileComplete(user: User): Boolean {
         return user.name.isNotEmpty() &&
                 user.phone.isNotEmpty() &&
@@ -190,7 +170,9 @@ class LoginActivity : AppCompatActivity() {
 
     private fun showLoading(show: Boolean) {
         progressBar.visibility = if (show) View.VISIBLE else View.GONE
-        loginBtn.isEnabled = !show
+        loginBtn.isEnabled = !show &&
+                emailField.text.toString().isNotBlank() &&
+                passwordField.text.toString().isNotBlank()
         googleBtn.isEnabled = !show
     }
 }

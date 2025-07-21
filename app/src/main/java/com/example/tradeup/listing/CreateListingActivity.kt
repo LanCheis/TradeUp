@@ -15,45 +15,62 @@ import com.example.tradeup.utils.CloudinaryHelper
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.NumberFormat
 import java.util.*
 
 class CreateListingActivity : AppCompatActivity() {
 
-    private lateinit var etTitle: EditText
-    private lateinit var etDescription: EditText
+    private lateinit var etTitle: TextInputEditText
+    private lateinit var etDescription: TextInputEditText
+    private lateinit var etPrice: TextInputEditText
     private lateinit var spCategory: Spinner
+    private lateinit var spCondition: Spinner
+    private lateinit var etLocation: TextInputEditText
+    private lateinit var switchNegotiable: Switch
     private lateinit var ivListingImage: ImageView
     private lateinit var btnPickImage: Button
     private lateinit var btnSubmit: Button
+    private lateinit var progressBar: ProgressBar
 
     private var imageUri: Uri? = null
     private val PICK_IMAGE_REQUEST = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_listing)
+        setContentView(R.layout.activity_create_listing_enhanced)
 
         initViews()
-        setupSpinner()
+        setupSpinners()
         setupClickListeners()
     }
 
     private fun initViews() {
         etTitle = findViewById(R.id.etTitle)
         etDescription = findViewById(R.id.etDescription)
+        etPrice = findViewById(R.id.etPrice)
         spCategory = findViewById(R.id.spCategory)
+        spCondition = findViewById(R.id.spCondition)
+        etLocation = findViewById(R.id.etLocation)
+        switchNegotiable = findViewById(R.id.switchNegotiable)
         ivListingImage = findViewById(R.id.ivListingImage)
         btnPickImage = findViewById(R.id.btnPickImage)
         btnSubmit = findViewById(R.id.btnSubmit)
+        progressBar = findViewById(R.id.progressBar)
 
-        // Set default placeholder image
         ivListingImage.setImageResource(R.drawable.ic_image_placeholder)
+        progressBar.visibility = View.GONE
     }
 
-    private fun setupSpinner() {
-        val categories = arrayOf("Đồ điện tử", "Thời trang", "Đồ gia dụng", "Khác")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
-        spCategory.adapter = adapter
+    private fun setupSpinners() {
+        // Categories
+        val categories = arrayOf("Select Category", "Electronics", "Fashion", "Home & Garden", "Sports", "Books", "Other")
+        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
+        spCategory.adapter = categoryAdapter
+
+        // Conditions
+        val conditions = arrayOf("Select Condition", "New", "Like New", "Good", "Fair", "Poor")
+        val conditionAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, conditions)
+        spCondition.adapter = conditionAdapter
     }
 
     private fun setupClickListeners() {
@@ -67,25 +84,146 @@ class CreateListingActivity : AppCompatActivity() {
                 uploadImageAndCreateListing()
             }
         }
+
+        // Price formatting
+        etPrice.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                formatPrice()
+            }
+        }
+    }
+
+    private fun formatPrice() {
+        val priceText = etPrice.text.toString().replace(",", "").replace("₫", "").trim()
+        if (priceText.isNotEmpty()) {
+            try {
+                val price = priceText.toDouble()
+                val formatter = NumberFormat.getNumberInstance(Locale("vi", "VN"))
+                etPrice.setText("${formatter.format(price)} ₫")
+            } catch (e: NumberFormatException) {
+                // Invalid number format
+            }
+        }
     }
 
     private fun validateInput(): Boolean {
+        var isValid = true
+
         if (etTitle.text.toString().trim().isEmpty()) {
-            etTitle.error = "Vui lòng nhập tiêu đề"
-            return false
+            etTitle.error = "Title is required"
+            isValid = false
         }
 
         if (etDescription.text.toString().trim().isEmpty()) {
-            etDescription.error = "Vui lòng nhập mô tả"
-            return false
+            etDescription.error = "Description is required"
+            isValid = false
+        }
+
+        if (etPrice.text.toString().trim().isEmpty()) {
+            etPrice.error = "Price is required"
+            isValid = false
+        }
+
+        if (spCategory.selectedItemPosition == 0) {
+            Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show()
+            isValid = false
+        }
+
+        if (spCondition.selectedItemPosition == 0) {
+            Toast.makeText(this, "Please select item condition", Toast.LENGTH_SHORT).show()
+            isValid = false
+        }
+
+        if (etLocation.text.toString().trim().isEmpty()) {
+            etLocation.error = "Location is required"
+            isValid = false
         }
 
         if (imageUri == null) {
-            Toast.makeText(this, "Vui lòng chọn ảnh sản phẩm", Toast.LENGTH_SHORT).show()
-            return false
+            Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show()
+            isValid = false
         }
 
-        return true
+        return isValid
+    }
+
+    private fun uploadImageAndCreateListing() {
+        imageUri?.let { uri ->
+            showLoading(true)
+
+            CloudinaryHelper.uploadListingImage(
+                context = this,
+                imageUri = uri,
+                onSuccess = { imageUrl ->
+                    createListing(imageUrl)
+                },
+                onFailure = { error ->
+                    handleUploadError(error)
+                },
+                onProgress = { progress ->
+                    btnSubmit.text = "Uploading... $progress%"
+                }
+            )
+        }
+    }
+
+    private fun createListing(imageUrl: String) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show()
+            showLoading(false)
+            return
+        }
+
+        // Parse price
+        val priceText = etPrice.text.toString().replace(",", "").replace("₫", "").trim()
+        val price = try {
+            priceText.toDouble()
+        } catch (e: NumberFormatException) {
+            0.0
+        }
+
+        val listing = Listing(
+            id = UUID.randomUUID().toString(),
+            title = etTitle.text.toString().trim(),
+            description = etDescription.text.toString().trim(),
+            price = price,
+            category = spCategory.selectedItem.toString(),
+            condition = spCondition.selectedItem.toString(),
+            location = etLocation.text.toString().trim(),
+            imageUrls = listOf(imageUrl), // Use imageUrls instead of imageUrl
+            ownerUid = currentUser.uid,
+            ownerName = currentUser.displayName ?: "Anonymous",
+            isNegotiable = switchNegotiable.isChecked,
+            createdAt = System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis()
+        )
+
+        FirebaseFirestore.getInstance()
+            .collection("listings")
+            .document(listing.id)
+            .set(listing)
+            .addOnSuccessListener {
+                Toast.makeText(this, "🎉 Listing created successfully!", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(this, "❌ Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                showLoading(false)
+            }
+    }
+
+    private fun handleUploadError(error: String) {
+        Toast.makeText(this, "❌ Upload failed: $error", Toast.LENGTH_LONG).show()
+        showLoading(false)
+    }
+
+    private fun showLoading(show: Boolean) {
+        progressBar.visibility = if (show) View.VISIBLE else View.GONE
+        btnSubmit.isEnabled = !show
+        if (!show) {
+            btnSubmit.text = "Create Listing"
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -98,72 +236,8 @@ class CreateListingActivity : AppCompatActivity() {
                     .load(uri)
                     .error(R.drawable.ic_image_placeholder)
                     .into(ivListingImage)
+                btnPickImage.text = "✓ Image Selected"
             }
         }
-    }
-
-    private fun uploadImageAndCreateListing() {
-        imageUri?.let { uri ->
-            btnSubmit.isEnabled = false
-            btnSubmit.text = "Đang tải ảnh lên..."
-
-            CloudinaryHelper.uploadListingImage(
-                context = this,
-                imageUri = uri,
-                onSuccess = { imageUrl ->
-                    createListing(imageUrl)
-                },
-                onFailure = { error ->
-                    handleUploadError(error)
-                },
-                onProgress = { progress ->
-                    btnSubmit.text = "Đang tải lên... $progress%"
-                }
-            )
-        }
-    }
-
-    private fun createListing(imageUrl: String) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser == null) {
-            Toast.makeText(this, "Vui lòng đăng nhập", Toast.LENGTH_SHORT).show()
-            resetUploadButton()
-            return
-        }
-
-        val listing = Listing(
-            id = UUID.randomUUID().toString(),
-            title = etTitle.text.toString().trim(),
-            description = etDescription.text.toString().trim(),
-            category = spCategory.selectedItem.toString(),
-            imageUrl = imageUrl,
-            ownerUid = currentUser.uid,
-            price = 0.0,
-            condition = "Good",
-            location = "Ho Chi Minh City"
-        )
-
-        FirebaseFirestore.getInstance()
-            .collection("listings")
-            .document(listing.id)
-            .set(listing)
-            .addOnSuccessListener {
-                Toast.makeText(this, "🎉 Đăng sản phẩm thành công!", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-            .addOnFailureListener { exception ->
-                Toast.makeText(this, "❌ Lỗi: ${exception.message}", Toast.LENGTH_SHORT).show()
-                resetUploadButton()
-            }
-    }
-
-    private fun handleUploadError(error: String) {
-        Toast.makeText(this, "❌ Tải ảnh thất bại: $error", Toast.LENGTH_LONG).show()
-        resetUploadButton()
-    }
-
-    private fun resetUploadButton() {
-        btnSubmit.isEnabled = true
-        btnSubmit.text = "Đăng bài"
     }
 }

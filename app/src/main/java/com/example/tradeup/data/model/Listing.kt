@@ -7,17 +7,21 @@ data class Listing(
     val price: Double = 0.0,
     val currency: String = "VND",
     val category: String = "",
-    val condition: String = "",
+    val condition: String = "", // New, Like New, Good, Fair, Poor
     val location: String = "",
-    val imageUrl: String = "",
+    val imageUrls: List<String> = emptyList(), // Support multiple images
     val ownerUid: String = "",
     val ownerName: String = "",
     val ownerAvatar: String = "",
-    val status: String = "Available",
+    val status: String = "Available", // Available, Sold, Paused
     val tags: List<String> = emptyList(),
     val views: Int = 0,
     val interactions: Int = 0,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
-    val isNegotiable: Boolean = true
+    val isNegotiable: Boolean = true,
+    val latitude: Double = 0.0, // For location services
+    val longitude: Double = 0.0,
+    val address: String = "",
+    val favoriteCount: Int = 0
 )

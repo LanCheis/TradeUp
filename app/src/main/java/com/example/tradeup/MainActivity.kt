@@ -9,6 +9,7 @@ import com.example.tradeup.chat.ChatFragment
 import com.example.tradeup.home.HomeFragment
 import com.example.tradeup.listing.ListingsFragment
 import com.example.tradeup.profile.ProfileFragment
+import com.example.tradeup.search.SearchFragment // Add this import
 import com.example.tradeup.utils.CloudinaryHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -18,14 +19,13 @@ class MainActivity : AppCompatActivity() {
     private val profileFragment = ProfileFragment()
     private val listingsFragment = ListingsFragment()
     private val chatFragment = ChatFragment()
+    private val searchFragment = SearchFragment() // Add this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Test Cloudinary setup
         testCloudinarySetup()
-
         loadFragment(homeFragment)
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.fragment_home -> loadFragment(homeFragment)
                 R.id.menu_profile -> loadFragment(profileFragment)
-                R.id.menu_library -> loadFragment(listingsFragment)
+                R.id.menu_library -> loadFragment(searchFragment) // Use search instead of listings
                 R.id.menu_chat -> loadFragment(chatFragment)
             }
             true

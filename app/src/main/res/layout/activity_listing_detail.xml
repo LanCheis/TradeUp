@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:text="📤 Chia sẻ bài đăng"
             android:layout_marginTop="16dp"
-            android:backgroundTint="@color/teal_700"
+            android:backgroundTint="@color/primary"
             android:textColor="@android:color/white" />
 
     </LinearLayout>

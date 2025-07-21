@@ -8,8 +8,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.tradeup.R
 import com.example.tradeup.data.model.Listing
+import com.example.tradeup.utils.CloudinaryHelper
 import java.text.NumberFormat
 import java.util.*
 
@@ -36,9 +38,30 @@ class HorizontalListingAdapter(private val listings: List<Listing>) :
         holder.tvPrice.text = formatPrice(listing.price)
         holder.tvLocation.text = listing.location
 
+        // Use the first image from imageUrls list
+        val imageUrl = if (listing.imageUrls.isNotEmpty()) {
+            listing.imageUrls[0]
+        } else {
+            "" // Empty string for no image
+        }
+
+        // Use optimized Cloudinary URL or fallback to original
+        val optimizedImageUrl = if (imageUrl.contains("cloudinary.com")) {
+            CloudinaryHelper.getOptimizedUrl(
+                originalUrl = imageUrl,
+                width = 200,
+                height = 200,
+                crop = "fill"
+            )
+        } else {
+            imageUrl
+        }
+
         Glide.with(holder.itemView.context)
-            .load(listing.imageUrl)
+            .load(optimizedImageUrl)
+            .placeholder(R.drawable.ic_image_placeholder)
             .error(R.drawable.ic_image_placeholder)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(holder.ivImage)
 
         holder.itemView.setOnClickListener {
@@ -47,7 +70,7 @@ class HorizontalListingAdapter(private val listings: List<Listing>) :
                 putExtra("listing_id", listing.id)
                 putExtra("title", listing.title)
                 putExtra("price", listing.price)
-                putExtra("imageUrl", listing.imageUrl)
+                putExtra("imageUrl", imageUrl)
                 putExtra("category", listing.category)
                 putExtra("condition", listing.condition)
                 putExtra("description", listing.description)

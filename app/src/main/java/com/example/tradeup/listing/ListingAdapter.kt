@@ -34,21 +34,29 @@ class ListingAdapter(private val listings: List<Listing>) :
         holder.tvTitle.text = listing.title
         holder.tvCategory.text = listing.category
 
+        // Use the first image from imageUrls list
+        val imageUrl = if (listing.imageUrls.isNotEmpty()) {
+            listing.imageUrls[0]
+        } else {
+            "" // Empty string for no image
+        }
+
         // Use optimized Cloudinary URL or fallback to original
-        val imageUrl = if (listing.imageUrl.contains("cloudinary.com")) {
+        val optimizedImageUrl = if (imageUrl.contains("cloudinary.com")) {
             CloudinaryHelper.getOptimizedUrl(
-                originalUrl = listing.imageUrl,
+                originalUrl = imageUrl,
                 width = 200,
                 height = 200,
                 crop = "fill"
             )
         } else {
-            listing.imageUrl
+            imageUrl
         }
 
         Glide.with(holder.itemView.context)
-            .load(imageUrl)
-            .error(R.drawable.ic_image_placeholder) // Fixed: use error instead of placeholder
+            .load(optimizedImageUrl)
+            .placeholder(R.drawable.ic_image_placeholder)
+            .error(R.drawable.ic_image_placeholder)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(holder.ivImage)
 
@@ -57,7 +65,7 @@ class ListingAdapter(private val listings: List<Listing>) :
             val intent = Intent(context, ListingDetailActivity::class.java).apply {
                 putExtra("listing_id", listing.id)
                 putExtra("title", listing.title)
-                putExtra("imageUrl", listing.imageUrl)
+                putExtra("imageUrl", imageUrl)
                 putExtra("category", listing.category)
                 putExtra("description", listing.description)
             }

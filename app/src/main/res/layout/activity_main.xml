@@ -5,23 +5,25 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/background">
 
-    <!-- Fragment container takes remaining space -->
+    <!-- Fragment container -->
     <FrameLayout
         android:id="@+id/nav_host_fragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <!-- Fixed bottom menu -->
+    <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/invisible"
+        android:background="@color/background"
+        android:elevation="8dp"
         app:menu="@menu/bottom_nav_menu"
         app:labelVisibilityMode="labeled"
-        app:itemIconTint="@color/bottom_nav_color"
-        app:itemTextColor="@color/bottom_nav_color" />
+        app:itemIconTint="@color/bottom_nav_selector"
+        app:itemTextColor="@color/bottom_nav_selector"
+        app:itemActiveIndicatorStyle="@style/BottomNavIndicator" />
 </LinearLayout>

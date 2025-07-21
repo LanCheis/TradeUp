@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA"
+    android:background="@color/background"
     android:fillViewport="true">
 
     <LinearLayout
@@ -11,17 +11,16 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Top Header Section -->
+        <!-- Header Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="16dp"
             android:gravity="center_vertical"
-            android:background="@android:color/white"
-            android:elevation="2dp">
+            android:padding="20dp"
+            android:background="@color/background">
 
-            <!-- Greeting Text -->
+            <!-- Greeting Section -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -33,136 +32,76 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Good Morning!"
-                    android:textSize="20sp"
+                    android:textSize="28sp"
                     android:textStyle="bold"
-                    android:textColor="#1a1a1a" />
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="sans-serif-medium" />
 
                 <TextView
                     android:id="@+id/tvUserName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Welcome back"
-                    android:textSize="14sp"
-                    android:textColor="#666666"
-                    android:layout_marginTop="2dp" />
+                    android:textSize="16sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="4dp" />
             </LinearLayout>
 
-            <!-- Action Buttons -->
+            <!-- Action Icons -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
-                <!-- Search Button -->
                 <ImageButton
                     android:id="@+id/btnSearch"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
                     android:src="@drawable/ic_search"
-                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:background="@drawable/circle_button_background"
                     android:layout_marginEnd="8dp"
                     android:contentDescription="Search"
-                    app:tint="#666666" />
+                    app:tint="@color/text_primary" />
 
-                <!-- Notification Button -->
                 <ImageButton
                     android:id="@+id/btnNotification"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
                     android:src="@drawable/ic_notification"
-                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:background="@drawable/circle_button_background"
                     android:layout_marginEnd="8dp"
                     android:contentDescription="Notifications"
-                    app:tint="#666666" />
+                    app:tint="@color/text_primary" />
 
-                <!-- Settings Button -->
                 <ImageButton
                     android:id="@+id/btnSettings"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
                     android:src="@drawable/ic_setting"
-                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:background="@drawable/circle_button_background"
                     android:contentDescription="Settings"
-                    app:tint="#666666" />
+                    app:tint="@color/text_primary" />
             </LinearLayout>
         </LinearLayout>
-
-        <!-- Special Sale Section -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="6dp"
-            android:clickable="true"
-            android:foreground="?attr/selectableItemBackground">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/gradient_sale_background"
-                android:padding="20dp"
-                android:gravity="center_vertical">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🔥 Flash Sale"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/white" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Up to 50% OFF"
-                        android:textSize="24sp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/white"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Limited time offer on electronics!"
-                        android:textSize="14sp"
-                        android:textColor="#E3F2FD"
-                        android:layout_marginTop="4dp" />
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/ic_sale_badge"
-                    android:layout_marginStart="16dp"
-                    app:tint="@android:color/white" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
 
         <!-- Quick Actions -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:layout_marginBottom="16dp">
+            android:paddingHorizontal="20dp"
+            android:layout_marginBottom="24dp">
 
-            <!-- Sell Item Button -->
+            <!-- Sell Item -->
             <androidx.cardview.widget.CardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/primary"
                 android:clickable="true"
                 android:foreground="?attr/selectableItemBackground">
 
@@ -171,35 +110,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center"
-                    android:background="@android:color/white">
+                    android:padding="20dp"
+                    android:gravity="center">
 
                     <ImageView
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:src="@drawable/ic_add_circle"
-                        app:tint="@color/blue_500"
+                        app:tint="@color/on_primary"
                         android:layout_marginBottom="8dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Your shop"
-                        android:textSize="14sp"
+                        android:text="Sell Item"
+                        android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="#1a1a1a" />
+                        android:textColor="@color/on_primary" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Browse Categories Button -->
+            <!-- Browse Categories -->
             <androidx.cardview.widget.CardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/surface_variant"
                 android:clickable="true"
                 android:foreground="?attr/selectableItemBackground">
 
@@ -208,37 +147,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center"
-                    android:background="@android:color/white">
+                    android:padding="20dp"
+                    android:gravity="center">
 
                     <ImageView
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:src="@drawable/ic_library"
-                        app:tint="@color/blue_500"
+                        app:tint="@color/text_primary"
                         android:layout_marginBottom="8dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Categories"
-                        android:textSize="14sp"
+                        android:text="Browse"
+                        android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="#1a1a1a" />
+                        android:textColor="@color/text_primary" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>
 
-        <!-- Mall Section -->
+        <!-- Recent Uploads Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@android:color/white"
-            android:padding="16dp">
+            android:paddingHorizontal="20dp">
 
-            <!-- Mall Header -->
+            <!-- Section Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -250,77 +187,98 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="🛍️ Recent Uploads"
-                    android:textSize="18sp"
+                    android:text="Recent Uploads"
+                    android:textSize="22sp"
                     android:textStyle="bold"
-                    android:textColor="#1a1a1a" />
+                    android:textColor="@color/text_primary" />
 
                 <TextView
                     android:id="@+id/tvSeeAll"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="See All"
-                    android:textSize="14sp"
-                    android:textColor="@color/blue_500"
+                    android:textSize="16sp"
+                    android:textColor="@color/primary"
+                    android:textStyle="bold"
                     android:background="?attr/selectableItemBackground"
                     android:padding="8dp"
                     android:clickable="true" />
             </LinearLayout>
 
-            <!-- Recent Listings RecyclerView -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvRecentListings"
+            <!-- Content Container -->
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:nestedScrollingEnabled="false" />
+                android:minHeight="120dp">
 
-            <!-- Loading State -->
-            <LinearLayout
-                android:id="@+id/layoutLoading"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:visibility="gone">
-
-                <ProgressBar
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Recent Listings RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvRecentListings"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Loading latest items..."
-                    android:textSize="14sp"
-                    android:textColor="#666666" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:nestedScrollingEnabled="false" />
 
-            <!-- Empty State -->
-            <LinearLayout
-                android:id="@+id/layoutEmpty"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:visibility="gone">
+                <!-- Loading State -->
+                <LinearLayout
+                    android:id="@+id/layoutLoading"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:visibility="gone">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🛒 No items yet"
-                    android:textSize="16sp"
-                    android:textColor="#666666" />
+                    <ProgressBar
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="8dp"
+                        android:indeterminateTint="@color/primary" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Be the first to sell something!"
-                    android:textSize="14sp"
-                    android:textColor="#999999"
-                    android:layout_marginTop="4dp" />
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Loading latest items..."
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+
+                <!-- Empty State -->
+                <LinearLayout
+                    android:id="@+id/layoutEmpty"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_add_circle"
+                        app:tint="@color/text_tertiary"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No items yet"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Be the first to sell something!"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_tertiary"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </FrameLayout>
         </LinearLayout>
+
+        <!-- Bottom Spacing -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="24dp" />
     </LinearLayout>
 </ScrollView>
