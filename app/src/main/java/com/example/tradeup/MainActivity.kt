@@ -1,19 +1,16 @@
 package com.example.tradeup
 
-import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.tradeup.auth.LoginActivity
 import com.example.tradeup.chat.ChatFragment
-import com.example.tradeup.data.remote.UserRepository
 import com.example.tradeup.home.HomeFragment
 import com.example.tradeup.listing.ListingsFragment
-import com.example.tradeup.onboarding.SetupProfileActivity
 import com.example.tradeup.profile.ProfileFragment
+import com.example.tradeup.utils.CloudinaryHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,17 +21,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // ✅ Check if user is logged in
-        if (!isUserLoggedIn()) {
-            redirectToLogin()
-            return
-        }
-
-        // ✅ Check if user needs to complete profile setup
-        checkProfileAndRedirectIfNeeded()
-
         setContentView(R.layout.activity_main)
+
+        // Test Cloudinary setup
+        testCloudinarySetup()
 
         loadFragment(homeFragment)
 
@@ -50,42 +40,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun isUserLoggedIn(): Boolean {
-        return FirebaseAuth.getInstance().currentUser != null
-    }
-
-    private fun redirectToLogin() {
-        val intent = Intent(this, LoginActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    private fun testCloudinarySetup() {
+        if (CloudinaryHelper.isInitialized()) {
+            Log.d("MainActivity", "✅ Cloudinary is working")
+            Toast.makeText(this, "✅ Cloudinary Ready", Toast.LENGTH_SHORT).show()
+        } else {
+            Log.e("MainActivity", "❌ Cloudinary not working")
+            Toast.makeText(this, "❌ Cloudinary Error", Toast.LENGTH_SHORT).show()
         }
-        startActivity(intent)
-        finish()
-    }
-
-    // ✅ NEW METHOD - Check if profile setup is needed
-    private fun checkProfileAndRedirectIfNeeded() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser != null) {
-            UserRepository.getUserProfile(currentUser.uid) { user ->
-                if (user == null || !isProfileComplete(user)) {
-                    // Profile incomplete, redirect to setup
-                    val intent = Intent(this, SetupProfileActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    }
-                    startActivity(intent)
-                    finish()
-                }
-                // If profile is complete, continue with MainActivity
-            }
-        }
-    }
-
-    // ✅ NEW METHOD - Check if essential profile fields are filled
-    private fun isProfileComplete(user: com.example.tradeup.data.model.User): Boolean {
-        return user.name.isNotEmpty() &&
-                user.phone.isNotEmpty() &&
-                user.bio.isNotEmpty() &&
-                user.gender.isNotEmpty()
     }
 
     private fun loadFragment(fragment: Fragment) {

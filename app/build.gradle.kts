@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.tradeup"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -74,7 +74,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     // Cloudinary
-    implementation("com.cloudinary:cloudinary-android:2.3.1")
+    implementation("com.cloudinary:cloudinary-android:2.5.0")
 
     // Keep Firebase for data
     implementation("com.google.firebase:firebase-firestore-ktx:24.9.1")
@@ -82,4 +82,5 @@ dependencies {
 
     // Glide for image loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    kapt("com.github.bumptech.glide:compiler:4.16.0")
 }

@@ -2,11 +2,14 @@ package com.example.tradeup.utils
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
 
 object CloudinaryHelper {
+
+    private const val TAG = "CloudinaryHelper"
 
     fun uploadListingImage(
         context: Context,
@@ -15,9 +18,11 @@ object CloudinaryHelper {
         onFailure: (String) -> Unit,
         onProgress: ((Int) -> Unit)? = null
     ) {
-        val publicId = "listings/${System.currentTimeMillis()}"
+        val publicId = "listings_${System.currentTimeMillis()}"
 
         try {
+            Log.d(TAG, "Starting listing image upload...")
+
             MediaManager.get().upload(imageUri)
                 .unsigned("android_unsigned")
                 .option("public_id", publicId)
@@ -26,38 +31,45 @@ object CloudinaryHelper {
                 .option("fetch_format", "auto")
                 .callback(object : UploadCallback {
                     override fun onStart(requestId: String) {
+                        Log.d(TAG, "Upload started: $requestId")
                         onProgress?.invoke(0)
                     }
 
                     override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {
-                        val progress = ((bytes * 100) / totalBytes).toInt()
-                        onProgress?.invoke(progress)
+                        if (totalBytes > 0) {
+                            val progress = ((bytes * 100L) / totalBytes).toInt()
+                            Log.d(TAG, "Upload progress: $progress%")
+                            onProgress?.invoke(progress)
+                        }
                     }
 
                     override fun onSuccess(requestId: String, resultData: Map<*, *>) {
+                        Log.d(TAG, "Upload successful: $requestId")
                         val imageUrl = resultData["secure_url"] as? String
                         if (imageUrl != null) {
                             onSuccess(imageUrl)
                         } else {
+                            Log.e(TAG, "No URL returned from Cloudinary")
                             onFailure("No URL returned from Cloudinary")
                         }
                     }
 
                     override fun onError(requestId: String, error: ErrorInfo) {
+                        Log.e(TAG, "Upload error: ${error.description}")
                         onFailure(error.description ?: "Upload failed")
                     }
 
                     override fun onReschedule(requestId: String, error: ErrorInfo) {
-                        // Handle retry
+                        Log.w(TAG, "Upload rescheduled: ${error.description}")
                     }
                 })
                 .dispatch()
         } catch (e: Exception) {
+            Log.e(TAG, "Failed to start upload", e)
             onFailure("Failed to start upload: ${e.message}")
         }
     }
 
-    // ✅ NEW METHOD - Upload profile images
     fun uploadProfileImage(
         context: Context,
         imageUri: Uri,
@@ -66,65 +78,78 @@ object CloudinaryHelper {
         onFailure: (String) -> Unit,
         onProgress: ((Int) -> Unit)? = null
     ) {
-        val publicId = "profiles/$userId"
+        val publicId = "profile_${userId}_${System.currentTimeMillis()}"
 
         try {
+            Log.d(TAG, "Starting profile image upload for user: $userId")
+
             MediaManager.get().upload(imageUri)
                 .unsigned("android_unsigned")
                 .option("public_id", publicId)
                 .option("folder", "tradeup/profiles")
-                .option("overwrite", false) // Don't overwrite since it's unsigned
-                .option("transformation", listOf(
-                    mapOf(
-                        "width" to 400,
-                        "height" to 400,
-                        "crop" to "fill",
-                        "gravity" to "face",
-                        "quality" to "auto"
-                    )
-                ))
                 .callback(object : UploadCallback {
                     override fun onStart(requestId: String) {
+                        Log.d(TAG, "Profile upload started: $requestId")
                         onProgress?.invoke(0)
                     }
 
                     override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {
-                        val progress = ((bytes * 100) / totalBytes).toInt()
-                        onProgress?.invoke(progress)
+                        if (totalBytes > 0) {
+                            val progress = ((bytes * 100L) / totalBytes).toInt()
+                            Log.d(TAG, "Profile upload progress: $progress%")
+                            onProgress?.invoke(progress)
+                        }
                     }
 
                     override fun onSuccess(requestId: String, resultData: Map<*, *>) {
+                        Log.d(TAG, "Profile upload successful: $requestId")
                         val imageUrl = resultData["secure_url"] as? String
                         if (imageUrl != null) {
                             onSuccess(imageUrl)
                         } else {
+                            Log.e(TAG, "No URL returned for profile image")
                             onFailure("No URL returned from Cloudinary")
                         }
                     }
 
                     override fun onError(requestId: String, error: ErrorInfo) {
+                        Log.e(TAG, "Profile upload error: ${error.description}")
                         onFailure(error.description ?: "Upload failed")
                     }
 
                     override fun onReschedule(requestId: String, error: ErrorInfo) {
-                        // Auto retry
+                        Log.w(TAG, "Profile upload rescheduled: ${error.description}")
                     }
                 })
                 .dispatch()
         } catch (e: Exception) {
+            Log.e(TAG, "Failed to start profile upload", e)
             onFailure("Failed to start upload: ${e.message}")
         }
     }
 
-    // Generate optimized URLs
     fun getOptimizedUrl(originalUrl: String, width: Int, height: Int, crop: String = "limit"): String {
         return if (originalUrl.contains("cloudinary.com")) {
-            originalUrl.replace(
-                "/upload/",
-                "/upload/w_$width,h_$height,c_$crop,q_auto,f_auto/"
-            )
+            val uploadIndex = originalUrl.indexOf("/upload/")
+            if (uploadIndex != -1) {
+                val beforeUpload = originalUrl.substring(0, uploadIndex)
+                val afterUpload = originalUrl.substring(uploadIndex + "/upload/".length)
+                "${beforeUpload}/upload/w_${width},h_${height},c_${crop},q_auto,f_auto/${afterUpload}"
+            } else {
+                originalUrl
+            }
         } else {
             originalUrl
+        }
+    }
+
+    fun isInitialized(): Boolean {
+        return try {
+            MediaManager.get() != null
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Cloudinary not initialized", e)
+            false
         }
     }
 }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.tradeup.R
 import com.example.tradeup.data.model.Listing
 import com.example.tradeup.utils.CloudinaryHelper
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
@@ -86,14 +88,12 @@ class CreateListingActivity : AppCompatActivity() {
         return true
     }
 
-    // ✅ FIXED VERSION - This is Step 2
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
             imageUri = data?.data
             imageUri?.let { uri ->
-                // ✅ FIXED: Using .error() instead of .placeholder()
                 Glide.with(this)
                     .load(uri)
                     .error(R.drawable.ic_image_placeholder)
