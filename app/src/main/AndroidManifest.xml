@@ -39,8 +39,5 @@
         <activity android:name=".listing.CreateListingActivity" />
         <activity android:name=".listing.ListingDetailActivity" />
 
-        <!-- Profile Activities -->
-        <activity android:name=".profile.EditProfileFragment" />
-
     </application>
 </manifest>

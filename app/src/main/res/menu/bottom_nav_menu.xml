@@ -13,6 +13,6 @@
         android:title="Library" />
     <item
         android:id="@+id/menu_profile"
-        android:icon="@drawable/ic_person"
+        android:icon="@drawable/ic_avatar_placeholder"
         android:title="Profile" />
 </menu>

@@ -12,13 +12,11 @@ import java.util.Calendar
 
 class EditProfileFragment : Fragment() {
 
-    // ViewBinding reference
     private var _binding: FragmentEditProfileBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEditProfileBinding.inflate(inflater, container, false)
@@ -37,30 +35,32 @@ class EditProfileFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        // Show date picker when clicking on any date field
-        binding.etDay.setOnClickListener { showDatePicker() }
-        binding.etMonth.setOnClickListener { showDatePicker() }
-        binding.etYear.setOnClickListener { showDatePicker() }
+        // Show date picker
+        binding.etBirthday.setOnClickListener {
+            showDatePicker()
+        }
 
-        // Save profile (stub)
+        // Save profile button
         binding.btnSave.setOnClickListener {
-            val day = binding.etDay.text.toString()
-            val month = binding.etMonth.text.toString()
-            val year = binding.etYear.text.toString()
-            val birthday = "$day/$month/$year"
-            // TODO: Use birthday string for saving
+            binding.etUsername.text.toString()
+            binding.etPhone.text.toString()
+            binding.etBio.text.toString()
+            binding.etInterest.text.toString()
+            binding.etBirthday.text.toString()
+
+            // TODO: Save this data to Firebase or local storage
+            // You could use a ViewModel, repository, or directly call Firebase here.
         }
     }
-
 
     private fun showDatePicker() {
         val calendar = Calendar.getInstance()
         val datePicker = DatePickerDialog(
             requireContext(),
             { _, year, month, dayOfMonth ->
-                binding.etDay.setText(String.format("%02d", dayOfMonth))
-                binding.etMonth.setText(String.format("%02d", month + 1))
-                binding.etYear.setText(String.format("%04d", year))
+                binding.etBirthday.setText(
+                    String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year)
+                )
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
@@ -68,7 +68,6 @@ class EditProfileFragment : Fragment() {
         )
         datePicker.show()
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

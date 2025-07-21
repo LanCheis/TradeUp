@@ -12,6 +12,7 @@ import com.example.tradeup.R
 import com.example.tradeup.auth.LoginActivity
 import com.example.tradeup.data.remote.UserRepository
 import com.google.firebase.auth.FirebaseAuth
+import androidx.navigation.fragment.findNavController
 
 class ProfileFragment : Fragment() {
 
@@ -48,7 +49,6 @@ class ProfileFragment : Fragment() {
         tvInterest = view.findViewById(R.id.tvInterest)
         btnEditProfile = view.findViewById(R.id.btnEditProfile)
         btnLogout = view.findViewById(R.id.btnLogout)
-        btnEditProfile = view.findViewById(R.id.btnEditProfile)
 
         // Load data
         loadUserData()
@@ -61,10 +61,7 @@ class ProfileFragment : Fragment() {
         }
 
         btnEditProfile.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, EditProfileFragment())
-                .addToBackStack(null)
-                .commit()
+            findNavController().navigate(R.id.editProfileFragment)
         }
     }
 

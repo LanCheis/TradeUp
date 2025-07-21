@@ -6,26 +6,26 @@
     app:startDestination="@id/homeFragment">
 
     <fragment
-        android:id="@id/homeFragment"
+        android:id="@+id/homeFragment"
         android:name="com.example.tradeup.home.HomeFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@id/profileFragment"
+        android:id="@+id/profileFragment"
         android:name="com.example.tradeup.profile.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
 
     <fragment
-        android:id="@id/editProfileFragment"
+        android:id="@+id/editProfileFragment"
         android:name="com.example.tradeup.profile.EditProfileFragment"
         android:label="Edit Profile"
         tools:layout="@layout/fragment_edit_profile" />
 
     <fragment
-        android:id="@id/listingsFragment"
-        android:name="com.example.tradeup.ListingsFragment"
+        android:id="@+id/listingsFragment"
+        android:name="com.example.tradeup.listing.ListingsFragment"
         android:label="Listings"
         tools:layout="@layout/fragment_listings" />
 </navigation>

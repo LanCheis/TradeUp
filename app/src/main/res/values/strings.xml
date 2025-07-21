@@ -3,12 +3,19 @@
     <string name="default_web_client_id">98977397255-3lb8s...apps.googleusercontent.com</string>
     <string name="welcome_user">Welcome %1$s</string>
 
-<!--profilelabel-->
+        <!--profile label-->
     <string name="email_label">Email: %1$s</string>
     <string name="phone_label">SĐT: %1$s</string>
     <string name="bio_label">Giới thiệu: %1$s</string>
     <string name="username_label">Username: %1$s</string>
     <string name="birthday_label">Sinh nhật: %1$s</string>
     <string name="interest_label">Sở thích: %1$s</string>
+
+        <!--item card-->
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="distance_icon_desc">Distance icon</string>
+    <string name="seller_avatar_desc">Sellers avatar</string>
+    <string name="item_image_desc">Image of the listed item</string>
+
 
 </resources>

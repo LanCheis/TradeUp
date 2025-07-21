@@ -43,7 +43,7 @@
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"
                         android:contentDescription="Profile Avatar"
-                        android:src="@drawable/ic_person"
+                        android:src="@drawable/ic_avatar_placeholder"
                         android:padding="4dp" />
                 </androidx.cardview.widget.CardView>
 
