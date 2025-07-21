@@ -46,7 +46,6 @@ class ProfileFragment : Fragment() {
         tvUsername = view.findViewById(R.id.tvUsername)
         tvBirthday = view.findViewById(R.id.tvBirthday)
         tvInterest = view.findViewById(R.id.tvInterest)
-        btnLogout = view.findViewById(R.id.btnLogout)
         btnEditProfile = view.findViewById(R.id.btnEditProfile)
 
         // Load data
@@ -60,7 +59,7 @@ class ProfileFragment : Fragment() {
         }
 
         btnEditProfile.setOnClickListener {
-            startActivity(Intent(requireContext(), EditProfileActivity::class.java))
+            startActivity(Intent(requireContext(), EditProfileFragment::class.java))
         }
     }
 
@@ -68,13 +67,12 @@ class ProfileFragment : Fragment() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         UserRepository.getUserProfile(uid) { user ->
             user?.let {
-                tvName.text = it.name
-                tvEmail.text = "Email: ${it.email}"
-                tvPhone.text = "SĐT: ${it.phone}"
-                tvBio.text = "Giới thiệu: ${it.bio}"
-                tvUsername.text = "Username: ${it.username}"
-                tvBirthday.text = "Sinh nhật: ${it.birthday}"
-                tvInterest.text = "Sở thích: ${it.interests}"
+                tvEmail.text = getString(R.string.email_label, it.email)
+                tvPhone.text = getString(R.string.phone_label, it.phone)
+                tvBio.text = getString(R.string.bio_label, it.bio)
+                tvUsername.text = getString(R.string.username_label, it.username)
+                tvBirthday.text = getString(R.string.birthday_label, it.birthday)
+                tvInterest.text = getString(R.string.interest_label, it.interests)
 
                 Glide.with(requireContext())
                     .load(it.profileImageUrl)

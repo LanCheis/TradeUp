@@ -15,7 +15,12 @@ object UserRepository {
             .addOnFailureListener { onComplete(false, it.message) }
     }
 
-    fun getUserProfile(uid: String, onResult: (User?) -> Unit) {
+    fun getUserProfile(uid: String?, onResult: (User?) -> Unit) {
+        if (uid.isNullOrEmpty()) {
+            onResult(null)
+            return
+        }
+
         usersCollection.document(uid).get()
             .addOnSuccessListener { snapshot ->
                 val user = snapshot.toObject(User::class.java)
@@ -25,6 +30,7 @@ object UserRepository {
                 onResult(null)
             }
     }
+
 
     fun submitRating(targetUserId: String, stars: Float, onComplete: (Boolean) -> Unit) {
         val raterId = FirebaseAuth.getInstance().currentUser?.uid ?: return

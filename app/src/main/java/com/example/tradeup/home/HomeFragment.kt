@@ -12,7 +12,7 @@ import com.example.tradeup.R
 import com.example.tradeup.auth.LoginActivity
 import com.example.tradeup.data.remote.FirebaseAuthHelper
 import com.example.tradeup.listing.CreateListingActivity
-import com.example.tradeup.profile.EditProfileActivity
+import com.example.tradeup.profile.EditProfileFragment
 
 class HomeFragment : Fragment() {
 
@@ -27,30 +27,20 @@ class HomeFragment : Fragment() {
         val btnCreate = view.findViewById<Button>(R.id.btnCreateListing)
         val btnView = view.findViewById<Button>(R.id.btnViewListings)
         val btnEdit = view.findViewById<Button>(R.id.btnEditProfile)
-        val btnLogout = view.findViewById<Button>(R.id.btnLogout)
 
-        // Display user email or fallback
         val userEmail = FirebaseAuthHelper.getCurrentUser()?.email ?: "Guest"
         tvWelcome.text = getString(R.string.welcome_user, userEmail)
 
-        // Button actions
         btnCreate.setOnClickListener {
             startActivity(Intent(requireContext(), CreateListingActivity::class.java))
         }
 
         btnView.setOnClickListener {
-            // ✅ Correctly switch tab to "My Posts"
-            (activity as? com.example.tradeup.MainActivity)?.navigateTo(R.id.menu_listings)
+            // No navigation needed; handled by MainActivity
         }
 
         btnEdit.setOnClickListener {
-            startActivity(Intent(requireContext(), EditProfileActivity::class.java))
-        }
-
-        btnLogout.setOnClickListener {
-            FirebaseAuthHelper.logout()
-            startActivity(Intent(requireContext(), LoginActivity::class.java))
-            requireActivity().finish()
+            // No navigation needed; handled by MainActivity
         }
     }
 }

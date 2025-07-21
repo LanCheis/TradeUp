@@ -23,11 +23,11 @@ class MainActivity : AppCompatActivity() {
         loadFragment(homeFragment)
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-        bottomNav.setOnItemSelectedListener {
-            when (it.itemId) {
-                R.id.menu_home -> loadFragment(homeFragment)
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.fragment_home -> loadFragment(homeFragment)
                 R.id.menu_profile -> loadFragment(profileFragment)
-                R.id.menu_listings -> loadFragment(listingsFragment)
+                R.id.menu_library -> loadFragment(listingsFragment)
                 R.id.menu_chat -> loadFragment(chatFragment)
             }
             true
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, fragment)
+            .replace(R.id.nav_host_fragment, fragment)
             .commit()
     }
 
