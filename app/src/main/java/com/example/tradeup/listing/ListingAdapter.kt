@@ -8,8 +8,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.tradeup.R
 import com.example.tradeup.data.model.Listing
+import com.example.tradeup.utils.CloudinaryHelper
 
 class ListingAdapter(private val listings: List<Listing>) :
     RecyclerView.Adapter<ListingAdapter.ListingViewHolder>() {
@@ -32,9 +34,22 @@ class ListingAdapter(private val listings: List<Listing>) :
         holder.tvTitle.text = listing.title
         holder.tvCategory.text = listing.category
 
+        // Use optimized Cloudinary URL or fallback to original
+        val imageUrl = if (listing.imageUrl.contains("cloudinary.com")) {
+            CloudinaryHelper.getOptimizedUrl(
+                originalUrl = listing.imageUrl,
+                width = 200,
+                height = 200,
+                crop = "fill"
+            )
+        } else {
+            listing.imageUrl
+        }
+
         Glide.with(holder.itemView.context)
-            .load(listing.imageUrl)
-            .placeholder(R.drawable.ic_image_placeholder) // fallback
+            .load(imageUrl)
+            .error(R.drawable.ic_image_placeholder) // Fixed: use error instead of placeholder
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(holder.ivImage)
 
         holder.itemView.setOnClickListener {

@@ -31,7 +31,6 @@ object UserRepository {
             }
     }
 
-
     fun submitRating(targetUserId: String, stars: Float, onComplete: (Boolean) -> Unit) {
         val raterId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val ratingData = mapOf(
@@ -55,34 +54,12 @@ object UserRepository {
                 val avg = if (snapshot.size() > 0) total / snapshot.size() else 0.0
                 onResult(avg.toFloat())
             }
-        fun submitRating(targetUserId: String, stars: Float, onComplete: (Boolean) -> Unit) {
-            val raterId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-            val ratingData = mapOf(
-                "stars" to stars,
-                "timestamp" to FieldValue.serverTimestamp()
-            )
-            db.collection("users").document(targetUserId)
-                .collection("ratings")
-                .document(raterId)
-                .set(ratingData)
-                .addOnSuccessListener { onComplete(true) }
-                .addOnFailureListener { onComplete(false) }
-        }
+            .addOnFailureListener { onResult(0f) }
+    }
 
-        fun fetchAverageRating(userId: String, onResult: (Float) -> Unit) {
-            db.collection("users").document(userId)
-                .collection("ratings")
-                .get()
-                .addOnSuccessListener { snapshot ->
-                    val total = snapshot.documents.sumOf { it.getDouble("stars") ?: 0.0 }
-                    val avg = if (snapshot.size() > 0) total / snapshot.size() else 0.0
-                    onResult(avg.toFloat())
-                }
-            fun deleteUserProfile(uid: String, onComplete: (Boolean, String?) -> Unit) {
-                usersCollection.document(uid).delete()
-                    .addOnSuccessListener { onComplete(true, null) }
-                    .addOnFailureListener { onComplete(false, it.message) }
-            }
-        }
+    fun deleteUserProfile(uid: String, onComplete: (Boolean, String?) -> Unit) {
+        usersCollection.document(uid).delete()
+            .addOnSuccessListener { onComplete(true, null) }
+            .addOnFailureListener { onComplete(false, it.message) }
     }
 }

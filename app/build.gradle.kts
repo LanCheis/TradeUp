@@ -61,23 +61,25 @@ dependencies {
     // Firebase
     implementation("com.google.firebase:firebase-auth:22.3.0")
     implementation("com.google.firebase:firebase-firestore-ktx:24.9.1")
-    implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
+    implementation("com.google.firebase:firebase-storage-ktx:20.3.0") // Firebase Storage
     implementation("com.google.android.gms:play-services-auth:21.0.0")
 
-    // Retrofit & OkHttp (if needed for Section 1.1.1)
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
-    // Glide (if needed)
+    // Glide for image loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
-
-    // Cloudinary (if needed)
-    implementation("com.cloudinary:cloudinary-android:2.3.1")
 
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Cloudinary
+    implementation("com.cloudinary:cloudinary-android:2.3.1")
+
+    // Keep Firebase for data
+    implementation("com.google.firebase:firebase-firestore-ktx:24.9.1")
+    implementation("com.google.firebase:firebase-auth:22.3.0")
+
+    // Glide for image loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 }

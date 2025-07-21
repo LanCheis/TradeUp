@@ -5,12 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.tradeup.R
-import com.example.tradeup.auth.LoginActivity
-import com.example.tradeup.data.remote.FirebaseAuthHelper
 import com.example.tradeup.listing.CreateListingActivity
 
 class HomeFragment : Fragment() {
@@ -27,8 +25,8 @@ class HomeFragment : Fragment() {
 
         val btnAddListing = view.findViewById<Button>(R.id.btnAddListing)
         btnAddListing.setOnClickListener {
-            // Example action
-            Toast.makeText(requireContext(), "Clicked", Toast.LENGTH_SHORT).show()
+            // Navigate to CreateListingActivity
+            startActivity(Intent(requireContext(), CreateListingActivity::class.java))
         }
     }
 }

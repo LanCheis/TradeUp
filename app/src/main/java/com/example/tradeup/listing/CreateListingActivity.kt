@@ -4,23 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.tradeup.R
 import com.example.tradeup.data.model.Listing
-import com.example.tradeup.network.CloudinaryService
-import com.example.tradeup.network.CloudinaryResponse
+import com.example.tradeup.utils.CloudinaryHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import retrofit2.*
-import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
-import retrofit2.Callback
-
 
 class CreateListingActivity : AppCompatActivity() {
 
@@ -38,7 +31,12 @@ class CreateListingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_listing)
 
-        // Ánh xạ view
+        initViews()
+        setupSpinner()
+        setupClickListeners()
+    }
+
+    private fun initViews() {
         etTitle = findViewById(R.id.etTitle)
         etDescription = findViewById(R.id.etDescription)
         spCategory = findViewById(R.id.spCategory)
@@ -46,75 +44,92 @@ class CreateListingActivity : AppCompatActivity() {
         btnPickImage = findViewById(R.id.btnPickImage)
         btnSubmit = findViewById(R.id.btnSubmit)
 
-        // Spinner danh mục
+        // Set default placeholder image
+        ivListingImage.setImageResource(R.drawable.ic_image_placeholder)
+    }
+
+    private fun setupSpinner() {
         val categories = arrayOf("Đồ điện tử", "Thời trang", "Đồ gia dụng", "Khác")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
         spCategory.adapter = adapter
+    }
 
+    private fun setupClickListeners() {
         btnPickImage.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
+            val intent = Intent(Intent.ACTION_PICK).apply { type = "image/*" }
             startActivityForResult(intent, PICK_IMAGE_REQUEST)
         }
 
         btnSubmit.setOnClickListener {
-            if (imageUri != null) {
-                uploadImageToCloudinary(imageUri!!)
-            } else {
-                Toast.makeText(this, "Vui lòng chọn ảnh!", Toast.LENGTH_SHORT).show()
+            if (validateInput()) {
+                uploadImageAndCreateListing()
             }
         }
     }
 
+    private fun validateInput(): Boolean {
+        if (etTitle.text.toString().trim().isEmpty()) {
+            etTitle.error = "Vui lòng nhập tiêu đề"
+            return false
+        }
+
+        if (etDescription.text.toString().trim().isEmpty()) {
+            etDescription.error = "Vui lòng nhập mô tả"
+            return false
+        }
+
+        if (imageUri == null) {
+            Toast.makeText(this, "Vui lòng chọn ảnh sản phẩm", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        return true
+    }
+
+    // ✅ FIXED VERSION - This is Step 2
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            imageUri = data.data
-            imageUri?.let { uploadImageToCloudinary(it) } // calls function below
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            imageUri = data?.data
+            imageUri?.let { uri ->
+                // ✅ FIXED: Using .error() instead of .placeholder()
+                Glide.with(this)
+                    .load(uri)
+                    .error(R.drawable.ic_image_placeholder)
+                    .into(ivListingImage)
+            }
         }
     }
 
-    // ✅ Gửi ảnh lên Cloudinary
-    private fun uploadImageToCloudinary(uri: Uri) {
-        val inputStream = contentResolver.openInputStream(uri)
-        if (inputStream == null) {
-            Toast.makeText(this, "Không thể đọc ảnh đã chọn", Toast.LENGTH_SHORT).show()
+    private fun uploadImageAndCreateListing() {
+        imageUri?.let { uri ->
+            btnSubmit.isEnabled = false
+            btnSubmit.text = "Đang tải ảnh lên..."
+
+            CloudinaryHelper.uploadListingImage(
+                context = this,
+                imageUri = uri,
+                onSuccess = { imageUrl ->
+                    createListing(imageUrl)
+                },
+                onFailure = { error ->
+                    handleUploadError(error)
+                },
+                onProgress = { progress ->
+                    btnSubmit.text = "Đang tải lên... $progress%"
+                }
+            )
+        }
+    }
+
+    private fun createListing(imageUrl: String) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            Toast.makeText(this, "Vui lòng đăng nhập", Toast.LENGTH_SHORT).show()
+            resetUploadButton()
             return
         }
-
-        val imageBytes = inputStream.readBytes()
-        val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), imageBytes)
-        val multipart = MultipartBody.Part.createFormData("file", "upload.jpg", requestFile)
-
-        val preset = RequestBody.create("text/plain".toMediaTypeOrNull(), "android_unsigned")
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.cloudinary.com/v1_1/dovf2zc0u/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val service = retrofit.create(CloudinaryService::class.java)
-
-        service.uploadImage(multipart, preset).enqueue(object : Callback<CloudinaryResponse> {
-            override fun onResponse(call: Call<CloudinaryResponse>, response: Response<CloudinaryResponse>) {
-                if (response.isSuccessful) {
-                    val imageUrl = response.body()?.secureUrl
-                    Toast.makeText(this@CreateListingActivity, "Ảnh đã được tải lên", Toast.LENGTH_SHORT).show()
-                    imageUrl?.let { saveListing(it) }
-                } else {
-                    Toast.makeText(this@CreateListingActivity, "Tải ảnh thất bại", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<CloudinaryResponse>, t: Throwable) {
-                Toast.makeText(this@CreateListingActivity, "❌ Lỗi: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    // ✅ Lưu bài đăng sau khi có URL ảnh
-    private fun saveListing(imageUrl: String) {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
         val listing = Listing(
             id = UUID.randomUUID().toString(),
@@ -122,18 +137,33 @@ class CreateListingActivity : AppCompatActivity() {
             description = etDescription.text.toString().trim(),
             category = spCategory.selectedItem.toString(),
             imageUrl = imageUrl,
-            ownerUid = uid
+            ownerUid = currentUser.uid,
+            price = 0.0,
+            condition = "Good",
+            location = "Ho Chi Minh City"
         )
 
-        FirebaseFirestore.getInstance().collection("listings")
+        FirebaseFirestore.getInstance()
+            .collection("listings")
             .document(listing.id)
             .set(listing)
             .addOnSuccessListener {
-                Toast.makeText(this, "🎉 Bài đăng đã được tạo!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "🎉 Đăng sản phẩm thành công!", Toast.LENGTH_SHORT).show()
                 finish()
             }
-            .addOnFailureListener {
-                Toast.makeText(this, "❌ Lỗi: ${it.message}", Toast.LENGTH_SHORT).show()
+            .addOnFailureListener { exception ->
+                Toast.makeText(this, "❌ Lỗi: ${exception.message}", Toast.LENGTH_SHORT).show()
+                resetUploadButton()
             }
+    }
+
+    private fun handleUploadError(error: String) {
+        Toast.makeText(this, "❌ Tải ảnh thất bại: $error", Toast.LENGTH_LONG).show()
+        resetUploadButton()
+    }
+
+    private fun resetUploadButton() {
+        btnSubmit.isEnabled = true
+        btnSubmit.text = "Đăng bài"
     }
 }

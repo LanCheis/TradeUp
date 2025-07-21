@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 
-
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -19,6 +18,12 @@
         android:theme="@style/Theme.TradeUp"
         tools:targetApi="31">
 
+        <!-- Setup Profile Activity - NEW -->
+        <activity
+            android:name=".onboarding.SetupProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- Main Launcher Activity -->
         <activity
@@ -31,13 +36,23 @@
         </activity>
 
         <!-- Auth Activities -->
-        <activity android:name=".auth.LoginActivity" />
-        <activity android:name=".auth.RegisterActivity" />
-        <activity android:name=".auth.ForgotPasswordActivity" />
+        <activity
+            android:name=".auth.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".auth.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".auth.ForgotPasswordActivity"
+            android:exported="false" />
 
         <!-- Listing Activities -->
-        <activity android:name=".listing.CreateListingActivity" />
-        <activity android:name=".listing.ListingDetailActivity" />
+        <activity
+            android:name=".listing.CreateListingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".listing.ListingDetailActivity"
+            android:exported="false" />
 
     </application>
 </manifest>

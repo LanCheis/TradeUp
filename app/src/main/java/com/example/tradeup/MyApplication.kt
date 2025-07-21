@@ -1,16 +1,24 @@
 package com.example.tradeup
 
 import android.app.Application
+import android.util.Log
 import com.cloudinary.android.MediaManager
 
 class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        val config = mapOf(
-            "cloud_name" to "dovf2zc0u",
-            "api_key" to "954889699447999",
-            "api_secret" to "jePY1jqFFEM3pbAmBo0i9XuVgQo"
-        )
-        MediaManager.init(this, config)
+
+        // Initialize Cloudinary with error handling
+        try {
+            val config = mapOf(
+                "cloud_name" to "dovf2zc0u",
+                "api_key" to "954889699447999",
+                "api_secret" to "jePY1jqFFEM3pbAmBo0i9XuVgQo"
+            )
+            MediaManager.init(this, config)
+            Log.d("Cloudinary", "✅ Cloudinary initialized successfully")
+        } catch (e: Exception) {
+            Log.e("Cloudinary", "❌ Failed to initialize Cloudinary: ${e.message}")
+        }
     }
 }

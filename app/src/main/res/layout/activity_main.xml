@@ -8,16 +8,13 @@
     android:background="@color/white">
 
     <!-- Fragment container takes remaining space -->
-    <androidx.fragment.app.FragmentContainerView
+    <FrameLayout
         android:id="@+id/nav_host_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_graph" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-
-    <!-- Fixed bottom menu with Discord-inspired gradient -->
+    <!-- Fixed bottom menu -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"

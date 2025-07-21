@@ -8,9 +8,12 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.example.tradeup.MainActivity
 import com.example.tradeup.R
+import com.example.tradeup.data.model.User
 import com.example.tradeup.data.remote.FirebaseAuthHelper
-import com.example.tradeup.home.HomeFragment
+import com.example.tradeup.data.remote.UserRepository
+import com.example.tradeup.onboarding.SetupProfileActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -39,27 +42,31 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        googleBtn = findViewById(R.id.btnGoogle)
-        errorText = findViewById(R.id.tvError)
-        progressBar = findViewById(R.id.progressBar)
+        initViews()
+        setupTextWatchers()
+        setupClickListeners()
+        setupGoogleSignIn()
+    }
 
-        // View binding
+    private fun initViews() {
         emailField = findViewById(R.id.etEmail)
         passwordField = findViewById(R.id.etPassword)
         togglePasswordIcon = findViewById(R.id.ivTogglePassword)
         loginBtn = findViewById(R.id.btnLogin)
         googleBtn = findViewById(R.id.btnGoogle)
         errorText = findViewById(R.id.tvError)
+        progressBar = findViewById(R.id.progressBar)
 
         loginBtn.isEnabled = false
         errorText.visibility = View.GONE
+    }
 
-        // TextWatcher to enable login button only when fields are filled
+    private fun setupTextWatchers() {
         val watcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 loginBtn.isEnabled =
                     emailField.text.toString().isNotBlank() && passwordField.text.toString().isNotBlank()
-                errorText.visibility = View.GONE // clear error when typing
+                errorText.visibility = View.GONE
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -68,16 +75,17 @@ class LoginActivity : AppCompatActivity() {
 
         emailField.addTextChangedListener(watcher)
         passwordField.addTextChangedListener(watcher)
+    }
 
-        // Toggle password visibility
+    private fun setupClickListeners() {
         togglePasswordIcon.setOnClickListener {
             isPasswordVisible = !isPasswordVisible
             if (isPasswordVisible) {
                 passwordField.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                togglePasswordIcon.setImageResource(R.drawable.ic_eye) // 👁
+                togglePasswordIcon.setImageResource(R.drawable.ic_eye)
             } else {
                 passwordField.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                togglePasswordIcon.setImageResource(R.drawable.ic_eye_off) // 👁‍🗨
+                togglePasswordIcon.setImageResource(R.drawable.ic_eye_off)
             }
             passwordField.setSelection(passwordField.text.length)
         }
@@ -86,10 +94,11 @@ class LoginActivity : AppCompatActivity() {
             val email = emailField.text.toString()
             val password = passwordField.text.toString()
 
+            showLoading(true)
             FirebaseAuthHelper.loginWithEmail(email, password) { success, error ->
+                showLoading(false)
                 if (success) {
-                    startActivity(Intent(this, HomeFragment::class.java))
-                    finish()
+                    checkUserProfileAndNavigate()
                 } else {
                     errorText.text = error ?: "Lỗi không xác định khi đăng nhập"
                     errorText.visibility = View.VISIBLE
@@ -97,7 +106,16 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        // Configure Google Sign-In
+        findViewById<TextView>(R.id.tvGoToRegister).setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
+        }
+
+        findViewById<TextView>(R.id.tvForgotPassword).setOnClickListener {
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
+        }
+    }
+
+    private fun setupGoogleSignIn() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -107,19 +125,10 @@ class LoginActivity : AppCompatActivity() {
         googleBtn.setOnClickListener {
             if (!hasNavigated) {
                 googleBtn.isEnabled = false
-                progressBar.visibility = View.VISIBLE
+                showLoading(true)
                 val intent = googleClient.signInIntent
                 startActivityForResult(intent, RC_SIGN_IN)
             }
-        }
-
-        // Navigation links
-        findViewById<TextView>(R.id.tvGoToRegister).setOnClickListener {
-            startActivity(Intent(this, RegisterActivity::class.java))
-        }
-
-        findViewById<TextView>(R.id.tvForgotPassword).setOnClickListener {
-            startActivity(Intent(this, ForgotPasswordActivity::class.java))
         }
     }
 
@@ -133,12 +142,11 @@ class LoginActivity : AppCompatActivity() {
                 val credential = GoogleAuthProvider.getCredential(account.idToken, null)
 
                 FirebaseAuthHelper.signInWithGoogleCredential(credential) { success, error ->
-                    progressBar.visibility = View.GONE
+                    showLoading(false)
 
                     if (success && !hasNavigated) {
                         hasNavigated = true
-                        startActivity(Intent(this, HomeFragment::class.java))
-                        finish()
+                        checkUserProfileAndNavigate()
                     } else if (!success) {
                         googleBtn.isEnabled = true
                         errorText.text = error ?: "Google đăng nhập thất bại"
@@ -146,12 +154,43 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
             } catch (e: ApiException) {
-                progressBar.visibility = View.GONE
+                showLoading(false)
                 googleBtn.isEnabled = true
                 errorText.text = "Google Sign-In thất bại: ${e.message}"
                 errorText.visibility = View.VISIBLE
-
             }
         }
+    }
+
+    // ✅ NEW METHOD - Check profile and navigate accordingly
+    private fun checkUserProfileAndNavigate() {
+        val currentUser = FirebaseAuthHelper.getCurrentUser()
+        if (currentUser != null) {
+            UserRepository.getUserProfile(currentUser.uid) { user ->
+                if (user != null && isProfileComplete(user)) {
+                    // Profile is complete, go to main app
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                } else {
+                    // Profile incomplete or doesn't exist, go to setup
+                    startActivity(Intent(this, SetupProfileActivity::class.java))
+                    finish()
+                }
+            }
+        }
+    }
+
+    // ✅ NEW METHOD - Check if profile has essential information
+    private fun isProfileComplete(user: User): Boolean {
+        return user.name.isNotEmpty() &&
+                user.phone.isNotEmpty() &&
+                user.bio.isNotEmpty() &&
+                user.gender.isNotEmpty()
+    }
+
+    private fun showLoading(show: Boolean) {
+        progressBar.visibility = if (show) View.VISIBLE else View.GONE
+        loginBtn.isEnabled = !show
+        googleBtn.isEnabled = !show
     }
 }

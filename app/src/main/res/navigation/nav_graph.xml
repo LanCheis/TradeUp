@@ -15,13 +15,25 @@
         android:id="@+id/profileFragment"
         android:name="com.example.tradeup.profile.ProfileFragment"
         android:label="Profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+
+        <!-- Add action to EditProfile -->
+        <action
+            android:id="@+id/action_profileFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.example.tradeup.profile.EditProfileFragment"
         android:label="Edit Profile"
-        tools:layout="@layout/fragment_edit_profile" />
+        tools:layout="@layout/fragment_edit_profile">
+
+        <!-- Add back action -->
+        <action
+            android:id="@+id/action_editProfileFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/listingsFragment"

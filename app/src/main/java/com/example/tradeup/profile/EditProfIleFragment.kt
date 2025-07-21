@@ -5,51 +5,116 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.tradeup.databinding.FragmentEditProfileBinding
+import com.example.tradeup.R
+import com.example.tradeup.data.model.User
+import com.example.tradeup.data.remote.UserRepository
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
 import java.util.Calendar
 
 class EditProfileFragment : Fragment() {
 
-    private var _binding: FragmentEditProfileBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var btnBack: ImageButton
+    private lateinit var btnSave: Button
+    private lateinit var ivAvatar: ImageView
+    private lateinit var etUsername: TextInputEditText
+    private lateinit var etPhone: TextInputEditText
+    private lateinit var etBio: TextInputEditText
+    private lateinit var etInterest: TextInputEditText
+    private lateinit var etBirthday: TextInputEditText
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEditProfileBinding.inflate(inflater, container, false)
-        return binding.root
+        return inflater.inflate(R.layout.fragment_edit_profile, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initViews(view)
         setupListeners()
+        loadCurrentUserData()
+    }
+
+    private fun initViews(view: View) {
+        btnBack = view.findViewById(R.id.btnBack)
+        btnSave = view.findViewById(R.id.btnSave)
+        ivAvatar = view.findViewById(R.id.ivAvatar)
+        etUsername = view.findViewById(R.id.etUsername)
+        etPhone = view.findViewById(R.id.etPhone)
+        etBio = view.findViewById(R.id.etBio)
+        etInterest = view.findViewById(R.id.etInterest)
+        etBirthday = view.findViewById(R.id.etBirthday)
     }
 
     private fun setupListeners() {
-        // Navigate back
-        binding.btnBack.setOnClickListener {
-            findNavController().navigateUp()
+        // ✅ FIXED: Proper back navigation
+        btnBack.setOnClickListener {
+            try {
+                findNavController().navigateUp()
+            } catch (e: Exception) {
+                // Fallback
+                requireActivity().onBackPressed()
+            }
         }
 
-        // Show date picker
-        binding.etBirthday.setOnClickListener {
+        // Show date picker for birthday
+        etBirthday.setOnClickListener {
             showDatePicker()
         }
 
         // Save profile button
-        binding.btnSave.setOnClickListener {
-            binding.etUsername.text.toString()
-            binding.etPhone.text.toString()
-            binding.etBio.text.toString()
-            binding.etInterest.text.toString()
-            binding.etBirthday.text.toString()
+        btnSave.setOnClickListener {
+            saveProfile()
+        }
+    }
 
-            // TODO: Save this data to Firebase or local storage
-            // You could use a ViewModel, repository, or directly call Firebase here.
+    private fun loadCurrentUserData() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        UserRepository.getUserProfile(uid) { user ->
+            if (user != null && isAdded) {
+                // Pre-fill form with current data
+                etUsername.setText(user.username)
+                etPhone.setText(user.phone)
+                etBio.setText(user.bio)
+                etInterest.setText(user.interests)
+                etBirthday.setText(user.birthday)
+            }
+        }
+    }
+
+    private fun saveProfile() {
+        val currentUser = FirebaseAuth.getInstance().currentUser ?: return
+
+        val updatedUser = User(
+            uid = currentUser.uid,
+            email = currentUser.email ?: "",
+            name = currentUser.displayName ?: "",
+            username = etUsername.text.toString().trim(),
+            phone = etPhone.text.toString().trim(),
+            bio = etBio.text.toString().trim(),
+            interests = etInterest.text.toString().trim(),
+            birthday = etBirthday.text.toString().trim()
+        )
+
+        UserRepository.saveUserProfile(updatedUser) { success, error ->
+            if (isAdded) {
+                if (success) {
+                    Toast.makeText(requireContext(), "✅ Profile updated!", Toast.LENGTH_SHORT).show()
+                    findNavController().navigateUp() // Go back to profile
+                } else {
+                    Toast.makeText(requireContext(), "❌ Failed to save: $error", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -58,7 +123,7 @@ class EditProfileFragment : Fragment() {
         val datePicker = DatePickerDialog(
             requireContext(),
             { _, year, month, dayOfMonth ->
-                binding.etBirthday.setText(
+                etBirthday.setText(
                     String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year)
                 )
             },
@@ -67,10 +132,5 @@ class EditProfileFragment : Fragment() {
             calendar.get(Calendar.DAY_OF_MONTH)
         )
         datePicker.show()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
