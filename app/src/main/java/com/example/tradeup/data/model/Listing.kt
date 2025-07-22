@@ -9,7 +9,7 @@ data class Listing(
     val category: String = "",
     val condition: String = "", // New, Like New, Good, Fair, Poor
     val location: String = "",
-    val imageUrls: List<String> = emptyList(), // Support multiple images
+    val imageUrl: String = "",
     val ownerUid: String = "",
     val ownerName: String = "",
     val ownerAvatar: String = "",

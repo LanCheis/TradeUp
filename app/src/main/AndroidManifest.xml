@@ -31,6 +31,7 @@
         <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
+            android:allowBackup="true"
             android:exported="false" />
 
         <!-- Setup Profile Activity -->
@@ -40,6 +41,11 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- Add this inside the <application> tag -->
+        <activity
+            android:name=".search.SearchActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <!-- Auth Activities -->
         <activity
             android:name=".auth.RegisterActivity"

@@ -4,78 +4,64 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.example.tradeup.R
 import com.example.tradeup.data.model.Listing
 import com.example.tradeup.utils.CloudinaryHelper
-import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import java.text.NumberFormat
 import java.util.*
 
 class CreateListingActivity : AppCompatActivity() {
 
-    private lateinit var etTitle: TextInputEditText
-    private lateinit var etDescription: TextInputEditText
-    private lateinit var etPrice: TextInputEditText
+    private lateinit var etTitle: EditText
+    private lateinit var etDescription: EditText
     private lateinit var spCategory: Spinner
-    private lateinit var spCondition: Spinner
-    private lateinit var etLocation: TextInputEditText
-    private lateinit var switchNegotiable: Switch
     private lateinit var ivListingImage: ImageView
     private lateinit var btnPickImage: Button
     private lateinit var btnSubmit: Button
     private lateinit var progressBar: ProgressBar
 
-    private var imageUri: Uri? = null
+    private var selectedImageUri: Uri? = null
     private val PICK_IMAGE_REQUEST = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_listing_enhanced)
+        setContentView(R.layout.activity_create_listing)
 
         initViews()
-        setupSpinners()
+        setupSpinner()
         setupClickListeners()
     }
 
     private fun initViews() {
         etTitle = findViewById(R.id.etTitle)
         etDescription = findViewById(R.id.etDescription)
-        etPrice = findViewById(R.id.etPrice)
         spCategory = findViewById(R.id.spCategory)
-        spCondition = findViewById(R.id.spCondition)
-        etLocation = findViewById(R.id.etLocation)
-        switchNegotiable = findViewById(R.id.switchNegotiable)
         ivListingImage = findViewById(R.id.ivListingImage)
         btnPickImage = findViewById(R.id.btnPickImage)
         btnSubmit = findViewById(R.id.btnSubmit)
-        progressBar = findViewById(R.id.progressBar)
 
+        // ✅ Set default placeholder image
         ivListingImage.setImageResource(R.drawable.ic_image_placeholder)
-        progressBar.visibility = View.GONE
     }
 
-    private fun setupSpinners() {
-        // Categories
-        val categories = arrayOf("Select Category", "Electronics", "Fashion", "Home & Garden", "Sports", "Books", "Other")
-        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
-        spCategory.adapter = categoryAdapter
-
-        // Conditions
-        val conditions = arrayOf("Select Condition", "New", "Like New", "Good", "Fair", "Poor")
-        val conditionAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, conditions)
-        spCondition.adapter = conditionAdapter
+    private fun setupSpinner() {
+        val categories = arrayOf("Đồ điện tử", "Thời trang", "Đồ gia dụng", "Khác")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
+        spCategory.adapter = adapter
     }
 
     private fun setupClickListeners() {
         btnPickImage.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK).apply { type = "image/*" }
+            val intent = Intent(Intent.ACTION_PICK).apply {
+                type = "image/*"
+            }
             startActivityForResult(intent, PICK_IMAGE_REQUEST)
         }
 
@@ -84,117 +70,97 @@ class CreateListingActivity : AppCompatActivity() {
                 uploadImageAndCreateListing()
             }
         }
-
-        // Price formatting
-        etPrice.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                formatPrice()
-            }
-        }
-    }
-
-    private fun formatPrice() {
-        val priceText = etPrice.text.toString().replace(",", "").replace("₫", "").trim()
-        if (priceText.isNotEmpty()) {
-            try {
-                val price = priceText.toDouble()
-                val formatter = NumberFormat.getNumberInstance(Locale("vi", "VN"))
-                etPrice.setText("${formatter.format(price)} ₫")
-            } catch (e: NumberFormatException) {
-                // Invalid number format
-            }
-        }
     }
 
     private fun validateInput(): Boolean {
-        var isValid = true
-
         if (etTitle.text.toString().trim().isEmpty()) {
-            etTitle.error = "Title is required"
-            isValid = false
+            etTitle.error = "Vui lòng nhập tiêu đề"
+            return false
         }
 
         if (etDescription.text.toString().trim().isEmpty()) {
-            etDescription.error = "Description is required"
-            isValid = false
+            etDescription.error = "Vui lòng nhập mô tả"
+            return false
         }
 
-        if (etPrice.text.toString().trim().isEmpty()) {
-            etPrice.error = "Price is required"
-            isValid = false
+        if (selectedImageUri == null) {
+            Toast.makeText(this, "Vui lòng chọn ảnh sản phẩm", Toast.LENGTH_SHORT).show()
+            return false
         }
 
-        if (spCategory.selectedItemPosition == 0) {
-            Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show()
-            isValid = false
-        }
+        return true
+    }
 
-        if (spCondition.selectedItemPosition == 0) {
-            Toast.makeText(this, "Please select item condition", Toast.LENGTH_SHORT).show()
-            isValid = false
-        }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-        if (etLocation.text.toString().trim().isEmpty()) {
-            etLocation.error = "Location is required"
-            isValid = false
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            selectedImageUri = data?.data
+            selectedImageUri?.let { uri ->
+                // ✅ Load selected image with proper error handling
+                loadImageIntoView(ivListingImage, uri)
+                btnPickImage.text = "✓ Đã chọn ảnh"
+            }
         }
+    }
 
-        if (imageUri == null) {
-            Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show()
-            isValid = false
+    private fun loadImageIntoView(imageView: ImageView, uri: Uri) {
+        val requestOptions = RequestOptions()
+            .placeholder(R.drawable.ic_image_placeholder)
+            .error(R.drawable.ic_image_placeholder)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .centerCrop()
+
+        try {
+            Glide.with(this)
+                .load(uri)
+                .apply(requestOptions)
+                .into(imageView)
+        } catch (e: Exception) {
+            imageView.setImageResource(R.drawable.ic_image_placeholder)
+            Toast.makeText(this, "Error loading image", Toast.LENGTH_SHORT).show()
         }
-
-        return isValid
     }
 
     private fun uploadImageAndCreateListing() {
-        imageUri?.let { uri ->
+        selectedImageUri?.let { uri ->
             showLoading(true)
 
             CloudinaryHelper.uploadListingImage(
                 context = this,
                 imageUri = uri,
                 onSuccess = { imageUrl ->
+                    // ✅ Use the uploaded imageUrl consistently
                     createListing(imageUrl)
                 },
                 onFailure = { error ->
                     handleUploadError(error)
                 },
                 onProgress = { progress ->
-                    btnSubmit.text = "Uploading... $progress%"
+                    btnSubmit.text = "Đang tải lên... $progress%"
                 }
             )
         }
     }
 
-    private fun createListing(imageUrl: String) {
+    private fun createListing(uploadedImageUrl: String) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
-            Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Vui lòng đăng nhập", Toast.LENGTH_SHORT).show()
             showLoading(false)
             return
-        }
-
-        // Parse price
-        val priceText = etPrice.text.toString().replace(",", "").replace("₫", "").trim()
-        val price = try {
-            priceText.toDouble()
-        } catch (e: NumberFormatException) {
-            0.0
         }
 
         val listing = Listing(
             id = UUID.randomUUID().toString(),
             title = etTitle.text.toString().trim(),
             description = etDescription.text.toString().trim(),
-            price = price,
             category = spCategory.selectedItem.toString(),
-            condition = spCondition.selectedItem.toString(),
-            location = etLocation.text.toString().trim(),
-            imageUrls = listOf(imageUrl), // Use imageUrls instead of imageUrl
+            imageUrl = uploadedImageUrl, // ✅ Consistent field name
             ownerUid = currentUser.uid,
-            ownerName = currentUser.displayName ?: "Anonymous",
-            isNegotiable = switchNegotiable.isChecked,
+            price = 0.0, // Can be enhanced later
+            condition = "Good",
+            location = "Ho Chi Minh City",
             createdAt = System.currentTimeMillis(),
             updatedAt = System.currentTimeMillis()
         )
@@ -204,40 +170,26 @@ class CreateListingActivity : AppCompatActivity() {
             .document(listing.id)
             .set(listing)
             .addOnSuccessListener {
-                Toast.makeText(this, "🎉 Listing created successfully!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "🎉 Đăng sản phẩm thành công!", Toast.LENGTH_SHORT).show()
                 finish()
             }
             .addOnFailureListener { exception ->
-                Toast.makeText(this, "❌ Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "❌ Lỗi: ${exception.message}", Toast.LENGTH_SHORT).show()
                 showLoading(false)
             }
     }
 
     private fun handleUploadError(error: String) {
-        Toast.makeText(this, "❌ Upload failed: $error", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "❌ Tải ảnh thất bại: $error", Toast.LENGTH_LONG).show()
         showLoading(false)
     }
 
     private fun showLoading(show: Boolean) {
-        progressBar.visibility = if (show) View.VISIBLE else View.GONE
         btnSubmit.isEnabled = !show
-        if (!show) {
-            btnSubmit.text = "Create Listing"
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
-            imageUri = data?.data
-            imageUri?.let { uri ->
-                Glide.with(this)
-                    .load(uri)
-                    .error(R.drawable.ic_image_placeholder)
-                    .into(ivListingImage)
-                btnPickImage.text = "✓ Image Selected"
-            }
+        if (show) {
+            btnSubmit.text = "Đang xử lý..."
+        } else {
+            btnSubmit.text = "Đăng bài"
         }
     }
 }

@@ -73,7 +73,7 @@ dependencies {
     kapt("com.github.bumptech.glide:compiler:4.16.0")
 
     // ✅ CLOUDINARY (for image uploads)
-    implementation("com.cloudinary:cloudinary-android:2.5.0")
+    implementation("com.cloudinary:cloudinary-android:2.8.0")
 
     // ✅ NETWORKING (if needed)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

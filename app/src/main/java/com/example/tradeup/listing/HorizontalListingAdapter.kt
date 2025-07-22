@@ -8,6 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.example.tradeup.R
 import com.example.tradeup.data.model.Listing
 import java.text.NumberFormat
@@ -32,18 +34,12 @@ class HorizontalListingAdapter(private val listings: List<Listing>) :
     override fun onBindViewHolder(holder: HorizontalViewHolder, position: Int) {
         val listing = listings[position]
 
-        holder.tvTitle.text = listing.title
+        holder.tvTitle.text = if (listing.title.isNotEmpty()) listing.title else "No Title"
         holder.tvPrice.text = formatPrice(listing.price)
-        holder.tvLocation.text = listing.location
+        holder.tvLocation.text = if (listing.location.isNotEmpty()) listing.location else "No Location"
 
-        // ✅ SIMPLIFIED: Basic Glide usage that definitely works
-        if (listing.imageUrl.isNotEmpty()) {
-            Glide.with(holder.itemView.context)
-                .load(listing.imageUrl)
-                .into(holder.ivImage)
-        } else {
-            holder.ivImage.setImageResource(R.drawable.ic_avatar_placeholder)
-        }
+        // ✅ Comprehensive image loading
+        loadImageIntoView(holder.ivImage, listing.imageUrl)
 
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
@@ -51,18 +47,13 @@ class HorizontalListingAdapter(private val listings: List<Listing>) :
                 putExtra("listing_id", listing.id)
                 putExtra("title", listing.title)
                 putExtra("price", listing.price)
-                putExtra("imageUrl", listing.imageUrl)
+                putExtra("imageUrl", listing.imageUrl) // ✅ Consistent field name
                 putExtra("category", listing.category)
                 putExtra("condition", listing.condition)
                 putExtra("description", listing.description)
                 putExtra("location", listing.location)
                 putExtra("ownerName", listing.ownerName)
                 putExtra("isNegotiable", listing.isNegotiable)
-                putExtra("sellerId", listing.ownerUid)
-                putExtra("sellerName", listing.ownerName)
-                putExtra("views", listing.views)
-                putExtra("interactions", listing.interactions)
-                putExtra("createdAt", listing.createdAt)
             }
             context.startActivity(intent)
         }
@@ -76,6 +67,31 @@ class HorizontalListingAdapter(private val listings: List<Listing>) :
             "${formatter.format(price)} ₫"
         } else {
             "Contact for price"
+        }
+    }
+
+    // ✅ Centralized image loading function
+    private fun loadImageIntoView(imageView: ImageView, imageUrl: String?) {
+        val context = imageView.context
+
+        if (imageUrl.isNullOrBlank()) {
+            imageView.setImageResource(R.drawable.ic_image_placeholder)
+            return
+        }
+
+        val requestOptions = RequestOptions()
+            .placeholder(R.drawable.ic_image_placeholder)
+            .error(R.drawable.ic_image_placeholder)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .centerCrop()
+
+        try {
+            Glide.with(context)
+                .load(imageUrl)
+                .apply(requestOptions)
+                .into(imageView)
+        } catch (e: Exception) {
+            imageView.setImageResource(R.drawable.ic_image_placeholder)
         }
     }
 }

@@ -8,6 +8,8 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.example.tradeup.MainActivity
 import com.example.tradeup.R
 import com.example.tradeup.data.model.User
@@ -90,10 +92,7 @@ class SetupProfileActivity : AppCompatActivity() {
 
             // Load existing avatar if available
             currentUser.photoUrl?.let { photoUrl ->
-                Glide.with(this)
-                    .load(photoUrl)
-                    .error(R.drawable.ic_avatar_placeholder)
-                    .into(ivAvatar)
+                loadImageIntoView(ivAvatar, photoUrl.toString())
             }
         }
     }
@@ -111,12 +110,26 @@ class SetupProfileActivity : AppCompatActivity() {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
             selectedImageUri = data?.data
             selectedImageUri?.let { uri ->
-                Glide.with(this)
-                    .load(uri)
-                    .into(ivAvatar)
-
+                loadImageIntoView(ivAvatar, uri.toString())
                 btnChangeAvatar.text = "✓ Đã chọn ảnh"
             }
+        }
+    }
+
+    private fun loadImageIntoView(imageView: CircleImageView, imageSource: String) {
+        val requestOptions = RequestOptions()
+            .placeholder(R.drawable.ic_avatar_placeholder)
+            .error(R.drawable.ic_avatar_placeholder)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .centerCrop()
+
+        try {
+            Glide.with(this)
+                .load(imageSource)
+                .apply(requestOptions)
+                .into(imageView)
+        } catch (e: Exception) {
+            imageView.setImageResource(R.drawable.ic_avatar_placeholder)
         }
     }
 
@@ -170,24 +183,31 @@ class SetupProfileActivity : AppCompatActivity() {
     }
 
     private fun uploadAvatarThenSaveProfile(userId: String) {
-        selectedImageUri?.let { uri ->
-            CloudinaryHelper.uploadProfileImage(
-                context = this,
-                imageUri = uri,
-                userId = userId,
-                onSuccess = { avatarUrl ->
-                    saveUserProfile(userId, avatarUrl)
-                },
-                onFailure = { error ->
-                    showLoading(false)
-                    Toast.makeText(this, "❌ Lỗi tải ảnh: $error", Toast.LENGTH_LONG).show()
-                    btnContinue.text = "Tiếp tục"
-                },
-                onProgress = { progress ->
-                    btnContinue.text = "Đang tải ảnh... $progress%"
-                }
-            )
+        val selectedUri = selectedImageUri ?: return
+
+        // ✅ Fixed: Create separate variables with explicit types for lambda parameters
+        val onSuccessCallback: (String) -> Unit = { avatarUrl ->
+            saveUserProfile(userId, avatarUrl)
         }
+
+        val onFailureCallback: (String) -> Unit = { error ->
+            showLoading(false)
+            Toast.makeText(this, "❌ Lỗi tải ảnh: $error", Toast.LENGTH_LONG).show()
+            btnContinue.text = "Tiếp tục"
+        }
+
+        val onProgressCallback: (Int) -> Unit = { progress ->
+            btnContinue.text = "Đang tải ảnh... $progress%"
+        }
+
+        CloudinaryHelper.uploadProfileImage(
+            context = this,
+            imageUri = selectedUri,
+            userId = userId,
+            onSuccess = onSuccessCallback,
+            onFailure = onFailureCallback,
+            onProgress = onProgressCallback
+        )
     }
 
     private fun saveUserProfile(userId: String, avatarUrl: String) {
@@ -208,7 +228,8 @@ class SetupProfileActivity : AppCompatActivity() {
             birthday = "" // Will be updated later
         )
 
-        UserRepository.saveUserProfile(userProfile) { success, error ->
+        // ✅ Fixed: Create separate variables with explicit types for callback
+        val onCompleteCallback: (Boolean, String?) -> Unit = { success, error ->
             showLoading(false)
 
             if (success) {
@@ -220,6 +241,8 @@ class SetupProfileActivity : AppCompatActivity() {
                 btnContinue.text = "Tiếp tục"
             }
         }
+
+        UserRepository.saveUserProfile(userProfile, onCompleteCallback)
     }
 
     private fun generateUsername(fullName: String): String {
@@ -251,8 +274,10 @@ class SetupProfileActivity : AppCompatActivity() {
         finish()
     }
 
-    // Prevent back press during setup
+    // ✅ Fixed: Override with super call
     override fun onBackPressed() {
+        super.onBackPressed() // Call super method first
         Toast.makeText(this, "Vui lòng hoàn thành thiết lập hồ sơ", Toast.LENGTH_SHORT).show()
+        // Don't actually go back - prevent back navigation during setup
     }
 }

@@ -45,6 +45,7 @@ object CloudinaryHelper {
 
                     override fun onSuccess(requestId: String, resultData: Map<*, *>) {
                         Log.d(TAG, "Upload successful: $requestId")
+                        // ✅ Ensure we get the secure_url which will be our imageUrl
                         val imageUrl = resultData["secure_url"] as? String
                         if (imageUrl != null) {
                             onSuccess(imageUrl)
@@ -76,7 +77,7 @@ object CloudinaryHelper {
         userId: String,
         onSuccess: (String) -> Unit,
         onFailure: (String) -> Unit,
-        onProgress: ((Int) -> Unit)? = null
+        onProgress: (Int) -> Unit
     ) {
         val publicId = "profile_${userId}_${System.currentTimeMillis()}"
 
@@ -84,20 +85,26 @@ object CloudinaryHelper {
             Log.d(TAG, "Starting profile image upload for user: $userId")
 
             MediaManager.get().upload(imageUri)
-                .unsigned("android_unsigned")
+                .unsigned("android_unsigned") // Using same preset as listing images
                 .option("public_id", publicId)
                 .option("folder", "tradeup/profiles")
+                .option("quality", "auto")
+                .option("fetch_format", "auto")
+                // Profile images should be square and reasonably sized
+                .option("width", 400)
+                .option("height", 400)
+                .option("crop", "fill")
                 .callback(object : UploadCallback {
                     override fun onStart(requestId: String) {
                         Log.d(TAG, "Profile upload started: $requestId")
-                        onProgress?.invoke(0)
+                        onProgress(0)
                     }
 
                     override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {
                         if (totalBytes > 0) {
                             val progress = ((bytes * 100L) / totalBytes).toInt()
                             Log.d(TAG, "Profile upload progress: $progress%")
-                            onProgress?.invoke(progress)
+                            onProgress(progress)
                         }
                     }
 
@@ -107,14 +114,14 @@ object CloudinaryHelper {
                         if (imageUrl != null) {
                             onSuccess(imageUrl)
                         } else {
-                            Log.e(TAG, "No URL returned for profile image")
+                            Log.e(TAG, "No URL returned from Cloudinary for profile image")
                             onFailure("No URL returned from Cloudinary")
                         }
                     }
 
                     override fun onError(requestId: String, error: ErrorInfo) {
                         Log.e(TAG, "Profile upload error: ${error.description}")
-                        onFailure(error.description ?: "Upload failed")
+                        onFailure(error.description ?: "Profile upload failed")
                     }
 
                     override fun onReschedule(requestId: String, error: ErrorInfo) {
@@ -124,7 +131,7 @@ object CloudinaryHelper {
                 .dispatch()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start profile upload", e)
-            onFailure("Failed to start upload: ${e.message}")
+            onFailure("Failed to start profile upload: ${e.message}")
         }
     }
 

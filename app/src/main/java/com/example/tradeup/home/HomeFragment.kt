@@ -14,6 +14,7 @@ import com.example.tradeup.data.model.Listing
 import com.example.tradeup.data.remote.UserRepository
 import com.example.tradeup.listing.CreateListingActivity
 import com.example.tradeup.listing.HorizontalListingAdapter
+import com.example.tradeup.search.SearchActivity // Add this import
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -39,7 +40,7 @@ class HomeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -73,10 +74,10 @@ class HomeFragment : Fragment() {
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
 
         val greeting = when (hour) {
-            in 6..11 -> "Good Morning!"
-            in 12..17 -> "Good Afternoon!"
-            in 18..23 -> "Good Evening!"
-            else -> "Good Midnight!"
+            in 6..11 -> "Good Morning! ☀️"
+            in 12..17 -> "Good Afternoon! 🌤️"
+            in 18..23 -> "Good Evening! 🌆"
+            else -> "Good Night! 🌙"
         }
 
         tvGreeting.text = greeting
@@ -84,7 +85,9 @@ class HomeFragment : Fragment() {
 
     private fun setupClickListeners() {
         btnSearch.setOnClickListener {
-            Toast.makeText(requireContext(), "🔍 Search feature coming soon!", Toast.LENGTH_SHORT).show()
+            // Fixed: Add proper Intent creation
+            val intent = Intent(requireContext(), SearchActivity::class.java)
+            startActivity(intent)
         }
 
         btnNotification.setOnClickListener {
