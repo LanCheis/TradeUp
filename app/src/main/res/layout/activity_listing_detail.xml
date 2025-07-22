@@ -3,538 +3,121 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA">
+    android:padding="16dp"
+    android:background="#FFFFFF">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Hero Image Section -->
-        <androidx.cardview.widget.CardView
+        <!-- Main Image -->
+        <ImageView
+            android:id="@+id/ivDetailImage"
             android:layout_width="match_parent"
-            android:layout_height="280dp"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="0dp">
+            android:layout_height="250dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="Ảnh bài đăng"
+            android:background="@drawable/edittext_background"
+            android:layout_marginBottom="16dp" />
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvDetailTitle"
+            android:text="Tiêu đề bài đăng"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#1a1a1a"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp" />
 
-                <ImageView
-                    android:id="@+id/ivDetailImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:background="#E0E0E0" />
+        <!-- ✅ NEW: Price -->
+        <TextView
+            android:id="@+id/tvDetailPrice"
+            android:text="💰 25,000,000 ₫"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#d32f2f"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp" />
 
-                <!-- Favorite Button -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:layout_margin="16dp"
-                    android:layout_gravity="top|end"
-                    app:cardCornerRadius="22dp"
-                    app:cardElevation="4dp"
-                    app:cardBackgroundColor="@android:color/white">
-
-                    <ImageView
-                        android:id="@+id/btnFavorite"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_heart_outline"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        app:tint="#666666" />
-                </androidx.cardview.widget.CardView>
-
-                <!-- Condition Badge -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cvConditionBadge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:layout_gravity="top|start"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/blue_500">
-
-                    <TextView
-                        android:id="@+id/tvConditionBadge"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Like New"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/white"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="6dp" />
-                </androidx.cardview.widget.CardView>
-            </FrameLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Main Content -->
+        <!-- Category & Condition -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@android:color/white"
-            android:padding="20dp">
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
 
-            <!-- Title and Price -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="16dp">
+            <TextView
+                android:id="@+id/tvDetailCategory"
+                android:text="📂 Đồ điện tử"
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
 
-                <TextView
-                    android:id="@+id/tvDetailTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="iPhone 15 Pro Max 256GB"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:textColor="#1a1a1a"
-                    android:layout_marginBottom="8dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:id="@+id/tvDetailPrice"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="25,000,000 ₫"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        android:textColor="#d32f2f" />
-
-                    <TextView
-                        android:id="@+id/tvNegotiable"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="💰 Negotiable"
-                        android:textSize="14sp"
-                        android:textColor="@color/blue_500"
-                        android:background="@drawable/small_circle_background"
-                        android:padding="8dp"
-                        android:visibility="gone" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Quick Info Grid -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="#F5F7FA">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Item Details"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#1a1a1a"
-                        android:layout_marginBottom="12dp" />
-
-                    <!-- Category Row -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="8dp">
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_library"
-                            app:tint="#666666" />
-
-                        <TextView
-                            android:layout_width="80dp"
-                            android:layout_height="wrap_content"
-                            android:text="Category:"
-                            android:textSize="14sp"
-                            android:textColor="#666666"
-                            android:layout_marginStart="8dp" />
-
-                        <TextView
-                            android:id="@+id/tvDetailCategory"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Electronics"
-                            android:textSize="14sp"
-                            android:textColor="#1a1a1a"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <!-- Condition Row -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="8dp">
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_setting"
-                            app:tint="#666666" />
-
-                        <TextView
-                            android:layout_width="80dp"
-                            android:layout_height="wrap_content"
-                            android:text="Condition:"
-                            android:textSize="14sp"
-                            android:textColor="#666666"
-                            android:layout_marginStart="8dp" />
-
-                        <TextView
-                            android:id="@+id/tvDetailCondition"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Like New"
-                            android:textSize="14sp"
-                            android:textColor="#1a1a1a"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <!-- Location Row -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_location"
-                            app:tint="#666666" />
-
-                        <TextView
-                            android:layout_width="80dp"
-                            android:layout_height="wrap_content"
-                            android:text="Location:"
-                            android:textSize="14sp"
-                            android:textColor="#666666"
-                            android:layout_marginStart="8dp" />
-
-                        <TextView
-                            android:id="@+id/tvDetailLocation"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Ho Chi Minh City"
-                            android:textSize="14sp"
-                            android:textColor="#1a1a1a"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Description Section -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Description"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#1a1a1a"
-                    android:layout_marginBottom="12dp" />
-
-                <TextView
-                    android:id="@+id/tvDetailDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="This iPhone is in excellent condition, barely used. Comes with original box and charger. No scratches or dents. Perfect for anyone looking for a premium phone at a great price."
-                    android:textSize="16sp"
-                    android:textColor="#444444"
-                    android:lineSpacingMultiplier="1.4" />
-            </LinearLayout>
-
-            <!-- Seller Info Section -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@android:color/white"
-                app:cardUseCompatPadding="true">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical">
-
-                    <!-- Seller Avatar -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        app:cardCornerRadius="24dp"
-                        app:cardBackgroundColor="#E0E0E0">
-
-                        <ImageView
-                            android:id="@+id/ivSellerAvatar"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/ic_avatar_placeholder"
-                            android:scaleType="centerCrop" />
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Seller Info -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginStart="12dp">
-
-                        <TextView
-                            android:id="@+id/tvSellerName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="John Doe"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="#1a1a1a" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginTop="4dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="⭐"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/tvSellerRating"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="4.5"
-                                android:textSize="14sp"
-                                android:textColor="#666666"
-                                android:layout_marginStart="4dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="•"
-                                android:textSize="14sp"
-                                android:textColor="#999999"
-                                android:layout_marginHorizontal="8dp" />
-
-                            <TextView
-                                android:id="@+id/tvSellerTransactions"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="23 sales"
-                                android:textSize="14sp"
-                                android:textColor="#666666" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <!-- View Profile Button -->
-                    <Button
-                        android:id="@+id/btnViewProfile"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:text="View Profile"
-                        android:textSize="12sp"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:minWidth="0dp"
-                        android:paddingHorizontal="16dp" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Stats Section -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="24dp">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvViews"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="124"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="#1a1a1a" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Views"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="40dp"
-                    android:background="#E0E0E0" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvInteractions"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="7"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="#1a1a1a" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Interested"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="40dp"
-                    android:background="#E0E0E0" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvTimePosted"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="2 days"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="#1a1a1a" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Posted"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
-                </LinearLayout>
-            </LinearLayout>
+            <TextView
+                android:id="@+id/tvDetailCondition"
+                android:text="✨ Như mới"
+                android:textSize="14sp"
+                android:textColor="#4CAF50"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- Bottom Action Buttons -->
+        <!-- Owner Information -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@android:color/white"
-            android:padding="20dp"
-            android:elevation="8dp">
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:background="@drawable/edittext_background"
+            android:layout_marginBottom="16dp"
+            android:gravity="center_vertical">
 
-            <!-- Main Action Buttons -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/ivOwnerAvatar"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_avatar_placeholder"
+                android:background="@drawable/avatar_circle_bg"
+                android:contentDescription="Seller Avatar" />
+
+            <TextView
+                android:id="@+id/tvOwnerName"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="12dp">
+                android:text="👤 Seller Name"
+                android:textSize="16sp"
+                android:textColor="#1a1a1a"
+                android:textStyle="bold" />
 
-                <Button
-                    android:id="@+id/btnContactSeller"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:text="💬 Message Seller"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    style="@style/Widget.Material3.Button"
-                    android:backgroundTint="@color/blue_500"
-                    android:layout_marginEnd="8dp" />
-
-                <Button
-                    android:id="@+id/btnMakeOffer"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:text="💰 Make Offer"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_marginStart="8dp" />
-            </LinearLayout>
-
-            <!-- Secondary Actions -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-                <Button
-                    android:id="@+id/btnShare"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:text="📤 Share"
-                    android:textSize="14sp"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_marginEnd="8dp" />
-
-                <Button
-                    android:id="@+id/btnReport"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:text="🚩 Report"
-                    android:textSize="14sp"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_marginStart="8dp" />
-            </LinearLayout>
         </LinearLayout>
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/tvDetailDescription"
+            android:text="Mô tả chi tiết..."
+            android:textSize="16sp"
+            android:textColor="#333333"
+            android:lineSpacingExtra="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Share Button -->
+        <Button
+            android:id="@+id/btnShare"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="📤 Chia sẻ bài đăng"
+            android:textSize="16sp"
+            android:backgroundTint="@color/blue_500"
+            android:textColor="@android:color/white" />
+
     </LinearLayout>
 </ScrollView>

@@ -10,7 +10,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.example.tradeup.R
 import com.example.tradeup.data.model.User
 import com.example.tradeup.data.remote.UserRepository
@@ -56,12 +55,11 @@ class EditProfileFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        // ✅ FIXED: Proper back navigation
+        // ✅ FIXED: Use parentFragmentManager to go back
         btnBack.setOnClickListener {
             try {
-                findNavController().navigateUp()
+                parentFragmentManager.popBackStack()
             } catch (e: Exception) {
-                // Fallback
                 requireActivity().onBackPressed()
             }
         }
@@ -95,24 +93,40 @@ class EditProfileFragment : Fragment() {
     private fun saveProfile() {
         val currentUser = FirebaseAuth.getInstance().currentUser ?: return
 
-        val updatedUser = User(
-            uid = currentUser.uid,
-            email = currentUser.email ?: "",
-            name = currentUser.displayName ?: "",
-            username = etUsername.text.toString().trim(),
-            phone = etPhone.text.toString().trim(),
-            bio = etBio.text.toString().trim(),
-            interests = etInterest.text.toString().trim(),
-            birthday = etBirthday.text.toString().trim()
-        )
+        // ✅ Show loading state
+        btnSave.isEnabled = false
+        btnSave.text = "Đang lưu..."
 
-        UserRepository.saveUserProfile(updatedUser) { success, error ->
-            if (isAdded) {
-                if (success) {
-                    Toast.makeText(requireContext(), "✅ Profile updated!", Toast.LENGTH_SHORT).show()
-                    findNavController().navigateUp() // Go back to profile
-                } else {
-                    Toast.makeText(requireContext(), "❌ Failed to save: $error", Toast.LENGTH_SHORT).show()
+        // Get current user data first
+        UserRepository.getUserProfile(currentUser.uid) { existingUser ->
+            val updatedUser = User(
+                uid = currentUser.uid,
+                email = currentUser.email ?: "",
+                name = existingUser?.name ?: currentUser.displayName ?: "",
+                username = etUsername.text.toString().trim(),
+                phone = etPhone.text.toString().trim(),
+                bio = etBio.text.toString().trim(),
+                interests = etInterest.text.toString().trim(),
+                birthday = etBirthday.text.toString().trim(),
+                // Keep existing data that we're not editing
+                address = existingUser?.address ?: "",
+                gender = existingUser?.gender ?: "",
+                profileImageUrl = existingUser?.profileImageUrl ?: "",
+                rating = existingUser?.rating ?: 0.0,
+                totalTransactions = existingUser?.totalTransactions ?: 0
+            )
+
+            UserRepository.saveUserProfile(updatedUser) { success, error ->
+                btnSave.isEnabled = true
+                btnSave.text = "Save"
+
+                if (isAdded) {
+                    if (success) {
+                        Toast.makeText(requireContext(), "✅ Profile updated!", Toast.LENGTH_SHORT).show()
+                        parentFragmentManager.popBackStack() // Go back to profile
+                    } else {
+                        Toast.makeText(requireContext(), "❌ Failed to save: $error", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

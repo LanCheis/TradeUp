@@ -3,80 +3,284 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="@color/white"
+    android:fillViewport="true">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
+        android:orientation="vertical"
+        android:padding="20dp">
 
-        <!-- Tiêu đề -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Header Section -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tiêu đề bài đăng"
-            android:layout_marginBottom="12dp">
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginBottom="24dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🛍️ Đăng bán sản phẩm"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#1a1a1a"
+                android:layout_marginBottom="8dp" />
 
-        <!-- Mô tả -->
-        <com.google.android.material.textfield.TextInputLayout
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chia sẻ những món đồ tuyệt vời của bạn!"
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <!-- ✅ NEW: Multiple Images Section -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Mô tả chi tiết"
-            android:layout_marginBottom="12dp">
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/white">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etDescription"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minLines="4"
-                android:gravity="top"
-                android:inputType="textMultiLine" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        <!-- Danh mục -->
-        <TextView
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📷 Hình ảnh sản phẩm (Tối đa 5 ảnh)"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#1a1a1a"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- ✅ NEW: Horizontal RecyclerView for selected images -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvSelectedImages"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- ✅ NEW: Image selection buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnPickImages"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:text="📸 Chọn nhiều ảnh"
+                        android:textSize="14sp"
+                        android:backgroundTint="@color/blue_500"
+                        android:textColor="@color/white"
+                        android:layout_marginEnd="8dp"
+                        style="@style/Widget.Material3.Button" />
+
+                    <Button
+                        android:id="@+id/btnTakePhoto"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:text="📱 Chụp ảnh"
+                        android:textSize="14sp"
+                        android:backgroundTint="@color/teal_700"
+                        android:textColor="@color/white"
+                        android:layout_marginStart="8dp"
+                        style="@style/Widget.Material3.Button" />
+                </LinearLayout>
+
+                <!-- ✅ Image counter -->
+                <TextView
+                    android:id="@+id/tvImageCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📊 Đã chọn: 0/5 ảnh"
+                    android:textSize="12sp"
+                    android:textColor="#666666"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Product Details Section (same as before) -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Danh mục"
-            android:textStyle="bold"
-            android:layout_marginBottom="4dp" />
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/white">
 
-        <Spinner
-            android:id="@+id/spCategory"
-            android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📝 Thông tin sản phẩm"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#1a1a1a"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Title -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tên sản phẩm *"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="4dp" />
+
+                <EditText
+                    android:id="@+id/etTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:hint="VD: iPhone 15 Pro Max 256GB"
+                    android:background="@drawable/edittext_background"
+                    android:padding="12dp"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Price -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Giá bán *"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="4dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <EditText
+                        android:id="@+id/etPrice"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:hint="25000000"
+                        android:inputType="numberDecimal"
+                        android:background="@drawable/edittext_background"
+                        android:padding="12dp"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" ₫"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#d32f2f"
+                        android:layout_marginStart="8dp" />
+                </LinearLayout>
+
+                <!-- Category -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Danh mục *"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="4dp" />
+
+                <Spinner
+                    android:id="@+id/spCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/edittext_background"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Condition -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tình trạng *"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="4dp" />
+
+                <Spinner
+                    android:id="@+id/spCondition"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/edittext_background"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Description -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mô tả chi tiết *"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="4dp" />
+
+                <EditText
+                    android:id="@+id/etDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:hint="Mô tả tình trạng, xuất xứ, lý do bán..."
+                    android:background="@drawable/edittext_background"
+                    android:padding="12dp"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:spinnerMode="dropdown" />
-
-        <!-- Ảnh minh họa -->
-        <ImageView
-            android:id="@+id/ivListingImage"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_gravity="center"
             android:layout_marginBottom="16dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="Ảnh sản phẩm" />
+            android:visibility="gone" />
 
+        <!-- Submit Button -->
         <Button
-            android:id="@+id/btnPickImage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Chọn ảnh"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Nút tạo bài đăng -->
-        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmit"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Đăng bài"
+            android:layout_height="56dp"
+            android:text="🚀 Đăng bài"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/blue_500"
+            android:textColor="@color/white"
             style="@style/Widget.Material3.Button"
-        android:layout_marginTop="12dp" />
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="* Thông tin bắt buộc"
+            android:textSize="12sp"
+            android:textColor="#888888"
+            android:layout_gravity="center" />
+
     </LinearLayout>
 </ScrollView>
