@@ -1,39 +1,380 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp">
+    android:background="@color/background"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
 
-    <EditText
-        android:id="@+id/etRegisterEmail"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:paddingTop="40dp"
+        android:gravity="center_horizontal">
 
-    <EditText
-        android:id="@+id/etRegisterPassword"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <!-- Back Button -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="start"
+            android:layout_marginBottom="32dp">
 
-    <EditText
-        android:id="@+id/etConfirmPassword"
-        android:hint="Confirm Password"
-        android:inputType="textPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_arrow_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Go back"
+                app:tint="@color/text_primary" />
+        </LinearLayout>
 
-    <Button
-        android:id="@+id/btnRegister"
-        android:text="Register"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <!-- Header Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginBottom="32dp">
 
-    <TextView
-        android:id="@+id/tvGoToLogin"
-        android:text="Already have an account? Login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+            <ImageView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:src="@drawable/ic_person_add"
+                app:tint="@color/primary"
+                android:layout_marginBottom="20dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create Account"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Join us today! Create your account to get started"
+                android:textSize="16sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="center"
+                android:lineSpacingExtra="4dp" />
+        </LinearLayout>
+
+        <!-- Registration Form Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="@color/surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <!-- Email Field -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilRegisterEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Email Address"
+                    android:layout_marginBottom="16dp"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    app:hintTextColor="@color/text_secondary"
+                    app:boxStrokeColor="@color/primary"
+                    app:startIconDrawable="@drawable/ic_email"
+                    app:startIconTint="@color/text_secondary"
+                    app:startIconContentDescription="Email icon"
+                    app:boxStartPadding="16dp"
+                    app:startIconMinSize="24dp"
+                    app:startIconScaleType="centerInside"
+                    app:errorEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etRegisterEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary"
+                        android:paddingStart="12dp"
+                        android:paddingLeft="12dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Password Field -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilRegisterPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    android:layout_marginBottom="16dp"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    app:hintTextColor="@color/text_secondary"
+                    app:boxStrokeColor="@color/primary"
+                    app:startIconDrawable="@drawable/ic_lock"
+                    app:startIconTint="@color/text_secondary"
+                    app:endIconMode="password_toggle"
+                    app:endIconTint="@color/text_secondary"
+                    app:startIconContentDescription="Password icon"
+                    app:boxStartPadding="16dp"
+                    app:startIconMinSize="24dp"
+                    app:startIconScaleType="centerInside"
+                    app:errorEnabled="true"
+                    app:helperText="Minimum 8 characters"
+                    app:helperTextTextColor="@color/text_secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etRegisterPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary"
+                        android:paddingStart="12dp"
+                        android:paddingLeft="12dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Confirm Password Field -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilConfirmPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Confirm Password"
+                    android:layout_marginBottom="8dp"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    app:hintTextColor="@color/text_secondary"
+                    app:boxStrokeColor="@color/primary"
+                    app:startIconDrawable="@drawable/ic_lock_outline"
+                    app:startIconTint="@color/text_secondary"
+                    app:endIconMode="password_toggle"
+                    app:endIconTint="@color/text_secondary"
+                    app:startIconContentDescription="Confirm password icon"
+                    app:boxStartPadding="16dp"
+                    app:startIconMinSize="24dp"
+                    app:startIconScaleType="centerInside"
+                    app:errorEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etConfirmPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary"
+                        android:paddingStart="12dp"
+                        android:paddingLeft="12dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Password Strength Indicator -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Password strength: "
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary" />
+
+                    <TextView
+                        android:id="@+id/tvPasswordStrength"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Weak"
+                        android:textSize="12sp"
+                        android:textColor="@color/error"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:layout_width="60dp"
+                        android:layout_height="4dp"
+                        android:orientation="horizontal"
+                        android:layout_marginStart="8dp">
+
+                        <View
+                            android:id="@+id/strengthBar1"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="2dp"
+                            android:background="@color/text_disabled" />
+
+                        <View
+                            android:id="@+id/strengthBar2"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="2dp"
+                            android:background="@color/text_disabled" />
+
+                        <View
+                            android:id="@+id/strengthBar3"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@color/text_disabled" />
+                    </LinearLayout>
+                </LinearLayout>
+
+
+                <!-- Error Message -->
+                <TextView
+                    android:id="@+id/tvError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/error"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    android:layout_marginBottom="16dp"
+                    android:padding="12dp"
+                    android:background="@drawable/error_background"
+                    android:drawableStart="@drawable/ic_error"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical" />
+
+                <!-- Success Message -->
+                <TextView
+                    android:id="@+id/tvSuccess"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/success"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    android:layout_marginBottom="16dp"
+                    android:padding="12dp"
+                    android:background="@drawable/success_background"
+                    android:drawableStart="@drawable/ic_check_circle"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="Account created successfully!" />
+
+                <!-- Register Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRegister"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Create Account"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:enabled="false"
+                    style="@style/Widget.Material3.Button"
+                    android:backgroundTint="@color/primary"
+                    android:layout_marginTop="8dp" />
+
+                <!-- Progress Bar -->
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone"
+                    android:indeterminateTint="@color/primary" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Social Registration Options -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="24dp">
+
+            <!-- Divider -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginVertical="16dp">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/text_disabled" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="OR SIGN UP WITH"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="16dp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/text_disabled" />
+            </LinearLayout>
+
+            <!-- Google Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGoogleSignUp"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="16dp"
+                android:text="Continue with Google"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary"
+                app:icon="@drawable/ic_google"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp"
+                app:iconTint="@null"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:strokeColor="@color/text_disabled" />
+        </LinearLayout>
+
+        <!-- Sign In Link -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Already have an account? "
+                android:textColor="@color/text_secondary"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvGoToLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign In"
+                android:textColor="@color/primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:background="?attr/selectableItemBackground"
+                android:padding="8dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

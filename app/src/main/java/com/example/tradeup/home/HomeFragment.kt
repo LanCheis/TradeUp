@@ -73,10 +73,10 @@ class HomeFragment : Fragment() {
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
 
         val greeting = when (hour) {
-            in 6..11 -> "Good Morning! ☀️"
-            in 12..17 -> "Good Afternoon! 🌤️"
-            in 18..23 -> "Good Evening! 🌆"
-            else -> "Good Night! 🌙"
+            in 6..11 -> "Good Morning!"
+            in 12..17 -> "Good Afternoon!"
+            in 18..23 -> "Good Evening!"
+            else -> "Good Midnight!"
         }
 
         tvGreeting.text = greeting

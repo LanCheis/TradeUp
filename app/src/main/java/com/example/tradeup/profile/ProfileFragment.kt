@@ -69,7 +69,7 @@ class ProfileFragment : Fragment() {
             requireActivity().finish()
         }
 
-        // ✅ FIXED: Proper navigation to EditProfile
+        //navigation to EditProfile
         btnEditProfile.setOnClickListener {
             try {
                 findNavController().navigate(R.id.action_profileFragment_to_editProfileFragment)

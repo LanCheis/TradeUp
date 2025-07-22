@@ -68,14 +68,18 @@
                     android:layout_height="wrap_content"
                     android:hint="Email Address"
                     android:layout_marginBottom="16dp"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    app:hintTextColor="@color/text_secondary"
+                    app:boxStrokeColor="@color/primary">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textEmailAddress"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Password Field -->
@@ -86,15 +90,20 @@
                     android:hint="Password"
                     android:layout_marginBottom="8dp"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                    app:endIconMode="password_toggle">
+                    app:endIconMode="password_toggle"
+                    app:hintTextColor="@color/text_secondary"
+                    app:boxStrokeColor="@color/primary">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary" />
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <!-- Forgot Password -->
                 <TextView
                     android:id="@+id/tvForgotPassword"
@@ -174,7 +183,7 @@
                     style="@style/Widget.Material3.Button.OutlinedButton"
                     app:strokeColor="@color/text_disabled"
                     app:strokeWidth="1dp"
-                    app:icon="@drawable/ic_avatar_placeholder"
+                    app:icon="@drawable/ic_google"
                     app:iconTint="@color/primary"
                     app:iconGravity="textStart" />
             </LinearLayout>

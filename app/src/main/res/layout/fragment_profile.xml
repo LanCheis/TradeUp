@@ -28,26 +28,27 @@
                 android:gravity="center"
                 android:padding="32dp">
 
-                <!-- Avatar Container -->
+                <!-- Avatar Container with Card Elevation -->
                 <androidx.cardview.widget.CardView
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     app:cardCornerRadius="60dp"
                     app:cardElevation="6dp"
                     app:cardBackgroundColor="#FFFFFF">
 
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/ivAvatar"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:contentDescription="Profile Avatar"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
                         android:src="@drawable/ic_avatar_placeholder"
-                        android:padding="4dp" />
+                        android:contentDescription="Profile Avatar"
+                        app:civ_border_width="2dp"
+                        app:civ_border_color="#CCCCCC" />
+
                 </androidx.cardview.widget.CardView>
 
-                <!-- Name and Rating -->
+                <!-- Name and Email -->
                 <TextView
                     android:id="@+id/tvDisplayName"
                     android:layout_width="wrap_content"
@@ -57,7 +58,6 @@
                     android:textStyle="bold"
                     android:textColor="#FFFFFF"
                     android:layout_marginBottom="4dp" />
-
 
                 <TextView
                     android:id="@+id/tvEmail"
@@ -112,7 +112,7 @@
                         android:id="@+id/tvName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="John Doe"
+                        android:text="John W. Doe"
                         android:textSize="16sp"
                         android:textColor="#1C1C1E"
                         android:layout_marginTop="4dp" />
@@ -137,7 +137,7 @@
                         android:id="@+id/tvUsername"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@johndoe"
+                        android:text="johnissupercool69"
                         android:textSize="16sp"
                         android:textColor="#1C1C1E"
                         android:layout_marginTop="4dp" />
@@ -153,7 +153,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Phone Number"
+                        android:text="Contact number"
                         android:textSize="12sp"
                         android:textColor="#8E8E93"
                         android:textStyle="bold" />
@@ -346,9 +346,8 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
             android:layout_marginTop="12dp"
-            android:paddingVertical="16dp"
             app:cardElevation="3dp"
-            app:cardBackgroundColor="#018786 ">
+            app:cardBackgroundColor="#018786">
 
             <Button
                 android:id="@+id/btnLogout"

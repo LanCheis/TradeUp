@@ -18,16 +18,9 @@
         android:theme="@style/Theme.TradeUp"
         tools:targetApi="31">
 
-        <!-- Setup Profile Activity - NEW -->
+        <!-- Login Activity - Launcher Activity -->
         <activity
-            android:name=".onboarding.SetupProfileActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-
-        <!-- Main Launcher Activity -->
-        <activity
-            android:name=".MainActivity"
+            android:name=".auth.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,10 +28,19 @@
             </intent-filter>
         </activity>
 
-        <!-- Auth Activities -->
+        <!-- Main Activity -->
         <activity
-            android:name=".auth.LoginActivity"
+            android:name=".MainActivity"
             android:exported="false" />
+
+        <!-- Setup Profile Activity -->
+        <activity
+            android:name=".onboarding.SetupProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Auth Activities -->
         <activity
             android:name=".auth.RegisterActivity"
             android:exported="false" />

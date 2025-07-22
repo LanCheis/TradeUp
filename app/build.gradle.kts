@@ -57,6 +57,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
 
     // Firebase
     implementation("com.google.firebase:firebase-auth:22.3.0")

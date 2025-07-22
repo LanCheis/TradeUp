@@ -26,6 +26,7 @@
     <color name="success">#1DB954</color>
     <color name="error">#E22134</color>
     <color name="warning">#FFA500</color>
+    <color name="unavaliable">#A9A9A9</color>
 
     <!-- Interactive States -->
     <color name="on_primary">#FFFFFF</color>
