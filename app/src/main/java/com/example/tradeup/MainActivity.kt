@@ -12,6 +12,7 @@ import com.example.tradeup.profile.ProfileFragment
 import com.example.tradeup.search.SearchFragment // Add this import
 import com.example.tradeup.utils.CloudinaryHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.tradeup.ImageUrl
 
 class MainActivity : AppCompatActivity() {
 

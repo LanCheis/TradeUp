@@ -56,5 +56,11 @@
             android:name=".listing.ListingDetailActivity"
             android:exported="false" />
 
+        <!--Message-->
+        <activity
+            android:name=".chat.MessageActivity"
+            android:exported="false"
+            android:parentActivityName=".listing.ListingDetailActivity" />
+
     </application>
 </manifest>

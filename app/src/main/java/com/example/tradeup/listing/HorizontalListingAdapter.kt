@@ -8,10 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.tradeup.R
 import com.example.tradeup.data.model.Listing
-import com.example.tradeup.utils.CloudinaryHelper
 import java.text.NumberFormat
 import java.util.*
 
@@ -38,31 +36,14 @@ class HorizontalListingAdapter(private val listings: List<Listing>) :
         holder.tvPrice.text = formatPrice(listing.price)
         holder.tvLocation.text = listing.location
 
-        // Use the first image from imageUrls list
-        val imageUrl = if (listing.imageUrls.isNotEmpty()) {
-            listing.imageUrls[0]
+        // ✅ SIMPLIFIED: Basic Glide usage that definitely works
+        if (listing.imageUrl.isNotEmpty()) {
+            Glide.with(holder.itemView.context)
+                .load(listing.imageUrl)
+                .into(holder.ivImage)
         } else {
-            "" // Empty string for no image
+            holder.ivImage.setImageResource(R.drawable.ic_avatar_placeholder)
         }
-
-        // Use optimized Cloudinary URL or fallback to original
-        val optimizedImageUrl = if (imageUrl.contains("cloudinary.com")) {
-            CloudinaryHelper.getOptimizedUrl(
-                originalUrl = imageUrl,
-                width = 200,
-                height = 200,
-                crop = "fill"
-            )
-        } else {
-            imageUrl
-        }
-
-        Glide.with(holder.itemView.context)
-            .load(optimizedImageUrl)
-            .placeholder(R.drawable.ic_image_placeholder)
-            .error(R.drawable.ic_image_placeholder)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(holder.ivImage)
 
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
@@ -70,13 +51,18 @@ class HorizontalListingAdapter(private val listings: List<Listing>) :
                 putExtra("listing_id", listing.id)
                 putExtra("title", listing.title)
                 putExtra("price", listing.price)
-                putExtra("imageUrl", imageUrl)
+                putExtra("imageUrl", listing.imageUrl)
                 putExtra("category", listing.category)
                 putExtra("condition", listing.condition)
                 putExtra("description", listing.description)
                 putExtra("location", listing.location)
                 putExtra("ownerName", listing.ownerName)
                 putExtra("isNegotiable", listing.isNegotiable)
+                putExtra("sellerId", listing.ownerUid)
+                putExtra("sellerName", listing.ownerName)
+                putExtra("views", listing.views)
+                putExtra("interactions", listing.interactions)
+                putExtra("createdAt", listing.createdAt)
             }
             context.startActivity(intent)
         }
@@ -85,7 +71,11 @@ class HorizontalListingAdapter(private val listings: List<Listing>) :
     override fun getItemCount() = listings.size
 
     private fun formatPrice(price: Double): String {
-        val formatter = NumberFormat.getNumberInstance(Locale("vi", "VN"))
-        return "${formatter.format(price)} ₫"
+        return if (price > 0) {
+            val formatter = NumberFormat.getNumberInstance(Locale("vi", "VN"))
+            "${formatter.format(price)} ₫"
+        } else {
+            "Contact for price"
+        }
     }
 }

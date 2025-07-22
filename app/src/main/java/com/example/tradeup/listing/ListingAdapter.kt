@@ -34,40 +34,44 @@ class ListingAdapter(private val listings: List<Listing>) :
         holder.tvTitle.text = listing.title
         holder.tvCategory.text = listing.category
 
-        // Use the first image from imageUrls list
-        val imageUrl = if (listing.imageUrls.isNotEmpty()) {
-            listing.imageUrls[0]
-        } else {
-            "" // Empty string for no image
-        }
-
         // Use optimized Cloudinary URL or fallback to original
-        val optimizedImageUrl = if (imageUrl.contains("cloudinary.com")) {
+        val imageUrl = if (listing.imageUrl.contains("cloudinary.com")) {
             CloudinaryHelper.getOptimizedUrl(
-                originalUrl = imageUrl,
+                originalUrl = listing.imageUrl,
                 width = 200,
                 height = 200,
                 crop = "fill"
             )
         } else {
-            imageUrl
+            listing.imageUrl
         }
 
         Glide.with(holder.itemView.context)
-            .load(optimizedImageUrl)
-            .placeholder(R.drawable.ic_image_placeholder)
+            .load(imageUrl)
             .error(R.drawable.ic_image_placeholder)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(holder.ivImage)
 
+        // 🔥 REPLACE THIS SECTION:
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
             val intent = Intent(context, ListingDetailActivity::class.java).apply {
                 putExtra("listing_id", listing.id)
                 putExtra("title", listing.title)
-                putExtra("imageUrl", imageUrl)
+                putExtra("imageUrl", listing.imageUrl)
                 putExtra("category", listing.category)
                 putExtra("description", listing.description)
+                // ✅ ADD THESE NEW LINES:
+                putExtra("price", listing.price)
+                putExtra("condition", listing.condition)
+                putExtra("location", listing.location)
+                putExtra("isNegotiable", listing.isNegotiable)
+                putExtra("sellerId", listing.ownerUid)
+                putExtra("sellerName", listing.ownerName)
+                putExtra("ownerName", listing.ownerName)
+                putExtra("views", listing.views)
+                putExtra("interactions", listing.interactions)
+                putExtra("createdAt", listing.createdAt)
             }
             context.startActivity(intent)
         }

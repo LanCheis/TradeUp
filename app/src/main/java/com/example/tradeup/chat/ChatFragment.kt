@@ -6,122 +6,103 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.*
 import com.example.tradeup.R
-import com.example.tradeup.data.model.ChatMessage
+import com.example.tradeup.data.model.Message
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import java.util.*
 
 class ChatFragment : Fragment() {
 
-    private lateinit var rvMessages: RecyclerView
-    private lateinit var etMessage: EditText
-    private lateinit var btnSend: Button
-    private val messages = mutableListOf<ChatMessage>()
-    private lateinit var adapter: ChatAdapter
-    private lateinit var db: FirebaseFirestore
-    private var listenerRegistration: ListenerRegistration? = null
-    private var chatRoomId: String = ""
-    private var currentUserId: String = ""
+    private lateinit var rvChats: RecyclerView
+    private lateinit var layoutEmpty: LinearLayout
+    private lateinit var layoutLoading: LinearLayout
+
+    private val chatList = mutableListOf<com.example.tradeup.data.model.Chat>()
+    private lateinit var chatListAdapter: ChatListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.fragment_chat, container, false)
+        return inflater.inflate(R.layout.fragment_chat_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initViews(view)
-        setupFirestore()
         setupRecyclerView()
-        setupClickListeners()
-        loadMessages()
+        loadUserChats()
     }
 
     private fun initViews(view: View) {
-        rvMessages = view.findViewById(R.id.rvMessages)
-        etMessage = view.findViewById(R.id.etMessage)
-        btnSend = view.findViewById(R.id.btnSend)
-    }
-
-    private fun setupFirestore() {
-        db = Firebase.firestore
-        currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-        chatRoomId = arguments?.getString("chatRoomId") ?: "general"
+        rvChats = view.findViewById(R.id.rvChats)
+        layoutEmpty = view.findViewById(R.id.layoutEmpty)
+        layoutLoading = view.findViewById(R.id.layoutLoading)
     }
 
     private fun setupRecyclerView() {
-        adapter = ChatAdapter(messages, currentUserId)
-        rvMessages.adapter = adapter
-        rvMessages.layoutManager = LinearLayoutManager(requireContext())
-    }
-
-    private fun setupClickListeners() {
-        btnSend.setOnClickListener {
-            sendMessage()
-        }
-
-        etMessage.setOnEditorActionListener { _, _, _ ->
-            sendMessage()
-            true
-        }
-    }
-
-    private fun sendMessage() {
-        val messageText = etMessage.text.toString().trim()
-        if (messageText.isNotEmpty()) {
-            val message = ChatMessage(
-                id = UUID.randomUUID().toString(),
-                senderId = currentUserId,
-                senderName = FirebaseAuth.getInstance().currentUser?.displayName ?: "Anonymous",
-                message = messageText,
-                timestamp = System.currentTimeMillis()
+        chatListAdapter = ChatListAdapter(chatList) { chat ->
+            // Navigate to individual chat
+            val fragment = MessageFragment.newInstance(
+                chatId = chat.id,
+                otherUserId = getOtherUserId(chat),
+                otherUserName = getOtherUserName(chat),
+                listingTitle = chat.listingTitle
             )
 
-            db.collection("chatRooms")
-                .document(chatRoomId)
-                .collection("messages")
-                .document(message.id)
-                .set(message)
-                .addOnSuccessListener {
-                    etMessage.text.clear()
-                }
-                .addOnFailureListener { exception ->
-                    Toast.makeText(requireContext(), "Failed to send message: ${exception.message}", Toast.LENGTH_SHORT).show()
-                }
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.nav_host_fragment, fragment)
+                .addToBackStack(null)
+                .commit()
         }
+
+        rvChats.layoutManager = LinearLayoutManager(requireContext())
+        rvChats.adapter = chatListAdapter
     }
 
-    private fun loadMessages() {
-        listenerRegistration = db.collection("chatRooms")
-            .document(chatRoomId)
-            .collection("messages")
-            .orderBy("timestamp", Query.Direction.ASCENDING)
-            .addSnapshotListener { snapshots, e ->
-                if (e != null) {
-                    Toast.makeText(requireContext(), "Listen failed: ${e.message}", Toast.LENGTH_SHORT).show()
-                    return@addSnapshotListener
+    private fun loadUserChats() {
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        showLoading(true)
+
+        FirebaseFirestore.getInstance()
+            .collection("chats")
+            .whereArrayContains("participants", currentUserId)
+            .orderBy("lastMessageTime", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshots, error ->
+                if (error != null || !isAdded) return@addSnapshotListener
+
+                chatList.clear()
+                snapshots?.forEach { doc ->
+                    val chat = doc.toObject(com.example.tradeup.data.model.Chat::class.java)
+                    chatList.add(chat)
                 }
 
-                messages.clear()
-                for (doc in snapshots!!) {
-                    val message = doc.toObject(ChatMessage::class.java)
-                    messages.add(message)
+                chatListAdapter.notifyDataSetChanged()
+                showLoading(false)
+
+                if (chatList.isEmpty()) {
+                    showEmpty(true)
                 }
-                adapter.notifyDataSetChanged()
-                scrollToBottom()
             }
     }
 
-    private fun scrollToBottom() {
-        if (messages.isNotEmpty()) {
-            rvMessages.scrollToPosition(messages.size - 1)
-        }
+    private fun getOtherUserId(chat: com.example.tradeup.data.model.Chat): String {
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+        return chat.participants.find { it != currentUserId } ?: ""
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        listenerRegistration?.remove()
+    private fun getOtherUserName(chat: com.example.tradeup.data.model.Chat): String {
+        val otherUserId = getOtherUserId(chat)
+        return chat.participantNames[otherUserId] ?: "Unknown User"
+    }
+
+    private fun showLoading(show: Boolean) {
+        layoutLoading.visibility = if (show) View.VISIBLE else View.GONE
+        rvChats.visibility = if (show) View.GONE else View.VISIBLE
+        layoutEmpty.visibility = View.GONE
+    }
+
+    private fun showEmpty(show: Boolean) {
+        layoutEmpty.visibility = if (show) View.VISIBLE else View.GONE
+        rvChats.visibility = if (show) View.GONE else View.VISIBLE
+        layoutLoading.visibility = View.GONE
     }
 }

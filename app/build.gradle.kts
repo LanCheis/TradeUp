@@ -45,50 +45,43 @@ android {
 }
 
 dependencies {
-    // AndroidX & UI
+    // ✅ CORE ANDROID DEPENDENCIES
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation("com.google.android.material:material:1.11.0")
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation("androidx.recyclerview:recyclerview:1.3.2")
-    implementation("de.hdodenhof:circleimageview:3.1.0")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.fragment:fragment-ktx:1.6.2")
-    implementation ("de.hdodenhof:circleimageview:3.1.0")
 
-    // Firebase
+    // ✅ UI & MATERIAL DESIGN
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.cardview:cardview:1.0.0")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
+
+    // ✅ NAVIGATION
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.6")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+
+    // ✅ FIREBASE DEPENDENCIES
     implementation("com.google.firebase:firebase-auth:22.3.0")
-    implementation("com.google.firebase:firebase-firestore-ktx:24.9.1")
-    implementation("com.google.firebase:firebase-storage-ktx:20.3.0") // Firebase Storage
+    implementation("com.google.firebase:firebase-firestore-ktx:24.10.0")
+    implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
 
-    // Glide for image loading
+    // ✅ IMAGE LOADING - GLIDE
     implementation("com.github.bumptech.glide:glide:4.16.0")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
 
-    // Testing
+    // ✅ CLOUDINARY (for image uploads)
+    implementation("com.cloudinary:cloudinary-android:2.5.0")
+
+    // ✅ NETWORKING (if needed)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // ✅ TESTING
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    // Cloudinary
-    implementation("com.cloudinary:cloudinary-android:2.5.0")
-
-    // Keep Firebase for data
-    implementation("com.google.firebase:firebase-firestore-ktx:24.9.1")
-    implementation("com.google.firebase:firebase-auth:22.3.0")
-
-    // Glide for image loading
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    kapt("com.github.bumptech.glide:compiler:4.16.0")
-
-    // Add this if not present - for CircleImageView
-    implementation("de.hdodenhof:circleimageview:3.1.0")
-
-    // Make sure these are also present
-    implementation("androidx.cardview:cardview:1.0.0")
-    implementation("com.google.android.material:material:1.11.0")
 }

@@ -4,56 +4,50 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:gravity="start"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:gravity="start">
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginEnd="64dp"
-        android:maxWidth="280dp">
+        android:layout_marginEnd="80dp"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="1dp"
+        app:cardBackgroundColor="@android:color/white">
 
-        <TextView
-            android:id="@+id/tvSenderName"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="John Doe"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_secondary"
-            android:layout_marginBottom="4dp"
-            android:layout_marginStart="4dp" />
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="1dp"
-            app:cardBackgroundColor="@color/surface_variant">
+            android:orientation="vertical"
+            android:padding="12dp">
 
             <TextView
-                android:id="@+id/tvMessageText"
+                android:id="@+id/tvSenderName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="This is a received message"
-                android:textColor="@color/on_surface"
-                android:textSize="16sp"
-                android:padding="12dp"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp" />
-        </androidx.cardview.widget.CardView>
+                android:text="John Doe"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/blue_500"
+                android:layout_marginBottom="4dp" />
 
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="12:34"
-            android:textSize="12sp"
-            android:textColor="@color/text_tertiary"
-            android:layout_gravity="start"
-            android:layout_marginTop="4dp"
-            android:layout_marginStart="4dp" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Yes, it's still available!"
+                android:textSize="16sp"
+                android:textColor="#1a1a1a"
+                android:maxWidth="250dp" />
+
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="14:35"
+                android:textSize="12sp"
+                android:textColor="#999999"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>
