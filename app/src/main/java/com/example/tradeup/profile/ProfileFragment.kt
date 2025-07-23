@@ -11,17 +11,31 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.tradeup.R
 import com.example.tradeup.auth.LoginActivity
-import com.example.tradeup.offers.OffersActivity
+import com.example.tradeup.data.remote.UserRepository
+import com.example.tradeup.data.remote.FirebaseAuthHelper
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ProfileFragment : Fragment() {
 
-    private var ivAvatar: ImageView? = null
-    private var tvDisplayName: TextView? = null
-    private var tvEmail: TextView? = null
+    private lateinit var ivAvatar: ImageView
+    private lateinit var tvDisplayName: TextView
+    private lateinit var tvName: TextView
+    private lateinit var tvEmail: TextView
+    private lateinit var tvPhone: TextView
+    private lateinit var tvAddress: TextView
+    private lateinit var tvBio: TextView
+    private lateinit var tvUsername: TextView
+    private lateinit var tvGender: TextView
+    private lateinit var tvBirthday: TextView
+    private lateinit var tvInterest: TextView
+    private lateinit var tvRating: TextView
+    private lateinit var tvTransactions: TextView
+    private lateinit var tvJoinedDate: TextView
     private lateinit var btnLogout: Button
     private lateinit var btnEditProfile: Button
+    private lateinit var btnDeleteAccount: Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,115 +50,158 @@ class ProfileFragment : Fragment() {
 
         initViews(view)
         setupClickListeners()
-        loadUserData()
+        loadUserProfile()
     }
 
     private fun initViews(view: View) {
-        // Find required views
-        btnLogout = view.findViewById(R.id.btnLogout)
-        btnEditProfile = view.findViewById(R.id.btnEditProfile)
-
-        // Find optional views with safe calls
         ivAvatar = view.findViewById(R.id.ivAvatar)
         tvDisplayName = view.findViewById(R.id.tvDisplayName)
+        tvName = view.findViewById(R.id.tvName)
         tvEmail = view.findViewById(R.id.tvEmail)
+        tvPhone = view.findViewById(R.id.tvPhone)
+        tvAddress = view.findViewById(R.id.tvAddress)
+        tvBio = view.findViewById(R.id.tvBio)
+        tvUsername = view.findViewById(R.id.tvUsername)
+        tvGender = view.findViewById(R.id.tvGender)
+        tvBirthday = view.findViewById(R.id.tvBirthday)
+        tvInterest = view.findViewById(R.id.tvInterest)
+        tvRating = view.findViewById(R.id.tvRating)
+        tvTransactions = view.findViewById(R.id.tvTransactions)
+        tvJoinedDate = view.findViewById(R.id.tvJoinedDate)
+        btnLogout = view.findViewById(R.id.btnLogout)
+        btnEditProfile = view.findViewById(R.id.btnEditProfile)
+        btnDeleteAccount = view.findViewById(R.id.btnDeleteAccount)
     }
 
     private fun setupClickListeners() {
+        // FR-1.1.5: Logout option accessible via profile
         btnLogout.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
-            startActivity(Intent(requireContext(), LoginActivity::class.java))
-            requireActivity().finish()
+            showLogoutConfirmation()
         }
 
+        // FR-1.2.2: Users can update profile
         btnEditProfile.setOnClickListener {
             startActivity(Intent(requireContext(), EditProfileActivity::class.java))
         }
 
-        // Try to find and setup additional buttons if they exist
-        view?.findViewById<Button>(R.id.btnDeleteAccount)?.setOnClickListener {
-            showDeleteAccountDialog()
-        }
-
-        view?.findViewById<Button>(R.id.btnMyOffers)?.setOnClickListener {
-            startActivity(Intent(requireContext(), OffersActivity::class.java))
+        // FR-1.2.3: Option to permanently delete account (confirmation required)
+        btnDeleteAccount.setOnClickListener {
+            showDeleteAccountConfirmation()
         }
     }
 
-    private fun showDeleteAccountDialog() {
+    private fun loadUserProfile() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUser?.let { user ->
+            UserRepository.getUserProfile(user.uid) { userProfile ->
+                if (userProfile != null) {
+                    populateUserData(userProfile)
+                } else {
+                    Toast.makeText(requireContext(), "Failed to load profile", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun populateUserData(user: com.example.tradeup.data.model.User) {
+        // FR-1.2.1: Profile includes display name, profile picture, bio, contact info, and rating
+        tvDisplayName.text = user.name.ifEmpty { "User" }
+        tvName.text = "Name: ${user.name}"
+        tvEmail.text = "Email: ${user.email}"
+        tvPhone.text = "Phone: ${user.phone.ifEmpty { "Not provided" }}"
+        tvAddress.text = "Address: ${user.address.ifEmpty { "Not provided" }}"
+        tvBio.text = "Bio: ${user.bio.ifEmpty { "No bio yet" }}"
+        tvUsername.text = "Username: ${user.username}"
+        tvGender.text = "Gender: ${user.gender.ifEmpty { "Not specified" }}"
+        tvBirthday.text = "Birthday: ${user.birthday.ifEmpty { "Not specified" }}"
+        tvInterest.text = "Interests: ${user.interests.ifEmpty { "None specified" }}"
+
+        // FR-7.2.1: Profile shows average rating, total transactions
+        tvRating.text = "Rating: ${String.format("%.1f", user.rating)}/5.0 (${user.ratingCount} reviews)"
+        tvTransactions.text = "Transactions: ${user.totalTransactions}"
+
+        // Show joined date
+        val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+        tvJoinedDate.text = "Joined: ${dateFormat.format(Date(user.joinedDate))}"
+
+        // Load profile image
+        if (user.profileImageUrl.isNotEmpty()) {
+            Glide.with(this)
+                .load(user.profileImageUrl)
+                .placeholder(R.drawable.ic_profile)
+                .into(ivAvatar)
+        }
+    }
+
+    private fun showLogoutConfirmation() {
         AlertDialog.Builder(requireContext())
-            .setTitle("⚠️ Delete Account")
-            .setMessage("Are you sure you want to permanently delete your account? This action cannot be undone.")
-            .setPositiveButton("Delete") { _, _ ->
-                deleteAccount()
+            .setTitle("Logout")
+            .setMessage("Are you sure you want to logout?")
+            .setPositiveButton("Logout") { _, _ ->
+                performLogout()
             }
             .setNegativeButton("Cancel", null)
             .show()
     }
 
-    private fun deleteAccount() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        currentUser?.delete()
-            ?.addOnSuccessListener {
-                Toast.makeText(requireContext(), "Account deleted successfully", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(requireContext(), LoginActivity::class.java))
-                requireActivity().finish()
-            }
-            ?.addOnFailureListener { e ->
-                Toast.makeText(requireContext(), "Failed to delete account: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+    private fun performLogout() {
+        FirebaseAuthHelper.logout()
+
+        val intent = Intent(requireContext(), LoginActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        startActivity(intent)
+        requireActivity().finish()
     }
 
-    private fun loadUserData() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        currentUser?.let { user ->
-            // Load basic user info with safe calls
-            tvDisplayName?.text = user.displayName ?: "No Name"
-            tvEmail?.text = "Email: ${user.email ?: "No Email"}"
+    private fun showDeleteAccountConfirmation() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Account")
+            .setMessage("⚠️ This action cannot be undone. All your data will be permanently deleted.\n\nAre you absolutely sure?")
+            .setPositiveButton("Delete Forever") { _, _ ->
+                showFinalDeleteConfirmation()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
 
-            // Load avatar with safe call
-            user.photoUrl?.let { photoUrl ->
-                ivAvatar?.let { imageView ->
-                    Glide.with(this)
-                        .load(photoUrl)
-                        .placeholder(R.drawable.ic_profile)
-                        .error(R.drawable.ic_profile)
-                        .into(imageView)
+    private fun showFinalDeleteConfirmation() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Final Confirmation")
+            .setMessage("Type 'DELETE' to confirm permanent account deletion:")
+            .setView(EditText(requireContext()).apply {
+                hint = "Type DELETE here"
+            })
+            .setPositiveButton("Delete Account") { dialog, _ ->
+                val editText = (dialog as AlertDialog).findViewById<EditText>(android.R.id.text1)
+                if (editText?.text?.toString() == "DELETE") {
+                    deleteUserAccount()
+                } else {
+                    Toast.makeText(requireContext(), "Deletion cancelled - incorrect confirmation", Toast.LENGTH_SHORT).show()
                 }
             }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
 
-            // Load additional user data from Firestore
-            FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.uid)
-                .get()
-                .addOnSuccessListener { document ->
-                    if (document.exists()) {
-                        val data = document.data
-                        data?.let { userData ->
-                            // Update additional profile fields if they exist
-                            view?.findViewById<TextView>(R.id.tvName)?.text =
-                                userData["fullName"]?.toString() ?: "No Name"
-                            view?.findViewById<TextView>(R.id.tvPhone)?.text =
-                                "Phone: ${userData["phone"]?.toString() ?: "No Phone"}"
-                            view?.findViewById<TextView>(R.id.tvAddress)?.text =
-                                userData["address"]?.toString() ?: "No Address"
-                            view?.findViewById<TextView>(R.id.tvBio)?.text =
-                                "Bio: ${userData["bio"]?.toString() ?: "No Bio"}"
-                            view?.findViewById<TextView>(R.id.tvUsername)?.text =
-                                "Username: ${userData["username"]?.toString() ?: "No Username"}"
-                            view?.findViewById<TextView>(R.id.tvGender)?.text =
-                                userData["gender"]?.toString() ?: "Not Specified"
-                            view?.findViewById<TextView>(R.id.tvBirthday)?.text =
-                                "Birthday: ${userData["birthday"]?.toString() ?: "Not Set"}"
-                            view?.findViewById<TextView>(R.id.tvInterest)?.text =
-                                "Interests: ${userData["interests"]?.toString() ?: "None"}"
-                        }
-                    }
+    private fun deleteUserAccount() {
+        UserRepository.deleteUserAccount { success, error ->
+            if (success) {
+                Toast.makeText(requireContext(), "Account deleted successfully", Toast.LENGTH_SHORT).show()
+                val intent = Intent(requireContext(), LoginActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
-                .addOnFailureListener {
-                    // Handle error silently
-                }
+                startActivity(intent)
+                requireActivity().finish()
+            } else {
+                Toast.makeText(requireContext(), "Failed to delete account: $error", Toast.LENGTH_LONG).show()
+            }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh profile data when returning to fragment
+        loadUserProfile()
     }
 }

@@ -12,20 +12,21 @@ data class User(
     val birthday: String = "",
     val interests: String = "",
     val profileImageUrl: String = "",
-    val rating: Double = 0.0, // ✅ Average rating (1-5 stars)
-    val totalTransactions: Int = 0, // ✅ Total completed transactions
-    val ratingCount: Int = 0, // ✅ NEW: Number of ratings received
-    val joinedDate: Long = System.currentTimeMillis(), // ✅ NEW: When user joined
-    val isActive: Boolean = true // ✅ NEW: Account status
+    val rating: Double = 0.0, // FR-7.2.1: Average rating (1-5 stars)
+    val totalTransactions: Int = 0, // FR-7.2.1: Total completed transactions
+    val ratingCount: Int = 0, // Number of ratings received
+    val joinedDate: Long = System.currentTimeMillis(), // When user joined
+    val isActive: Boolean = true, // FR-1.2.3: Account status for deactivation
+    val lastLoginTime: Long = System.currentTimeMillis() // Track last login
 )
 
-// ✅ NEW: Rating data model
+// FR-7.1.1 & FR-7.1.2: Rating data model
 data class UserRating(
     val id: String = "",
     val fromUserId: String = "",
     val toUserId: String = "",
     val stars: Float = 0f, // 1-5 stars
-    val comment: String = "",
+    val comment: String = "", // Optional written feedback
     val transactionId: String = "", // Related to which transaction
     val timestamp: Long = System.currentTimeMillis()
 )

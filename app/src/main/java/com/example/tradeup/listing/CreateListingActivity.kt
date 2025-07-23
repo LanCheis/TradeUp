@@ -204,7 +204,7 @@ class CreateListingActivity : AppCompatActivity() {
             "tags" to emptyList<String>(),
             "views" to 0,
             "interactions" to 0,
-            "isNegotiable" to isNegotiable, // Use default value
+            "isNegotiable" to isNegotiable,
             "createdAt" to System.currentTimeMillis(),
             "updatedAt" to System.currentTimeMillis()
         )

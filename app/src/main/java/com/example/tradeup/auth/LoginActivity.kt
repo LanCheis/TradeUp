@@ -20,6 +20,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
 
@@ -53,6 +54,7 @@ class LoginActivity : AppCompatActivity() {
         errorText = findViewById(R.id.tvError)
         progressBar = findViewById(R.id.progressBar)
 
+        // FR-1.1.4: Login button disabled until both fields filled
         loginBtn.isEnabled = false
         errorText.visibility = View.GONE
     }
@@ -60,8 +62,13 @@ class LoginActivity : AppCompatActivity() {
     private fun setupTextWatchers() {
         val watcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                loginBtn.isEnabled =
-                    emailField.text.toString().isNotBlank() && passwordField.text.toString().isNotBlank()
+                // FR-1.1.4: Enable login only when both fields are filled correctly
+                val emailText = emailField.text.toString().trim()
+                val passwordText = passwordField.text.toString().trim()
+
+                loginBtn.isEnabled = emailText.isNotBlank() &&
+                        passwordText.isNotBlank() &&
+                        android.util.Patterns.EMAIL_ADDRESS.matcher(emailText).matches()
                 errorText.visibility = View.GONE
             }
 
@@ -75,18 +82,11 @@ class LoginActivity : AppCompatActivity() {
 
     private fun setupClickListeners() {
         loginBtn.setOnClickListener {
-            val email = emailField.text.toString()
-            val password = passwordField.text.toString()
+            val email = emailField.text.toString().trim()
+            val password = passwordField.text.toString().trim()
 
-            showLoading(true)
-            FirebaseAuthHelper.loginWithEmail(email, password) { success, error ->
-                showLoading(false)
-                if (success) {
-                    checkUserProfileAndNavigate()
-                } else {
-                    errorText.text = error ?: "Login failed"
-                    errorText.visibility = View.VISIBLE
-                }
+            if (validateInput(email, password)) {
+                loginUser(email, password)
             }
         }
 
@@ -96,6 +96,53 @@ class LoginActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.tvForgotPassword).setOnClickListener {
             startActivity(Intent(this, ForgotPasswordActivity::class.java))
+        }
+    }
+
+    private fun validateInput(email: String, password: String): Boolean {
+        if (email.isEmpty()) {
+            emailField.error = "Email is required"
+            emailField.requestFocus()
+            return false
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailField.error = "Please enter a valid email"
+            emailField.requestFocus()
+            return false
+        }
+
+        if (password.isEmpty()) {
+            passwordField.error = "Password is required"
+            passwordField.requestFocus()
+            return false
+        }
+
+        return true
+    }
+
+    private fun loginUser(email: String, password: String) {
+        showLoading(true)
+
+        FirebaseAuthHelper.loginWithEmail(email, password) { success, error ->
+            showLoading(false)
+
+            if (success) {
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                if (currentUser != null && currentUser.isEmailVerified) {
+                    checkUserProfileAndNavigate()
+                } else if (currentUser != null && !currentUser.isEmailVerified) {
+                    errorText.text = "Please verify your email before logging in"
+                    errorText.visibility = View.VISIBLE
+                    FirebaseAuth.getInstance().signOut()
+                } else {
+                    errorText.text = "Login failed"
+                    errorText.visibility = View.VISIBLE
+                }
+            } else {
+                errorText.text = error ?: "Login failed"
+                errorText.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -147,31 +194,24 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun checkUserProfileAndNavigate() {
-        val currentUser = FirebaseAuthHelper.getCurrentUser()
-        if (currentUser != null) {
-            UserRepository.getUserProfile(currentUser.uid) { user ->
-                if (user != null && isProfileComplete(user)) {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
-                } else {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUser?.let { user ->
+            UserRepository.getUserProfile(user.uid) { userProfile ->
+                if (userProfile == null) {
+                    // User needs to complete profile setup
                     startActivity(Intent(this, SetupProfileActivity::class.java))
-                    finish()
+                } else {
+                    // User profile exists, go to main app
+                    startActivity(Intent(this, MainActivity::class.java))
                 }
+                finish()
             }
         }
     }
 
-    private fun isProfileComplete(user: User): Boolean {
-        return user.name.isNotEmpty() &&
-                user.phone.isNotEmpty() &&
-                user.bio.isNotEmpty() &&
-                user.gender.isNotEmpty()
-    }
-
     private fun showLoading(show: Boolean) {
         progressBar.visibility = if (show) View.VISIBLE else View.GONE
-        loginBtn.isEnabled = !show &&
-                emailField.text.toString().isNotBlank() &&
+        loginBtn.isEnabled = !show && emailField.text.toString().isNotBlank() &&
                 passwordField.text.toString().isNotBlank()
         googleBtn.isEnabled = !show
     }

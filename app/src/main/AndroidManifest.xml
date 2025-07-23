@@ -2,83 +2,44 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- ✅ HARDWARE FEATURES (Add these) -->
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="false" />
-    <uses-feature
-        android:name="android.hardware.camera.autofocus"
-        android:required="false" />
-    <uses-feature
-        android:name="android.hardware.location"
-        android:required="false" />
-    <uses-feature
-        android:name="android.hardware.location.gps"
-        android:required="false" />
-
-    <!-- ✅ PERMISSIONS (Cleaned up duplicates) -->
-    <!-- Internet & Network -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <!-- Media & Storage (API 33+) -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-
-    <!-- Legacy Storage (API 32 and below) -->
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" />
-
-    <!-- Camera -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
-
-    <!-- Location -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- Notifications (API 33+) -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-
-    <!-- Wake lock for FCM -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-
     <application
-        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TradeUp"
-        android:requestLegacyExternalStorage="true"
         tools:targetApi="31">
 
-        <!-- ✅ MAIN LAUNCHER ACTIVITY -->
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:launchMode="singleTop"
             android:screenOrientation="portrait">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Handle notification clicks -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="tradeup" />
             </intent-filter>
         </activity>
 
-        <!-- ✅ AUTH ACTIVITIES -->
+        <!-- Auth Activities -->
         <activity
             android:name=".auth.LoginActivity"
             android:exported="false"
@@ -91,19 +52,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity
-            android:name=".auth.ForgotPasswordActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-
-        <!-- ✅ PROFILE ACTIVITIES -->
-        <activity
-            android:name=".onboarding.SetupProfileActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-
+        <!-- Profile Activities -->
         <activity
             android:name=".profile.ViewProfileActivity"
             android:exported="false"
@@ -115,7 +64,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
 
-        <!-- ✅ LISTING ACTIVITIES -->
+        <!-- Listing Activities -->
         <activity
             android:name=".listing.CreateListingActivity"
             android:exported="false"
@@ -135,21 +84,21 @@
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
 
-        <!-- ✅ SEARCH ACTIVITIES -->
+        <!-- Search Activities -->
         <activity
             android:name=".search.SearchActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
 
-        <!-- ✅ CHAT ACTIVITIES -->
+        <!-- Chat Activities -->
         <activity
             android:name=".chat.MessageActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
 
-        <!-- ✅ OFFERS ACTIVITIES -->
+        <!-- Offers Activities -->
         <activity
             android:name=".offers.MakeOfferActivity"
             android:exported="false"
@@ -162,52 +111,6 @@
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
 
-        <!-- ✅ FIREBASE MESSAGING SERVICE -->
-        <service
-            android:name=".services.MyFirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
-        <!-- ✅ FIREBASE METADATA -->
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_notification" />
-
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/primary" />
-
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="tradeup_general" />
-
-        <meta-data
-            android:name="com.google.firebase.messaging.auto_init_enabled"
-            android:value="true" />
-
-        <!-- ✅ FIREBASE ANALYTICS (Optional) -->
-        <meta-data
-            android:name="firebase_analytics_collection_deactivated"
-            android:value="false" />
-
-        <!-- ✅ CLOUDINARY CONFIGURATION -->
-        <meta-data
-            android:name="com.cloudinary.android.CLOUD_NAME"
-            android:value="dovf2zc0u" />
-
-        <!-- ✅ FILE PROVIDER (For camera and file operations) -->
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-
     </application>
+
 </manifest>
