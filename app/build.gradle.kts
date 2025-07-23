@@ -1,4 +1,3 @@
-// app/build.gradle.kts
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -126,8 +125,8 @@ dependencies {
     // ✅ WORK MANAGER (for background tasks)
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
-    // ✅ RATING BAR
-    implementation("com.github.ome450901:SimpleRatingBar:1.5.1")
+    // ✅ RATING BAR (FIXED - Using AppCompat RatingBar instead)
+    // Removed problematic SimpleRatingBar dependency
 
     // ✅ SHIMMER EFFECT (loading placeholders)
     implementation("com.facebook.shimmer:shimmer:0.5.0")

@@ -15,9 +15,9 @@ class SelectedImageAdapter(
     private val onRemoveClick: (Int) -> Unit
 ) : RecyclerView.Adapter<SelectedImageAdapter.ImageViewHolder>() {
 
-    inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val ivImage: ImageView = view.findViewById(R.id.ivImage)
-        val btnRemove: ImageButton = view.findViewById(R.id.btnRemove)
+    class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val imageView: ImageView = view.findViewById(R.id.ivSelectedImage)
+        val removeButton: ImageButton = view.findViewById(R.id.btnRemoveImage)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
@@ -27,14 +27,15 @@ class SelectedImageAdapter(
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        val imageUri = images[position]
+        val uri = images[position]
 
         Glide.with(holder.itemView.context)
-            .load(imageUri)
+            .load(uri)
             .centerCrop()
-            .into(holder.ivImage)
+            .placeholder(R.drawable.placeholder_image)
+            .into(holder.imageView)
 
-        holder.btnRemove.setOnClickListener {
+        holder.removeButton.setOnClickListener {
             onRemoveClick(position)
         }
     }

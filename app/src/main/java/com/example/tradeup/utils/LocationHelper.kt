@@ -1,5 +1,3 @@
-// app/src/main/java/com/example/tradeup/utils/LocationHelper.kt
-
 package com.example.tradeup.utils
 
 import android.Manifest
@@ -33,6 +31,11 @@ object LocationHelper {
             return
         }
 
+        if (!isLocationEnabled(context)) {
+            onFailure("Please enable location services")
+            return
+        }
+
         val fusedLocationClient: FusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(context)
 
@@ -49,7 +52,7 @@ object LocationHelper {
                             onSuccess(locationData)
                         }
                     } else {
-                        onFailure("Unable to get current location")
+                        onFailure("Unable to get current location. Please try again.")
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -87,19 +90,16 @@ object LocationHelper {
                         append(address.countryName)
                     }
                 }
-                onResult(addressText.ifEmpty { "Unknown location" })
+                onResult(addressText.ifEmpty { "Ho Chi Minh City, Vietnam" })
             } else {
-                onResult("Ho Chi Minh City, Vietnam") // Default location
+                onResult("Ho Chi Minh City, Vietnam")
             }
         } catch (e: Exception) {
-            onResult("Ho Chi Minh City, Vietnam") // Default location
+            onResult("Ho Chi Minh City, Vietnam")
         }
     }
 
-    fun calculateDistance(
-        lat1: Double, lon1: Double,
-        lat2: Double, lon2: Double
-    ): Double {
+    fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
         val earthRadius = 6371.0 // Earth's radius in kilometers
 
         val dLat = Math.toRadians(lat2 - lat1)
@@ -116,12 +116,10 @@ object LocationHelper {
 
     fun hasLocationPermission(context: Context): Boolean {
         return ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            context, Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
+                    context, Manifest.permission.ACCESS_COARSE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
     }
 
@@ -131,7 +129,6 @@ object LocationHelper {
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
-    // Convert location string to coordinates (for existing listings)
     fun getCoordinatesFromAddress(
         context: Context,
         address: String,
@@ -145,12 +142,10 @@ object LocationHelper {
                 val location = addresses[0]
                 onResult(location.latitude, location.longitude)
             } else {
-                // Default to Ho Chi Minh City coordinates
-                onResult(10.8231, 106.6297)
+                onResult(null, null)
             }
         } catch (e: Exception) {
-            // Default to Ho Chi Minh City coordinates
-            onResult(10.8231, 106.6297)
+            onResult(null, null)
         }
     }
 }

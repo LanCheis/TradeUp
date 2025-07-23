@@ -5,6 +5,7 @@
     <color name="primary">#1DB954</color> <!-- Spotify Green -->
     <color name="primary_variant">#1ED760</color>
     <color name="primary_dark">#169C46</color>
+    <color name="primary_light">#4285F4</color>
 
     <!-- Dark Theme Colors -->
     <color name="background">#FFFFFF</color>
@@ -17,6 +18,7 @@
     <color name="text_secondary">#535353</color>
     <color name="text_tertiary">#B3B3B3</color>
     <color name="text_disabled">#E0E0E0</color>
+    <color name="text_hint">#9AA0A6</color>
 
     <!-- Accent Colors -->
     <color name="accent_orange">#FF6B35</color>
@@ -30,6 +32,11 @@
     <color name="info">#2196F3</color>
     <color name="unavailable">#A9A9A9</color>
 
+    <!-- Status Colors -->
+    <color name="status_available">#34A853</color>
+    <color name="status_sold">#EA4335</color>
+    <color name="status_paused">#FBBC04</color>
+
     <!-- Interactive States -->
     <color name="on_primary">#FFFFFF</color>
     <color name="on_secondary">#000000</color>
@@ -41,13 +48,14 @@
     <color name="white">#FFFFFF</color>
     <color name="secondary">#1DB954</color>
     <color name="secondary_variant">#169C46</color>
+    <color name="transparent">#00000000</color>
 
     <!-- Legacy Blue Colors -->
-    <color name="blue_500">#1DB954</color> <!-- Mapped to primary green -->
-    <color name="blue_700">#169C46</color> <!-- Mapped to primary dark -->
+    <color name="blue_500">#1DB954</color>
+    <color name="blue_700">#169C46</color>
 
     <!-- Legacy Teal Colors -->
-    <color name="teal_700">#1DB954</color> <!-- Mapped to primary green -->
+    <color name="teal_700">#1DB954</color>
 
     <!-- Material Design Colors -->
     <color name="md_theme_primary">#1DB954</color>
@@ -70,6 +78,7 @@
     <color name="online_status">#1DB954</color>
     <color name="offline_status">#9E9E9E</color>
     <color name="premium_gold">#FFD700</color>
+    <color name="accent">#34A853</color>
 
     <!-- Offer Status Colors -->
     <color name="offer_pending">#FFA500</color>
@@ -90,4 +99,18 @@
     <color name="rating_average">#FFC107</color>
     <color name="rating_poor">#FF9800</color>
     <color name="rating_bad">#F44336</color>
+
+    <!-- Material Design Colors (for compatibility) -->
+    <color name="colorPrimary">@color/primary</color>
+    <color name="colorPrimaryDark">@color/primary_dark</color>
+    <color name="colorAccent">@color/accent</color>
+
+    <!-- Additional UI Colors -->
+    <color name="divider">#E0E0E0</color>
+    <color name="overlay">#80000000</color>
+
+    <!-- Bottom Navigation Colors -->
+    <color name="bottom_nav_selected">#1A73E8</color>
+    <color name="bottom_nav_unselected">#9AA0A6</color>
+
 </resources>

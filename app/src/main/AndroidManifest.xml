@@ -2,20 +2,45 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Internet permission -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- ✅ HARDWARE FEATURES (Add these) -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
 
-    <!-- File access permissions -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <!-- ✅ PERMISSIONS (Cleaned up duplicates) -->
+    <!-- Internet & Network -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Media & Storage (API 33+) -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 
-    <!-- Location permissions for nearby listings -->
+    <!-- Legacy Storage (API 32 and below) -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <!-- Camera -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Location -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- Notification permissions -->
+    <!-- Notifications (API 33+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -25,17 +50,21 @@
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.TradeUp"
+        android:requestLegacyExternalStorage="true"
         tools:targetApi="31">
 
-        <!-- Main Launcher Activity -->
+        <!-- ✅ MAIN LAUNCHER ACTIVITY -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -49,7 +78,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Auth Activities -->
+        <!-- ✅ AUTH ACTIVITIES -->
         <activity
             android:name=".auth.LoginActivity"
             android:exported="false"
@@ -68,7 +97,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
 
-        <!-- Profile Activities -->
+        <!-- ✅ PROFILE ACTIVITIES -->
         <activity
             android:name=".onboarding.SetupProfileActivity"
             android:exported="false"
@@ -80,42 +109,60 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <!-- Listing Activities -->
         <activity
-            android:name=".listing.CreateListingActivity"
+            android:name=".profile.EditProfileActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- ✅ LISTING ACTIVITIES -->
+        <activity
+            android:name=".listing.CreateListingActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".listing.ListingDetailActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity" />
 
         <activity
             android:name=".listing.MyListingsActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity" />
 
-        <!-- Search Activities -->
+        <!-- ✅ SEARCH ACTIVITIES -->
         <activity
             android:name=".search.SearchActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity" />
 
-        <!-- Chat Activities -->
+        <!-- ✅ CHAT ACTIVITIES -->
         <activity
             android:name=".chat.MessageActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity" />
 
-        <!-- Offers Activities -->
+        <!-- ✅ OFFERS ACTIVITIES -->
+        <activity
+            android:name=".offers.MakeOfferActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".listing.ListingDetailActivity" />
+
         <activity
             android:name=".offers.OffersActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity" />
 
-        <!-- Firebase Cloud Messaging Service -->
+        <!-- ✅ FIREBASE MESSAGING SERVICE -->
         <service
             android:name=".services.MyFirebaseMessagingService"
             android:exported="false">
@@ -124,37 +171,43 @@
             </intent-filter>
         </service>
 
-        <!-- Firebase Messaging default notification icon -->
+        <!-- ✅ FIREBASE METADATA -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_notification" />
 
-        <!-- Firebase Messaging default notification color -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/primary" />
 
-        <!-- Firebase Messaging default notification channel -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="tradeup_general" />
 
-        <!-- Firebase App ID -->
         <meta-data
             android:name="com.google.firebase.messaging.auto_init_enabled"
             android:value="true" />
 
-        <!-- Disable Firebase Analytics collection by default -->
+        <!-- ✅ FIREBASE ANALYTICS (Optional) -->
         <meta-data
             android:name="firebase_analytics_collection_deactivated"
-            android:value="true" />
+            android:value="false" />
 
-
-
-        <!-- Cloudinary configuration -->
+        <!-- ✅ CLOUDINARY CONFIGURATION -->
         <meta-data
             android:name="com.cloudinary.android.CLOUD_NAME"
             android:value="dovf2zc0u" />
+
+        <!-- ✅ FILE PROVIDER (For camera and file operations) -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
     </application>
 </manifest>

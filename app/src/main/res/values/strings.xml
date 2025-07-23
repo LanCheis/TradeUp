@@ -50,4 +50,43 @@
     <string name="attach_file_desc">Attach file</string>
     <string name="user_avatar_desc">User avatar</string>
     <string name="product_image_desc">Product image</string>
+
+    <!-- Create Listing Strings -->
+    <string name="create_new_listing">Create New Listing</string>
+    <string name="basic_information">✏️ Basic Information</string>
+    <string name="what_are_you_selling">What are you selling? *</string>
+    <string name="price_vnd">Price (VND) *</string>
+    <string name="category_required">Category *</string>
+    <string name="condition_required">Condition *</string>
+    <string name="describe_your_item">Describe your item *</string>
+    <string name="location_and_settings">📍 Location &amp; Settings</string>
+    <string name="where_is_item_located">Where is your item located? *</string>
+    <string name="use_current_location">📍 Use My Current Location</string>
+    <string name="price_negotiable">💰 Price Negotiable</string>
+    <string name="allow_buyers_offers">Allow buyers to make offers</string>
+    <string name="add_photos">📷 Add Photos</string>
+    <string name="choose_photos">📷 Choose Photos</string>
+    <string name="preview_and_post">📝 Preview &amp; Post Listing</string>
+
+    <!-- Preview Strings -->
+    <string name="preview_your_listing">👀 Preview Your Listing</string>
+    <string name="edit_more">✏️ Edit More</string>
+    <string name="confirm_and_post">✅ Confirm &amp; Post</string>
+    <string name="item_title">Item Title</string>
+    <string name="zero_vnd">0 VND</string>
+    <string name="category">Category</string>
+    <string name="condition">Condition</string>
+    <string name="description">Description</string>
+    <string name="location">Location</string>
+    <string name="negotiable">Negotiable</string>
+    <string name="preview_info">ℹ️ This is how your listing will appear to buyers. Make sure everything looks good before posting!</string>
+    <string name="image_count_format">%1$d/%2$d</string>
+
+    <!-- Content Descriptions for Accessibility -->
+    <string name="remove_image">Remove image</string>
+    <string name="preview_image">Preview image</string>
+    <string name="get_location_button">Get current location</string>
+    <string name="price_negotiable_switch">Toggle price negotiable</string>
+    <string name="choose_photos_button">Choose photos from gallery</string>
+
 </resources>

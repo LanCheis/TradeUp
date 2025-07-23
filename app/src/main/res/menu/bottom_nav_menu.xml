@@ -1,18 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/fragment_home"
         android:icon="@drawable/ic_home"
         android:title="@string/nav_home" />
-    <item
-        android:id="@+id/menu_chat"
-        android:icon="@drawable/ic_chat"
-        android:title="@string/nav_chat" />
+
     <item
         android:id="@+id/menu_library"
         android:icon="@drawable/ic_search"
         android:title="@string/nav_search" />
+
+    <item
+        android:id="@+id/menu_chat"
+        android:icon="@drawable/ic_chat"
+        android:title="@string/nav_chat" />
+
     <item
         android:id="@+id/menu_profile"
-        android:icon="@drawable/ic_avatar_placeholder"
+        android:icon="@drawable/ic_profile"
         android:title="@string/nav_profile" />
 </menu>
