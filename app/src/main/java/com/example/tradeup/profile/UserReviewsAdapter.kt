@@ -1,3 +1,5 @@
+// File: app/src/main/java/com/example/tradeup/profile/UserReviewsAdapter.kt
+
 package com.example.tradeup.profile
 
 import android.view.LayoutInflater
@@ -31,9 +33,14 @@ class UserReviewsAdapter(private val reviews: List<UserRating>) :
     override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
         val review = reviews[position]
 
-        // Load reviewer name
-        UserRepository.getUserProfile(review.fromUserId) { user ->
-            holder.tvReviewerName.text = user?.name ?: "Anonymous User"
+        // ✅ FIXED: Load reviewer name using the correct callback signature
+        UserRepository.getUserProfile(review.fromUserId) { success, userData ->
+            if (success && userData != null) {
+                val name = userData["name"] as? String ?: "Anonymous User"
+                holder.tvReviewerName.text = name
+            } else {
+                holder.tvReviewerName.text = "Anonymous User"
+            }
         }
 
         holder.ratingBar.rating = review.stars

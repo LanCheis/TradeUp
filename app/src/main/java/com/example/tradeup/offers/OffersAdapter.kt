@@ -1,3 +1,5 @@
+// File: app/src/main/java/com/example/tradeup/offers/OffersAdapter.kt
+
 package com.example.tradeup.offers
 
 import android.view.LayoutInflater
@@ -55,7 +57,7 @@ class OffersAdapter(
         // Set basic info
         holder.tvItemTitle.text = offer.listingTitle
         holder.tvOriginalPrice.text = "Original: ${formatPrice(offer.originalPrice)}"
-        holder.tvOfferPrice.text = "Offer: ${formatPrice(offer.offeredPrice)}"
+        holder.tvOfferPrice.text = "Offer: ${formatPrice(offer.calculateOfferAmount())}"
 
         // Set user name based on tab type
         holder.tvUserName.text = if (tabType == "received") {
@@ -64,25 +66,27 @@ class OffersAdapter(
             "To: ${offer.sellerName}"
         }
 
-        // Set date - FIXED
+        // ✅ COMPLETELY SAFE DATE HANDLING
         val dateFormat = SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault())
-        val date = try {
-            when {
-                offer.createdAt > 0L -> Date(offer.createdAt)
-                else -> Date() // Current date as fallback
-            }
+        val dateText = try {
+            // Convert Timestamp? to Long safely
+            val timestamp: Long = offer.createdAt?.toDate()?.time ?: System.currentTimeMillis()
+            val date = Date(timestamp)
+            dateFormat.format(date)
         } catch (e: Exception) {
-            Date() // Current date as fallback
+            // If anything fails, show a simple fallback
+            "Recent"
         }
-        holder.tvDate.text = dateFormat.format(date)
+        holder.tvDate.text = dateText
 
         // Set message
-        holder.tvMessage.text = if (offer.message.isNotEmpty()) {
-            "\"${offer.message}\""
+        if (offer.message.isNotEmpty()) {
+            holder.tvMessage.text = "\"${offer.message}\""
+            holder.tvMessage.visibility = View.VISIBLE
         } else {
-            "No message"
+            holder.tvMessage.text = "No message"
+            holder.tvMessage.visibility = View.GONE
         }
-        holder.tvMessage.visibility = if (offer.message.isNotEmpty()) View.VISIBLE else View.GONE
 
         // Set status and status indicator
         setStatusAppearance(holder, offer.status)
@@ -94,29 +98,31 @@ class OffersAdapter(
     private fun setStatusAppearance(holder: OfferViewHolder, status: String) {
         val context = holder.itemView.context
 
-        when (status) {
+        when (status.lowercase()) {
             "pending" -> {
                 holder.tvStatus.text = "Pending"
-                holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.orange))
-                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.orange))
+                holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.warning))
+                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.warning))
             }
             "accepted" -> {
                 holder.tvStatus.text = "Accepted"
-                holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.green))
-                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.green))
+                holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.success))
+                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.success))
             }
             "rejected" -> {
                 holder.tvStatus.text = "Rejected"
-                holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.red))
-                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
+                holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.error))
+                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.error))
             }
             "countered" -> {
                 holder.tvStatus.text = "Countered"
-                holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.blue))
-                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.blue))
+                holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.info))
+                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.info))
             }
             else -> {
-                holder.tvStatus.text = status
+                holder.tvStatus.text = status.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+                }
                 holder.tvStatus.setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray))
                 holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray))
             }
@@ -125,7 +131,9 @@ class OffersAdapter(
 
     private fun configureActionButtons(holder: OfferViewHolder, offer: Offer) {
         // Show action buttons only for received offers that are pending
-        if (tabType == "received" && offer.status == "pending") {
+        val shouldShowActions = tabType == "received" && offer.status.equals("pending", ignoreCase = true)
+
+        if (shouldShowActions) {
             holder.layoutActions.visibility = View.VISIBLE
 
             holder.btnAccept.setOnClickListener {
@@ -150,8 +158,12 @@ class OffersAdapter(
     }
 
     private fun formatPrice(price: Double): String {
-        val formatter = NumberFormat.getNumberInstance(Locale("vi", "VN"))
-        return "${formatter.format(price)} ₫"
+        return try {
+            val formatter = NumberFormat.getNumberInstance(Locale("vi", "VN"))
+            "${formatter.format(price)} ₫"
+        } catch (e: Exception) {
+            String.format("%.0f ₫", price)
+        }
     }
 
     fun updateOffers(newOffers: List<Offer>, newTabType: String) {

@@ -1,57 +1,82 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme -->
     <style name="Theme.TradeUp" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
-        <item name="colorOnPrimary">@color/surface</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorSecondaryVariant">@color/secondary_variant</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorError">@color/error</item>
+    </style>
 
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/accent</item>
-        <item name="colorSecondaryVariant">@color/accent</item>
-        <item name="colorOnSecondary">@color/surface</item>
-
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/primary</item>
-
-        <!-- Background colors -->
+    <!-- Spotify Dark Theme -->
+    <style name="Theme.TradeUp.Spotify" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorSecondaryVariant">@color/secondary_variant</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorError">@color/error</item>
         <item name="android:windowBackground">@color/background</item>
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:navigationBarColor">@color/background</item>
+    </style>
+
+    <!-- Custom Alert Dialog Style -->
+    <style name="AlertDialogCustom" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="android:colorBackground">@color/surface</item>
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/text_primary</item>
-
-        <!-- Error color -->
-        <item name="colorError">@color/error</item>
-
-        <!-- Customize buttons -->
-        <item name="materialButtonStyle">@style/Widget.TradeUp.Button</item>
-        <item name="materialButtonOutlinedStyle">@style/Widget.TradeUp.Button.Outlined</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
     </style>
 
-    <!-- Button Styles -->
-    <style name="Widget.TradeUp.Button" parent="Widget.MaterialComponents.Button">
-        <item name="android:textAllCaps">false</item>
-        <item name="cornerRadius">12dp</item>
-        <item name="android:textSize">16sp</item>
+    <!-- Dangerous Alert Dialog Style -->
+    <style name="AlertDialogDangerous" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="colorPrimary">@color/error</item>
+        <item name="colorSecondary">@color/error</item>
+        <item name="android:colorBackground">@color/surface</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="buttonBarButtonStyle">@style/DangerousButton</item>
+    </style>
+
+    <!-- Dangerous Button Style -->
+    <style name="DangerousButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/error</item>
+    </style>
+
+    <!-- Spotify Button Style -->
+    <style name="SpotifyButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/button_spotify_style</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:minHeight">48dp</item>
-    </style>
-
-    <style name="Widget.TradeUp.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:textAllCaps">false</item>
-        <item name="cornerRadius">12dp</item>
         <item name="android:textSize">16sp</item>
-        <item name="strokeColor">@color/primary</item>
-        <item name="android:textColor">@color/primary</item>
         <item name="android:minHeight">48dp</item>
+        <item name="android:elevation">4dp</item>
+        <item name="cornerRadius">25dp</item>
     </style>
 
-    <!-- Bottom Navigation Style -->
-    <style name="Widget.TradeUp.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.TradeUp.BottomNavigationView</item>
+    <!-- Card View Style -->
+    <style name="SpotifyCard" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="cardBackgroundColor">@color/surface</item>
     </style>
 
-    <style name="ThemeOverlay.TradeUp.BottomNavigationView" parent="">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorOnSurface">@color/text_secondary</item>
-    </style>
 </resources>

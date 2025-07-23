@@ -129,7 +129,8 @@ class ViewProfileActivity : AppCompatActivity() {
         btnRateUser.isEnabled = false
         btnRateUser.text = "Submitting..."
 
-        UserRepository.submitRating(targetUserId, stars) { success ->
+        // ✅ FIXED: Pass the comment parameter to submitRating
+        UserRepository.submitRating(targetUserId, stars, comment) { success ->
             btnRateUser.isEnabled = true
             btnRateUser.text = "Rate User"
 
@@ -195,45 +196,61 @@ class ViewProfileActivity : AppCompatActivity() {
     }
 
     private fun loadUserProfile(userId: String) {
-        UserRepository.getUserProfile(userId) { user ->
+        UserRepository.getUserProfile(userId) { success, user ->
             progressBar.visibility = android.view.View.GONE
 
-            if (user != null) {
+            if (success && user != null) {
                 layoutProfile.visibility = android.view.View.VISIBLE
 
-                // Update UI with user data
-                tvDisplayName.text = user.name.ifEmpty { "User" }
-                tvName.text = user.name.ifEmpty { "Not provided" }
-                tvEmail.text = if (user.email.isNotEmpty()) user.email else "Not provided"
-                tvPhone.text = if (user.phone.isNotEmpty()) user.phone else "Not provided"
-                tvBio.text = user.bio.ifEmpty { "No bio yet" }
+                // Convert Map to User if needed
+                val userData = if (user is Map<*, *>) {
+                    @Suppress("UNCHECKED_CAST")
+                    val userMap = user as Map<String, Any>
 
-                // ✅ UPDATED: Enhanced rating display
-                if (user.ratingCount > 0) {
-                    tvRating.text = "⭐ ${String.format("%.1f", user.rating)} (${user.ratingCount} reviews)"
+                    // Update UI with user data from map
+                    tvDisplayName.text = (userMap["name"] as? String)?.ifEmpty { "User" } ?: "User"
+                    tvName.text = (userMap["name"] as? String)?.ifEmpty { "Not provided" } ?: "Not provided"
+                    tvEmail.text = (userMap["email"] as? String)?.takeIf { it.isNotEmpty() } ?: "Not provided"
+                    tvPhone.text = (userMap["phone"] as? String)?.takeIf { it.isNotEmpty() } ?: "Not provided"
+                    tvBio.text = (userMap["bio"] as? String)?.ifEmpty { "No bio yet" } ?: "No bio yet"
+
+                    // Rating display
+                    val rating = (userMap["rating"] as? Number)?.toDouble() ?: 0.0
+                    val ratingCount = (userMap["ratingCount"] as? Number)?.toInt() ?: 0
+
+                    if (ratingCount > 0) {
+                        tvRating.text = "⭐ ${String.format("%.1f", rating)} ($ratingCount reviews)"
+                    } else {
+                        tvRating.text = "⭐ No ratings yet"
+                    }
+
+                    // Joined date
+                    val joinedDate = (userMap["joinedDate"] as? Number)?.toLong() ?: System.currentTimeMillis()
+                    val dateFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+                    tvJoinedDate.text = "Joined ${dateFormat.format(Date(joinedDate))}"
+
+                    // Transactions count
+                    val totalTransactions = (userMap["totalTransactions"] as? Number)?.toInt() ?: 0
+                    tvTransactions.text = "$totalTransactions completed transactions"
+
+                    // Load profile image
+                    val profileImageUrl = userMap["profileImageUrl"] as? String
+                    if (!profileImageUrl.isNullOrEmpty()) {
+                        Glide.with(this)
+                            .load(profileImageUrl)
+                            .error(R.drawable.ic_avatar_placeholder)
+                            .into(ivAvatar)
+                    }
+
+                    // Update title
+                    val displayName = (userMap["name"] as? String) ?: "User"
+                    supportActionBar?.title = "$displayName's Profile"
+
                 } else {
-                    tvRating.text = "⭐ No ratings yet"
+                    Toast.makeText(this, "❌ Invalid user data format", Toast.LENGTH_SHORT).show()
                 }
 
-                // ✅ NEW: Show join date
-                val dateFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
-                tvJoinedDate.text = "Joined ${dateFormat.format(Date(user.joinedDate))}"
-
-                // Transactions count
-                tvTransactions.text = "${user.totalTransactions} completed transactions"
-
-                // Load profile image
-                if (user.profileImageUrl.isNotEmpty()) {
-                    Glide.with(this)
-                        .load(user.profileImageUrl)
-                        .error(R.drawable.ic_avatar_placeholder)
-                        .into(ivAvatar)
-                }
-
-                // Update title
-                supportActionBar?.title = "${user.name}'s Profile"
-
-                // ✅ Hide rate button if viewing own profile
+                // Hide rate button if viewing own profile
                 val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
                 btnRateUser.visibility = if (currentUserId == userId) {
                     android.view.View.GONE

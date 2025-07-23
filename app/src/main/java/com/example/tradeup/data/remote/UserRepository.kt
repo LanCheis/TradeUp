@@ -1,226 +1,269 @@
+// File: app/src/main/java/com/example/tradeup/data/remote/UserRepository.kt
+
 package com.example.tradeup.data.remote
 
 import com.example.tradeup.data.model.User
-import com.example.tradeup.data.model.UserRating
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.FieldValue
 
-object UserRepository {
-    private val db = FirebaseFirestore.getInstance()
-    private val usersCollection = db.collection("users")
+class UserRepository {
 
-    // FR-1.2.1 & FR-1.2.2: Save/Update user profile
-    fun saveUserProfile(user: User, onComplete: (Boolean, String?) -> Unit) {
-        usersCollection.document(user.uid).set(user)
-            .addOnSuccessListener { onComplete(true, null) }
-            .addOnFailureListener { onComplete(false, it.message) }
-    }
+    companion object {
+        private val firestore = FirebaseFirestore.getInstance()
+        private val auth = FirebaseAuth.getInstance()
 
-    // FR-1.2.1 & FR-1.2.4: Get user profile (own or others)
-    fun getUserProfile(uid: String?, onResult: (User?) -> Unit) {
-        if (uid.isNullOrEmpty()) {
-            onResult(null)
-            return
+        // ✅ OVERLOADED METHOD 1: For backward compatibility (Boolean only)
+        fun checkUserProfileExists(userId: String, callback: (Boolean) -> Unit) {
+            getUserProfile(userId) { success, userData ->
+                callback(success)
+            }
         }
 
-        usersCollection.document(uid).get()
-            .addOnSuccessListener { snapshot ->
-                val user = snapshot.toObject(User::class.java)
-                onResult(user)
-            }
-            .addOnFailureListener {
-                onResult(null)
-            }
-    }
-
-    // FR-1.2.2: Update profile fields
-    fun updateUserProfile(uid: String, updates: Map<String, Any>, onComplete: (Boolean, String?) -> Unit) {
-        usersCollection.document(uid).update(updates)
-            .addOnSuccessListener { onComplete(true, null) }
-            .addOnFailureListener { onComplete(false, it.message) }
-    }
-
-    // FR-7.1.1: Submit rating after transaction
-    fun submitRating(targetUserId: String, stars: Float, comment: String, transactionId: String = "", onComplete: (Boolean) -> Unit) {
-        val raterId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-
-        val ratingData = UserRating(
-            id = "${raterId}_${targetUserId}_${System.currentTimeMillis()}",
-            fromUserId = raterId,
-            toUserId = targetUserId,
-            stars = stars,
-            comment = comment,
-            transactionId = transactionId,
-            timestamp = System.currentTimeMillis()
-        )
-
-        // Save individual rating
-        db.collection("users").document(targetUserId)
-            .collection("ratings")
-            .document(raterId)
-            .set(ratingData)
-            .addOnSuccessListener {
-                // Update user's aggregate rating
-                updateUserRating(targetUserId)
-                onComplete(true)
-            }
-            .addOnFailureListener { onComplete(false) }
-    }
-
-    // FR-7.2.1: Update user's aggregate rating and transaction count
-    private fun updateUserRating(userId: String) {
-        db.collection("users").document(userId)
-            .collection("ratings")
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val ratings = snapshot.documents.mapNotNull {
-                    it.toObject(UserRating::class.java)?.stars
-                }
-
-                if (ratings.isNotEmpty()) {
-                    val averageRating = ratings.average()
-                    val ratingCount = ratings.size
-
-                    // Update user document with new rating
-                    db.collection("users").document(userId)
-                        .update(
-                            mapOf(
-                                "rating" to averageRating,
-                                "ratingCount" to ratingCount
-                            )
-                        )
-                }
-            }
-    }
-
-    // FR-7.2.1: Fetch user ratings for display
-    fun getUserRatings(userId: String, onResult: (List<UserRating>) -> Unit) {
-        db.collection("users").document(userId)
-            .collection("ratings")
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val ratings = snapshot.documents.mapNotNull {
-                    it.toObject(UserRating::class.java)
-                }
-                onResult(ratings)
-            }
-            .addOnFailureListener { onResult(emptyList()) }
-    }
-
-    // FR-1.2.3: Account deactivation (soft delete)
-    fun deactivateAccount(onComplete: (Boolean, String?) -> Unit) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser == null) {
-            onComplete(false, "No user logged in")
-            return
-        }
-
-        usersCollection.document(currentUser.uid)
-            .update("isActive", false)
-            .addOnSuccessListener {
-                FirebaseAuth.getInstance().signOut()
-                onComplete(true, null)
-            }
-            .addOnFailureListener { onComplete(false, it.message) }
-    }
-
-    // FR-1.2.3: Permanent account deletion with confirmation
-    fun deleteUserAccount(onComplete: (Boolean, String?) -> Unit) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser == null) {
-            onComplete(false, "No user logged in")
-            return
-        }
-
-        val uid = currentUser.uid
-
-        // Step 1: Delete user data from Firestore
-        usersCollection.document(uid).delete()
-            .addOnSuccessListener {
-                // Step 2: Delete user's listings
-                deleteUserListings(uid) { listingsDeleted ->
-                    if (listingsDeleted) {
-                        // Step 3: Delete user's ratings
-                        deleteUserRatings(uid) { ratingsDeleted ->
-                            if (ratingsDeleted) {
-                                // Step 4: Delete Firebase Auth account
-                                currentUser.delete()
-                                    .addOnSuccessListener {
-                                        onComplete(true, null)
-                                    }
-                                    .addOnFailureListener { exception ->
-                                        onComplete(false, "Failed to delete account: ${exception.message}")
-                                    }
-                            } else {
-                                onComplete(false, "Failed to delete user ratings")
-                            }
-                        }
+        // ✅ OVERLOADED METHOD 2: For new usage (Boolean + Map)
+        fun getUserProfile(userId: String, callback: (Boolean, Map<String, Any>?) -> Unit) {
+            firestore.collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        callback(true, document.data)
                     } else {
-                        onComplete(false, "Failed to delete user listings")
+                        callback(false, null)
                     }
                 }
-            }
-            .addOnFailureListener { exception ->
-                onComplete(false, "Failed to delete user data: ${exception.message}")
-            }
-    }
-
-    // Helper method to delete user's listings
-    private fun deleteUserListings(userId: String, onComplete: (Boolean) -> Unit) {
-        FirebaseFirestore.getInstance()
-            .collection("listings")
-            .whereEqualTo("ownerUid", userId)
-            .get()
-            .addOnSuccessListener { documents ->
-                val batch = FirebaseFirestore.getInstance().batch()
-                for (document in documents) {
-                    batch.delete(document.reference)
+                .addOnFailureListener {
+                    callback(false, null)
                 }
+        }
 
-                batch.commit()
-                    .addOnSuccessListener { onComplete(true) }
-                    .addOnFailureListener { onComplete(false) }
-            }
-            .addOnFailureListener { onComplete(false) }
-    }
-
-    // Helper method to delete user's ratings
-    private fun deleteUserRatings(userId: String, onComplete: (Boolean) -> Unit) {
-        db.collection("users").document(userId)
-            .collection("ratings")
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val batch = db.batch()
-                for (document in snapshot.documents) {
-                    batch.delete(document.reference)
+        // ✅ OVERLOADED METHOD 3: For User object compatibility
+        fun getUserProfile(userId: String, callback: (User?) -> Unit) {
+            getUserProfile(userId) { success, userData ->
+                if (success && userData != null) {
+                    val user = mapToUser(userData, userId)
+                    callback(user)
+                } else {
+                    callback(null)
                 }
-
-                batch.commit()
-                    .addOnSuccessListener { onComplete(true) }
-                    .addOnFailureListener { onComplete(false) }
             }
-            .addOnFailureListener { onComplete(false) }
-    }
+        }
 
-    // Search users by name or username
-    fun searchUsers(query: String, onResult: (List<User>) -> Unit) {
-        usersCollection
-            .whereEqualTo("isActive", true)
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val users = snapshot.documents.mapNotNull { doc ->
-                    doc.toObject(User::class.java)?.let { user ->
-                        if (user.name.contains(query, ignoreCase = true) ||
-                            user.username.contains(query, ignoreCase = true)) {
-                            user
-                        } else null
+        // ✅ HELPER: Convert Map to User object
+        private fun mapToUser(data: Map<String, Any>, userId: String): User {
+            return User(
+                uid = userId,
+                name = data["name"] as? String ?: "",
+                email = data["email"] as? String ?: "",
+                phone = data["phone"] as? String ?: "",
+                address = data["address"] as? String ?: "",
+                bio = data["bio"] as? String ?: "",
+                username = data["username"] as? String ?: "",
+                gender = data["gender"] as? String ?: "",
+                birthday = data["birthday"] as? String ?: "",
+                interests = data["interests"] as? String ?: "",
+                profileImageUrl = data["profileImageUrl"] as? String ?: "",
+                rating = (data["rating"] as? Number)?.toDouble() ?: 0.0,
+                totalTransactions = (data["totalTransactions"] as? Number)?.toInt() ?: 0,
+                ratingCount = (data["ratingCount"] as? Number)?.toInt() ?: 0,
+                joinedDate = (data["joinedDate"] as? Number)?.toLong() ?: System.currentTimeMillis(),
+                isActive = data["isActive"] as? Boolean ?: true
+            )
+        }
+
+        // ✅ RATING SUBMISSION - Two overloaded versions
+        fun submitRating(userId: String, stars: Float, callback: (Boolean) -> Unit) {
+            submitRating(userId, stars, "", callback)
+        }
+
+        fun submitRating(userId: String, stars: Float, comment: String, callback: (Boolean) -> Unit) {
+            val currentUser = auth.currentUser
+            if (currentUser == null) {
+                callback(false)
+                return
+            }
+
+            val ratingData = hashMapOf(
+                "fromUserId" to currentUser.uid,
+                "toUserId" to userId,
+                "stars" to stars.toDouble(),
+                "comment" to comment,
+                "timestamp" to FieldValue.serverTimestamp()
+            )
+
+            firestore.collection("ratings")
+                .add(ratingData)
+                .addOnSuccessListener {
+                    updateUserRating(userId) { success ->
+                        callback(success)
                     }
                 }
-                onResult(users)
+                .addOnFailureListener {
+                    callback(false)
+                }
+        }
+
+        // ✅ USER PROFILE SAVING - Multiple overloaded versions
+        fun saveUserProfile(user: User, callback: (Boolean, String?) -> Unit) {
+            val userData = hashMapOf(
+                "uid" to user.uid,
+                "name" to user.name,
+                "email" to user.email,
+                "phone" to user.phone,
+                "address" to user.address,
+                "bio" to user.bio,
+                "username" to user.username,
+                "gender" to user.gender,
+                "birthday" to user.birthday,
+                "interests" to user.interests,
+                "profileImageUrl" to user.profileImageUrl,
+                "rating" to user.rating,
+                "totalTransactions" to user.totalTransactions,
+                "ratingCount" to user.ratingCount,
+                "joinedDate" to user.joinedDate,
+                "isActive" to user.isActive
+            )
+
+            firestore.collection("users")
+                .document(user.uid)
+                .set(userData)
+                .addOnSuccessListener {
+                    callback(true, null)
+                }
+                .addOnFailureListener { exception ->
+                    callback(false, exception.message)
+                }
+        }
+
+        // ✅ Alternative saveUserProfile for backward compatibility
+        fun saveUserProfile(user: User, callback: (Boolean) -> Unit) {
+            saveUserProfile(user) { success, _ ->
+                callback(success)
             }
-            .addOnFailureListener { onResult(emptyList()) }
+        }
+
+        // ✅ UPDATE USER PROFILE
+        fun updateUserProfile(userId: String, userData: Map<String, Any>, callback: (Boolean) -> Unit) {
+            firestore.collection("users")
+                .document(userId)
+                .update(userData)
+                .addOnSuccessListener {
+                    callback(true)
+                }
+                .addOnFailureListener {
+                    callback(false)
+                }
+        }
+
+        // ✅ CREATE USER PROFILE
+        fun createUserProfile(user: User, callback: (Boolean) -> Unit) {
+            saveUserProfile(user, callback)
+        }
+
+        // ✅ DELETE USER DATA - Updated method name and signature
+        fun deleteUserData(userId: String, callback: (Boolean) -> Unit) {
+            firestore.collection("users")
+                .document(userId)
+                .delete()
+                .addOnSuccessListener {
+                    deleteUserRatings(userId) { ratingsDeleted ->
+                        callback(ratingsDeleted)
+                    }
+                }
+                .addOnFailureListener {
+                    callback(false)
+                }
+        }
+
+        // ✅ Alternative method name for compatibility
+        fun deleteUserAccount(userId: String, callback: (Boolean) -> Unit) {
+            deleteUserData(userId, callback)
+        }
+
+        // ✅ PRIVATE HELPER METHODS
+        private fun updateUserRating(userId: String, callback: (Boolean) -> Unit) {
+            firestore.collection("ratings")
+                .whereEqualTo("toUserId", userId)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (documents.isEmpty) {
+                        callback(true)
+                        return@addOnSuccessListener
+                    }
+
+                    var totalStars = 0.0
+                    var count = 0
+
+                    for (document in documents) {
+                        val stars = document.getDouble("stars") ?: 0.0
+                        totalStars += stars
+                        count++
+                    }
+
+                    val averageRating = if (count > 0) totalStars / count else 0.0
+
+                    firestore.collection("users")
+                        .document(userId)
+                        .update(
+                            "rating", averageRating,
+                            "ratingCount", count
+                        )
+                        .addOnSuccessListener {
+                            callback(true)
+                        }
+                        .addOnFailureListener {
+                            callback(false)
+                        }
+                }
+                .addOnFailureListener {
+                    callback(false)
+                }
+        }
+
+        private fun deleteUserRatings(userId: String, callback: (Boolean) -> Unit) {
+            firestore.collection("ratings")
+                .whereEqualTo("fromUserId", userId)
+                .get()
+                .addOnSuccessListener { documents ->
+                    val batch = firestore.batch()
+                    for (document in documents) {
+                        batch.delete(document.reference)
+                    }
+
+                    batch.commit()
+                        .addOnSuccessListener {
+                            deleteRatingsForUser(userId, callback)
+                        }
+                        .addOnFailureListener {
+                            callback(false)
+                        }
+                }
+                .addOnFailureListener {
+                    callback(false)
+                }
+        }
+
+        private fun deleteRatingsForUser(userId: String, callback: (Boolean) -> Unit) {
+            firestore.collection("ratings")
+                .whereEqualTo("toUserId", userId)
+                .get()
+                .addOnSuccessListener { documents ->
+                    val batch = firestore.batch()
+                    for (document in documents) {
+                        batch.delete(document.reference)
+                    }
+
+                    batch.commit()
+                        .addOnSuccessListener {
+                            callback(true)
+                        }
+                        .addOnFailureListener {
+                            callback(false)
+                        }
+                }
+                .addOnFailureListener {
+                    callback(false)
+                }
+        }
     }
 }

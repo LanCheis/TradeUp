@@ -1,3 +1,5 @@
+// File: app/src/main/java/com/example/tradeup/data/model/Offer.kt
+
 package com.example.tradeup.data.model
 
 import com.google.firebase.Timestamp
@@ -15,10 +17,27 @@ data class Offer(
     val status: String = "pending", // pending, accepted, rejected, countered
     val counterOffer: Double? = null,
     val counterMessage: String? = null,
-    val createdAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long = System.currentTimeMillis(),
+    val createdAt: Timestamp? = null,
+    val updatedAt: Timestamp? = null,
+
+    // ✅ ADDED: Fields that the existing OffersAdapter expects
     val listingTitle: String = "",
     val listingImageUrl: String = "",
     val offeredPrice: Double = 0.0,
-    val timestamp: Timestamp = Timestamp.now() // For Firestore compatibility
-)
+    val offerPrice: Double = 0.0
+) {
+    // ✅ Helper method to get timestamp as Long (for existing adapter compatibility)
+    fun getCreatedAtLong(): Long {
+        return createdAt?.toDate()?.time ?: System.currentTimeMillis()
+    }
+
+    // ✅ Helper method to get offer amount (handles both field names)
+    fun calculateOfferAmount(): Double {
+        return when {
+            offeredPrice > 0 -> offeredPrice
+            offerPrice > 0 -> offerPrice
+            offerAmount > 0 -> offerAmount
+            else -> 0.0
+        }
+    }
+}
