@@ -3,55 +3,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:fillViewport="true">
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="16dp">
 
         <!-- Header -->
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="24dp">
+            android:text="💰 Make an Offer"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/on_background"
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
 
-            <ImageButton
-                android:id="@+id/btnBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_arrow_back"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Back"
-                app:tint="@color/text_primary" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Negotiate a price that works for both of you"
+            android:textSize="14sp"
+            android:textColor="@color/gray"
+            android:gravity="center"
+            android:layout_marginBottom="20dp" />
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="💰 Make an Offer"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:gravity="center" />
-
-            <View
-                android:layout_width="40dp"
-                android:layout_height="40dp" />
-        </LinearLayout>
-
-        <!-- Item Preview Card -->
+        <!-- Item Info Card -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="@color/surface">
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -65,7 +51,8 @@
                     android:layout_height="80dp"
                     android:layout_marginEnd="12dp"
                     android:scaleType="centerCrop"
-                    android:background="@drawable/rounded_image_background" />
+                    android:background="@drawable/rounded_corner_8dp"
+                    android:src="@drawable/ic_image_placeholder" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -77,10 +64,10 @@
                         android:id="@+id/tvItemTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="iPhone 15 Pro Max"
+                        android:text="Item Title"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary"
+                        android:textColor="@color/on_background"
                         android:maxLines="2"
                         android:ellipsize="end" />
 
@@ -88,7 +75,7 @@
                         android:id="@+id/tvAskingPrice"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Asking: 25,000,000 ₫"
+                        android:text="Asking: 0 ₫"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/primary"
@@ -98,9 +85,9 @@
                         android:id="@+id/tvSellerName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Seller: John Doe"
+                        android:text="Seller: Unknown"
                         android:textSize="14sp"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="@color/gray"
                         android:layout_marginTop="4dp" />
                 </LinearLayout>
             </LinearLayout>
@@ -111,9 +98,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="@color/surface">
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -121,145 +107,71 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
+                <!-- Form Title -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="💸 Your Offer"
+                    android:text="Your Offer"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/on_background"
                     android:layout_marginBottom="16dp" />
 
-                <!-- Offer Price -->
+                <!-- Offer Amount -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Offer Price (VND)"
+                    android:hint="Your offer amount (VND)"
                     android:layout_marginBottom="16dp"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                    app:prefixText="₫ ">
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etOfferPrice"
+                        android:id="@+id/etOfferAmount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="numberDecimal" />
+                        android:inputType="number"
+                        android:textSize="16sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Price Suggestion Chips -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Quick Suggestions:"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginBottom="8dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
-
-                    <Button
-                        android:id="@+id/btn90Percent"
-                        android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_weight="1"
-                        android:text="90%"
-                        android:textSize="12sp"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:layout_marginEnd="4dp" />
-
-                    <Button
-                        android:id="@+id/btn80Percent"
-                        android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_weight="1"
-                        android:text="80%"
-                        android:textSize="12sp"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:layout_marginHorizontal="4dp" />
-
-                    <Button
-                        android:id="@+id/btn70Percent"
-                        android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_weight="1"
-                        android:text="70%"
-                        android:textSize="12sp"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:layout_marginStart="4dp" />
-                </LinearLayout>
-
-                <!-- Optional Message -->
+                <!-- Message -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Message (Optional)"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                    android:hint="Message to seller (optional)"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etMessage"
+                        android:id="@+id/etOfferMessage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textMultiLine|textCapSentences"
+                        android:inputType="textCapSentences|textMultiLine"
                         android:minLines="3"
                         android:maxLines="5"
-                        android:gravity="top" />
+                        android:gravity="top"
+                        android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
+
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Info Card -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="#E3F2FD">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ℹ️ Offer Details"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/primary"
-                    android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="• Your offer expires in 24 hours\n• The seller can accept, reject, or counter\n• You can withdraw before acceptance\n• Be respectful and reasonable"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:lineSpacingExtra="2dp" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Submit Button -->
-        <Button
-            android:id="@+id/btnSubmitOffer"
+        <!-- Send Offer Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSendOffer"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="🚀 Submit Offer"
+            android:text="💸 Send Offer"
             android:textSize="16sp"
             android:textStyle="bold"
-            style="@style/Widget.Material3.Button"
-            android:backgroundTint="@color/primary"
-            android:enabled="false" />
+            style="@style/Widget.MaterialComponents.Button" />
 
-        <!-- Bottom Spacing -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="24dp" />
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
     </LinearLayout>
 </ScrollView>

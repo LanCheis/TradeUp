@@ -15,6 +15,10 @@ data class Offer(
     val status: String = "pending", // pending, accepted, rejected, countered
     val counterOffer: Double? = null,
     val counterMessage: String? = null,
-    val createdAt: Timestamp? = null,
-    val updatedAt: Timestamp? = null
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis(),
+    val listingTitle: String = "",
+    val listingImageUrl: String = "",
+    val offeredPrice: Double = 0.0,
+    val timestamp: Timestamp = Timestamp.now() // For Firestore compatibility
 )

@@ -1,6 +1,4 @@
-// app/src/main/java/com/example/tradeup/offer/OffersAdapter.kt
-
-package com.example.tradeup.offer
+package com.example.tradeup.offers
 
 import android.view.LayoutInflater
 import android.view.View
@@ -66,9 +64,17 @@ class OffersAdapter(
             "To: ${offer.sellerName}"
         }
 
-        // Set date
+        // Set date - FIXED
         val dateFormat = SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault())
-        holder.tvDate.text = dateFormat.format(Date(offer.createdAt))
+        val date = try {
+            when {
+                offer.createdAt > 0L -> Date(offer.createdAt)
+                else -> Date() // Current date as fallback
+            }
+        } catch (e: Exception) {
+            Date() // Current date as fallback
+        }
+        holder.tvDate.text = dateFormat.format(date)
 
         // Set message
         holder.tvMessage.text = if (offer.message.isNotEmpty()) {
@@ -90,27 +96,27 @@ class OffersAdapter(
 
         when (status) {
             "pending" -> {
-                holder.tvStatus.text = "🟡 Pending"
-                holder.tvStatus.setTextColor(ContextCompat.getColor(context, android.R.color.holo_orange_dark))
-                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_orange_dark))
+                holder.tvStatus.text = "Pending"
+                holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.orange))
+                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.orange))
             }
             "accepted" -> {
-                holder.tvStatus.text = "✅ Accepted"
-                holder.tvStatus.setTextColor(ContextCompat.getColor(context, android.R.color.holo_green_dark))
-                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_green_dark))
+                holder.tvStatus.text = "Accepted"
+                holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.green))
+                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.green))
             }
             "rejected" -> {
-                holder.tvStatus.text = "❌ Rejected"
-                holder.tvStatus.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_dark))
-                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_red_dark))
+                holder.tvStatus.text = "Rejected"
+                holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.red))
+                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
             }
             "countered" -> {
-                holder.tvStatus.text = "🔄 Countered"
-                holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.primary))
-                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.primary))
+                holder.tvStatus.text = "Countered"
+                holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.blue))
+                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.blue))
             }
             else -> {
-                holder.tvStatus.text = "❓ Unknown"
+                holder.tvStatus.text = status
                 holder.tvStatus.setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray))
                 holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray))
             }

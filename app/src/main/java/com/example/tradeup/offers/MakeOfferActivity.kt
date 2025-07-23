@@ -11,9 +11,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class MakeOfferActivity : AppCompatActivity() {
 
-    private lateinit var ivListingImage: ImageView
-    private lateinit var tvListingTitle: TextView
-    private lateinit var tvListingPrice: TextView
+    private lateinit var ivItemImage: ImageView
+    private lateinit var tvItemTitle: TextView
+    private lateinit var tvAskingPrice: TextView
+    private lateinit var tvSellerName: TextView
     private lateinit var etOfferAmount: EditText
     private lateinit var etOfferMessage: EditText
     private lateinit var btnSendOffer: Button
@@ -34,9 +35,10 @@ class MakeOfferActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        ivListingImage = findViewById(R.id.ivListingImage)
-        tvListingTitle = findViewById(R.id.tvListingTitle)
-        tvListingPrice = findViewById(R.id.tvListingPrice)
+        ivItemImage = findViewById(R.id.ivItemImage)
+        tvItemTitle = findViewById(R.id.tvItemTitle)
+        tvAskingPrice = findViewById(R.id.tvAskingPrice)
+        tvSellerName = findViewById(R.id.tvSellerName)
         etOfferAmount = findViewById(R.id.etOfferAmount)
         etOfferMessage = findViewById(R.id.etOfferMessage)
         btnSendOffer = findViewById(R.id.btnSendOffer)
@@ -52,15 +54,16 @@ class MakeOfferActivity : AppCompatActivity() {
         val title = intent.getStringExtra("listing_title") ?: ""
         val imageUrl = intent.getStringExtra("listing_image") ?: ""
 
-        tvListingTitle.text = title
-        tvListingPrice.text = "Original Price: ${String.format("%,.0f", originalPrice)} VND"
+        tvItemTitle.text = title
+        tvAskingPrice.text = "Asking: ${String.format("%,.0f", originalPrice)} ₫"
+        tvSellerName.text = "Seller: $sellerName"
 
         if (imageUrl.isNotEmpty()) {
             Glide.with(this)
                 .load(imageUrl)
                 .centerCrop()
-                .placeholder(R.drawable.placeholder_image)
-                .into(ivListingImage)
+                .placeholder(R.drawable.ic_image_placeholder)
+                .into(ivItemImage)
         }
 
         // Pre-fill offer amount with 80% of original price
@@ -116,12 +119,14 @@ class MakeOfferActivity : AppCompatActivity() {
 
         val offer = hashMapOf(
             "listingId" to listingId,
+            "listingTitle" to tvItemTitle.text.toString(),
+            "listingImageUrl" to intent.getStringExtra("listing_image"),
+            "originalPrice" to originalPrice,
+            "offeredPrice" to offerAmount,
             "buyerId" to currentUser.uid,
-            "buyerName" to (currentUser.displayName ?: "Anonymous"),
+            "buyerName" to (currentUser.displayName ?: "Unknown User"),
             "sellerId" to sellerId,
             "sellerName" to sellerName,
-            "originalPrice" to originalPrice,
-            "offerAmount" to offerAmount,
             "message" to message,
             "status" to "pending",
             "createdAt" to FieldValue.serverTimestamp(),

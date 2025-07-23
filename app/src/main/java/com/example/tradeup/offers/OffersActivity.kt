@@ -31,8 +31,8 @@ class OffersActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        offersAdapter = OffersAdapter(offers) { offer ->
-            handleOfferAction(offer)
+        offersAdapter = OffersAdapter(offers, "received") { offer, action ->
+            handleOfferAction(offer, action)
         }
 
         rvOffers.layoutManager = LinearLayoutManager(this)
@@ -94,50 +94,39 @@ class OffersActivity : AppCompatActivity() {
             }
     }
 
-    private fun handleOfferAction(offer: Offer) {
+    private fun handleOfferAction(offer: Offer, action: String) {
         val currentUser = FirebaseAuth.getInstance().currentUser ?: return
 
-        if (offer.sellerId == currentUser.uid && offer.status == "pending") {
-            // Seller can accept/reject/counter
-            showSellerActions(offer)
+        when (action) {
+            "accept" -> {
+                updateOfferStatus(offer, "accepted")
+            }
+            "reject" -> {
+                updateOfferStatus(offer, "rejected")
+            }
+            "counter" -> {
+                // TODO: Implement counter offer functionality
+                Toast.makeText(this, "Counter offer feature coming soon!", Toast.LENGTH_SHORT).show()
+            }
+            "view" -> {
+                // TODO: Navigate to offer details
+                Toast.makeText(this, "Viewing offer details", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
-    private fun showSellerActions(offer: Offer) {
-        val options = arrayOf("Accept Offer", "Reject Offer", "Counter Offer")
-
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Offer from ${offer.buyerName}")
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> acceptOffer(offer)
-                    1 -> rejectOffer(offer)
-                    2 -> counterOffer(offer)
-                }
-            }
-            .show()
-    }
-
-    private fun acceptOffer(offer: Offer) {
-        updateOfferStatus(offer.id, "accepted")
-    }
-
-    private fun rejectOffer(offer: Offer) {
-        updateOfferStatus(offer.id, "rejected")
-    }
-
-    private fun counterOffer(offer: Offer) {
-        // TODO: Implement counter offer dialog
-        Toast.makeText(this, "Counter offer feature coming soon", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun updateOfferStatus(offerId: String, status: String) {
+    private fun updateOfferStatus(offer: Offer, newStatus: String) {
         FirebaseFirestore.getInstance()
             .collection("offers")
-            .document(offerId)
-            .update("status", status, "updatedAt", com.google.firebase.firestore.FieldValue.serverTimestamp())
+            .document(offer.id)
+            .update(
+                mapOf(
+                    "status" to newStatus,
+                    "updatedAt" to System.currentTimeMillis()
+                )
+            )
             .addOnSuccessListener {
-                Toast.makeText(this, "Offer $status successfully", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Offer $newStatus successfully!", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Failed to update offer: ${e.message}", Toast.LENGTH_SHORT).show()
