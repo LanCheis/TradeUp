@@ -17,14 +17,14 @@
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:scaleType="centerCrop"
-            android:contentDescription="Ảnh bài đăng"
+            android:contentDescription="Item image"
             android:background="@drawable/edittext_background"
             android:layout_marginBottom="16dp" />
 
         <!-- Title -->
         <TextView
             android:id="@+id/tvDetailTitle"
-            android:text="Tiêu đề bài đăng"
+            android:text="Item title"
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="#1a1a1a"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp" />
 
-        <!-- ✅ NEW: Price -->
+        <!-- Price -->
         <TextView
             android:id="@+id/tvDetailPrice"
             android:text="💰 25,000,000 ₫"
@@ -52,7 +52,7 @@
 
             <TextView
                 android:id="@+id/tvDetailCategory"
-                android:text="📂 Đồ điện tử"
+                android:text="📂 Electronics"
                 android:textSize="14sp"
                 android:textColor="#666666"
                 android:layout_width="0dp"
@@ -61,7 +61,7 @@
 
             <TextView
                 android:id="@+id/tvDetailCondition"
-                android:text="✨ Như mới"
+                android:text="✨ Like new"
                 android:textSize="14sp"
                 android:textColor="#4CAF50"
                 android:layout_width="wrap_content"
@@ -101,7 +101,7 @@
         <!-- Description -->
         <TextView
             android:id="@+id/tvDetailDescription"
-            android:text="Mô tả chi tiết..."
+            android:text="Detailed description..."
             android:textSize="16sp"
             android:textColor="#333333"
             android:lineSpacingExtra="2dp"
@@ -109,15 +109,38 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp" />
 
-        <!-- Share Button -->
-        <Button
-            android:id="@+id/btnShare"
+        <!-- Action Buttons -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="📤 Chia sẻ bài đăng"
-            android:textSize="16sp"
-            android:backgroundTint="@color/blue_500"
-            android:textColor="@android:color/white" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Make Offer Button -->
+            <Button
+                android:id="@+id/btnMakeOffer"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="💰 Make Offer"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/primary"
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="8dp"
+                style="@style/Widget.Material3.Button" />
+
+            <!-- Share Button -->
+            <Button
+                android:id="@+id/btnShare"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="📤 Share"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

@@ -2,6 +2,7 @@ package com.example.tradeup.listing
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -9,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.tradeup.R
+import com.example.tradeup.offers.MakeOfferActivity
+import com.google.firebase.auth.FirebaseAuth
 import java.text.NumberFormat
 import java.util.*
 
@@ -20,7 +23,7 @@ class ListingDetailActivity : AppCompatActivity() {
 
         // Set up action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Chi tiết bài đăng"
+        supportActionBar?.title = "Item Details"
 
         // Get all the data from intent
         val image = intent.getStringExtra("imageUrl")
@@ -30,8 +33,11 @@ class ListingDetailActivity : AppCompatActivity() {
         val description = intent.getStringExtra("description")
         val ownerName = intent.getStringExtra("ownerName")
         val ownerAvatar = intent.getStringExtra("ownerAvatar")
+        val ownerUid = intent.getStringExtra("ownerUid")
         val location = intent.getStringExtra("location")
         val price = intent.getDoubleExtra("price", 0.0)
+        val isNegotiable = intent.getBooleanExtra("isNegotiable", false)
+        val listingId = intent.getStringExtra("listing_id") ?: ""
 
         // Find views
         val ivImage = findViewById<ImageView>(R.id.ivDetailImage)
@@ -43,11 +49,23 @@ class ListingDetailActivity : AppCompatActivity() {
         val tvOwnerName = findViewById<TextView>(R.id.tvOwnerName)
         val ivOwnerAvatar = findViewById<ImageView>(R.id.ivOwnerAvatar)
         val btnShare = findViewById<Button>(R.id.btnShare)
+        val btnMakeOffer = findViewById<Button>(R.id.btnMakeOffer)
 
-        // Set up share button
-        btnShare.setOnClickListener {
-            shareContent(title, price, category, condition, ownerName, location, description)
-        }
+        // Set up buttons
+        setupButtons(
+            btnShare,
+            btnMakeOffer,
+            title,
+            price,
+            category,
+            condition,
+            ownerName,
+            location,
+            description,
+            isNegotiable,
+            listingId,
+            ownerUid
+        )
 
         // Load listing image
         loadListingImage(ivImage, image)
@@ -56,30 +74,66 @@ class ListingDetailActivity : AppCompatActivity() {
         loadOwnerAvatar(ivOwnerAvatar, ownerAvatar)
 
         // Set text data
-        setTextData(tvTitle, tvPrice, tvCategory, tvCondition, tvDescription, tvOwnerName,
-            title, price, category, condition, description, ownerName)
+        setTextData(
+            tvTitle, tvPrice, tvCategory, tvCondition, tvDescription, tvOwnerName,
+            title, price, category, condition, description, ownerName, isNegotiable
+        )
     }
 
-    private fun shareContent(title: String?, price: Double, category: String?,
-                             condition: String?, ownerName: String?, location: String?,
-                             description: String?) {
+    private fun setupButtons(
+        btnShare: Button, btnMakeOffer: Button, title: String?, price: Double,
+        category: String?, condition: String?, ownerName: String?,
+        location: String?, description: String?, isNegotiable: Boolean,
+        listingId: String, ownerUid: String?
+    ) {
+
+        // Share button
+        btnShare.setOnClickListener {
+            shareContent(title, price, category, condition, ownerName, location, description)
+        }
+
+        // Make offer button - only show if negotiable and not owner
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (isNegotiable && currentUser != null && currentUser.uid != ownerUid) {
+            btnMakeOffer.visibility = View.VISIBLE
+            btnMakeOffer.setOnClickListener {
+                val intent = Intent(this, MakeOfferActivity::class.java).apply {
+                    putExtra("listing_id", listingId)
+                    putExtra("listing_title", title)
+                    putExtra("listing_image", intent.getStringExtra("imageUrl"))
+                    putExtra("seller_uid", ownerUid)
+                    putExtra("seller_name", ownerName)
+                    putExtra("asking_price", price)
+                }
+                startActivity(intent)
+            }
+        } else {
+            btnMakeOffer.visibility = View.GONE
+        }
+    }
+
+    private fun shareContent(
+        title: String?, price: Double, category: String?,
+        condition: String?, ownerName: String?, location: String?,
+        description: String?
+    ) {
         val formattedPrice = formatPrice(price)
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, "Chia sẻ bài đăng từ TradeUp")
+            putExtra(Intent.EXTRA_SUBJECT, "Share listing from TradeUp")
             putExtra(
                 Intent.EXTRA_TEXT,
-                "📢 ${title ?: "Sản phẩm"}\n\n" +
-                        "💰 Giá: $formattedPrice\n" +
-                        "📂 Danh mục: ${category ?: "Không xác định"}\n" +
-                        "✨ Tình trạng: ${condition ?: "Không xác định"}\n" +
-                        "👤 Người bán: ${ownerName ?: "Anonymous"}\n" +
-                        "📍 Vị trí: ${location ?: "Không xác định"}\n\n" +
-                        "📄 Mô tả: ${description ?: "Không có mô tả"}\n\n" +
-                        "Tải TradeUp để xem thêm!"
+                "📢 ${title ?: "Product"}\n\n" +
+                        "💰 Price: $formattedPrice\n" +
+                        "📂 Category: ${category ?: "Unknown"}\n" +
+                        "✨ Condition: ${condition ?: "Unknown"}\n" +
+                        "👤 Seller: ${ownerName ?: "Anonymous"}\n" +
+                        "📍 Location: ${location ?: "Unknown"}\n\n" +
+                        "📄 Description: ${description ?: "No description"}\n\n" +
+                        "Download TradeUp to see more!"
             )
         }
-        startActivity(Intent.createChooser(shareIntent, "Chia sẻ qua..."))
+        startActivity(Intent.createChooser(shareIntent, "Share via..."))
     }
 
     private fun loadListingImage(imageView: ImageView, imageUrl: String?) {
@@ -108,16 +162,19 @@ class ListingDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun setTextData(tvTitle: TextView, tvPrice: TextView, tvCategory: TextView,
-                            tvCondition: TextView, tvDescription: TextView, tvOwnerName: TextView,
-                            title: String?, price: Double, category: String?,
-                            condition: String?, description: String?, ownerName: String?) {
+    private fun setTextData(
+        tvTitle: TextView, tvPrice: TextView, tvCategory: TextView,
+        tvCondition: TextView, tvDescription: TextView, tvOwnerName: TextView,
+        title: String?, price: Double, category: String?,
+        condition: String?, description: String?, ownerName: String?,
+        isNegotiable: Boolean
+    ) {
 
-        tvTitle.text = title ?: "Không có tiêu đề"
-        tvPrice.text = formatPrice(price)
-        tvCategory.text = "📂 ${category ?: "Không xác định"}"
-        tvCondition.text = "✨ ${condition ?: "Không xác định"}"
-        tvDescription.text = description ?: "Không có mô tả"
+        tvTitle.text = title ?: "No title"
+        tvPrice.text = formatPrice(price) + if (isNegotiable) " (Negotiable)" else ""
+        tvCategory.text = "📂 ${category ?: "Unknown"}"
+        tvCondition.text = "✨ ${condition ?: "Unknown"}"
+        tvDescription.text = description ?: "No description"
         tvOwnerName.text = "👤 ${ownerName ?: "Anonymous"}"
     }
 
@@ -126,7 +183,7 @@ class ListingDetailActivity : AppCompatActivity() {
             val formatter = NumberFormat.getNumberInstance(Locale("vi", "VN"))
             "💰 ${formatter.format(price)} ₫"
         } else {
-            "💰 Liên hệ để biết giá"
+            "💰 Contact for price"
         }
     }
 
