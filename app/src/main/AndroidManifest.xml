@@ -4,10 +4,23 @@
 
     <!-- Internet permission -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- File access permissions -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
+    <!-- Location permissions for nearby listings -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Notification permissions -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Wake lock for FCM -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".MyApplication"
@@ -18,47 +31,128 @@
         android:theme="@style/Theme.TradeUp"
         tools:targetApi="31">
 
-        <!-- Setup Profile Activity -->
-        <activity
-            android:name=".onboarding.SetupProfileActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-
-        <!-- 🆕 NEW: View Profile Activity -->
-        <activity
-            android:name=".profile.ViewProfileActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
         <!-- Main Launcher Activity -->
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Handle notification clicks -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
 
         <!-- Auth Activities -->
         <activity
             android:name=".auth.LoginActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".auth.RegisterActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".auth.ForgotPasswordActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Profile Activities -->
+        <activity
+            android:name=".onboarding.SetupProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".profile.ViewProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <!-- Listing Activities -->
         <activity
             android:name=".listing.CreateListingActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".listing.ListingDetailActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".listing.MyListingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Search Activities -->
+        <activity
+            android:name=".search.SearchActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Chat Activities -->
+        <activity
+            android:name=".chat.MessageActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Offers Activities -->
+        <activity
+            android:name=".offers.OffersActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Firebase Cloud Messaging Service -->
+        <service
+            android:name=".services.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Firebase Messaging default notification icon -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+
+        <!-- Firebase Messaging default notification color -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/primary" />
+
+        <!-- Firebase Messaging default notification channel -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="tradeup_general" />
+
+        <!-- Firebase App ID -->
+        <meta-data
+            android:name="com.google.firebase.messaging.auto_init_enabled"
+            android:value="true" />
+
+        <!-- Disable Firebase Analytics collection by default -->
+        <meta-data
+            android:name="firebase_analytics_collection_deactivated"
+            android:value="true" />
+
+        <!-- Cloudinary configuration -->
+        <meta-data
+            android:name="com.cloudinary.android.CLOUD_NAME"
+            android:value="dovf2zc0u" />
 
     </application>
 </manifest>

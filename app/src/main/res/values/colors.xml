@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- app/src/main/res/values/colors.xml -->
 <resources>
     <!-- Main Brand Colors (Spotify-inspired) -->
     <color name="primary">#1DB954</color> <!-- Spotify Green -->
@@ -26,7 +27,8 @@
     <color name="success">#1DB954</color>
     <color name="error">#E22134</color>
     <color name="warning">#FFA500</color>
-    <color name="unavaliable">#A9A9A9</color>
+    <color name="info">#2196F3</color>
+    <color name="unavailable">#A9A9A9</color>
 
     <!-- Interactive States -->
     <color name="on_primary">#FFFFFF</color>
@@ -68,4 +70,24 @@
     <color name="online_status">#1DB954</color>
     <color name="offline_status">#9E9E9E</color>
     <color name="premium_gold">#FFD700</color>
+
+    <!-- Offer Status Colors -->
+    <color name="offer_pending">#FFA500</color>
+    <color name="offer_accepted">#4CAF50</color>
+    <color name="offer_rejected">#F44336</color>
+    <color name="offer_counter">#2196F3</color>
+    <color name="offer_expired">#9E9E9E</color>
+
+    <!-- Chat Colors -->
+    <color name="chat_sent_bubble">#1DB954</color>
+    <color name="chat_received_bubble">#F0F0F0</color>
+    <color name="chat_sent_text">#FFFFFF</color>
+    <color name="chat_received_text">#191414</color>
+
+    <!-- Rating Colors -->
+    <color name="rating_excellent">#4CAF50</color>
+    <color name="rating_good">#8BC34A</color>
+    <color name="rating_average">#FFC107</color>
+    <color name="rating_poor">#FF9800</color>
+    <color name="rating_bad">#F44336</color>
 </resources>

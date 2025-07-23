@@ -18,7 +18,7 @@
             android:orientation="horizontal"
             android:padding="16dp"
             android:gravity="center_vertical"
-            android:background="@color/blue_500">
+            android:background="@color/primary">
 
             <ImageButton
                 android:id="@+id/btnBack"
@@ -65,7 +65,7 @@
                 android:layout_marginBottom="24dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/blue_500">
+                app:cardBackgroundColor="@color/primary">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -109,8 +109,18 @@
                         android:id="@+id/tvRating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="⭐ 4.5 (12 transactions)"
+                        android:text="⭐ 4.5 (12 reviews)"
                         android:textSize="16sp"
+                        android:textColor="#E1BEE7"
+                        android:layout_marginBottom="4dp" />
+
+                    <!-- ✅ NEW: Joined Date -->
+                    <TextView
+                        android:id="@+id/tvJoinedDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Joined January 2024"
+                        android:textSize="14sp"
                         android:textColor="#E1BEE7" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -220,6 +230,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
                 app:cardBackgroundColor="@android:color/white">
@@ -246,6 +257,59 @@
                         android:text="12 completed transactions"
                         android:textSize="16sp"
                         android:textColor="#1C1C1E" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- ✅ NEW: Rate User Button -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="3dp"
+                app:cardBackgroundColor="@color/primary">
+
+                <Button
+                    android:id="@+id/btnRateUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:text="⭐ Rate This User"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:background="@android:color/transparent"
+                    android:elevation="0dp" />
+            </androidx.cardview.widget.CardView>
+
+            <!-- ✅ NEW: Reviews Section -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@android:color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/tvReviewsTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Recent Reviews"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#1C1C1E"
+                        android:layout_marginBottom="16dp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvReviews"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>

@@ -19,7 +19,7 @@
             android:layout_marginBottom="24dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="4dp"
-            app:cardBackgroundColor="#6200EE">
+            app:cardBackgroundColor="@color/primary">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -28,24 +28,55 @@
                 android:gravity="center"
                 android:padding="32dp">
 
-                <!-- Avatar Container -->
+                <!-- Avatar Container with Change Photo Option -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="120dp"
                     android:layout_height="120dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="12dp"
                     app:cardCornerRadius="60dp"
                     app:cardElevation="6dp"
                     app:cardBackgroundColor="#FFFFFF">
 
-                    <ImageView
-                        android:id="@+id/ivAvatar"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:contentDescription="Profile Avatar"
-                        android:src="@drawable/ic_avatar_placeholder"
-                        android:padding="4dp" />
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/ivAvatar"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:contentDescription="Profile Avatar"
+                            android:src="@drawable/ic_avatar_placeholder"
+                            android:padding="4dp"
+                            android:clickable="true"
+                            android:foreground="?attr/selectableItemBackground" />
+
+                        <!-- Camera icon overlay -->
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_gravity="bottom|end"
+                            android:layout_margin="4dp"
+                            android:src="@drawable/ic_camera"
+                            android:background="@drawable/circle_background"
+                            android:padding="6dp"
+                            app:tint="@color/white"
+                            android:elevation="2dp" />
+                    </FrameLayout>
                 </androidx.cardview.widget.CardView>
+
+                <!-- ✅ NEW: Change Profile Picture Button -->
+                <Button
+                    android:id="@+id/btnChangeProfilePicture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="Change Photo"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="16dp"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:textColor="@color/white"
+                    app:strokeColor="@color/white" />
 
                 <!-- Name and Rating -->
                 <TextView
@@ -58,6 +89,24 @@
                     android:textColor="#FFFFFF"
                     android:layout_marginBottom="4dp" />
 
+                <!-- ✅ NEW: Rating Display -->
+                <TextView
+                    android:id="@+id/tvRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⭐ No ratings yet"
+                    android:textSize="16sp"
+                    android:textColor="#E1BEE7"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- ✅ NEW: Joined Date -->
+                <TextView
+                    android:id="@+id/tvJoinedDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Joined January 2024"
+                    android:textSize="14sp"
+                    android:textColor="#E1BEE7" />
 
                 <TextView
                     android:id="@+id/tvEmail"
@@ -65,7 +114,8 @@
                     android:layout_height="wrap_content"
                     android:text="user@example.com"
                     android:textSize="14sp"
-                    android:textColor="#E1BEE7" />
+                    android:textColor="#E1BEE7"
+                    android:layout_marginTop="8dp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -326,7 +376,7 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
             app:cardElevation="3dp"
-            app:cardBackgroundColor="#03DAC6">
+            app:cardBackgroundColor="@color/primary">
 
             <Button
                 android:id="@+id/btnEditProfile"
@@ -335,7 +385,7 @@
                 android:text="Edit Profile"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#000000"
+                android:textColor="@color/white"
                 android:background="@android:color/transparent"
                 android:elevation="0dp" />
         </androidx.cardview.widget.CardView>
@@ -347,7 +397,7 @@
             app:cardCornerRadius="12dp"
             android:layout_marginTop="12dp"
             app:cardElevation="3dp"
-            app:cardBackgroundColor="#018786 ">
+            app:cardBackgroundColor="#FF9800">
 
             <Button
                 android:id="@+id/btnLogout"
@@ -356,12 +406,12 @@
                 android:text="Logout"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#000000"
+                android:textColor="@color/white"
                 android:background="@android:color/transparent"
                 android:elevation="0dp" />
         </androidx.cardview.widget.CardView>
 
-        <!-- 🆕 NEW: Delete Account Button -->
+        <!-- Delete Account Button -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

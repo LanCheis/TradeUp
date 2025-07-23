@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="#FFFFFF">
+    android:background="@color/background"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,135 +12,291 @@
         android:orientation="vertical">
 
         <!-- Main Image -->
-        <ImageView
-            android:id="@+id/ivDetailImage"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="Item image"
-            android:background="@drawable/edittext_background"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Title -->
-        <TextView
-            android:id="@+id/tvDetailTitle"
-            android:text="Item title"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="#1a1a1a"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp" />
-
-        <!-- Price -->
-        <TextView
-            android:id="@+id/tvDetailPrice"
-            android:text="💰 25,000,000 ₫"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#d32f2f"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp" />
-
-        <!-- Category & Condition -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:id="@+id/tvDetailCategory"
-                android:text="📂 Electronics"
-                android:textSize="14sp"
-                android:textColor="#666666"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/tvDetailCondition"
-                android:text="✨ Like new"
-                android:textSize="14sp"
-                android:textColor="#4CAF50"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <!-- Owner Information -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="12dp"
-            android:background="@drawable/edittext_background"
-            android:layout_marginBottom="16dp"
-            android:gravity="center_vertical">
+            android:layout_height="300dp"
+            android:layout_margin="16dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp">
 
             <ImageView
-                android:id="@+id/ivOwnerAvatar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="12dp"
-                android:src="@drawable/ic_avatar_placeholder"
-                android:background="@drawable/avatar_circle_bg"
-                android:contentDescription="Seller Avatar" />
+                android:id="@+id/ivDetailImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="Product Image"
+                android:background="@color/surface_variant" />
+        </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:id="@+id/tvOwnerName"
-                android:layout_width="wrap_content"
+        <!-- Product Info Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="👤 Seller Name"
-                android:textSize="16sp"
-                android:textColor="#1a1a1a"
-                android:textStyle="bold" />
+                android:orientation="vertical"
+                android:padding="24dp">
 
-        </LinearLayout>
+                <!-- Title -->
+                <TextView
+                    android:id="@+id/tvDetailTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="iPhone 15 Pro Max"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="12dp" />
 
-        <!-- Description -->
-        <TextView
-            android:id="@+id/tvDetailDescription"
-            android:text="Detailed description..."
-            android:textSize="16sp"
-            android:textColor="#333333"
-            android:lineSpacingExtra="2dp"
+                <!-- Price -->
+                <TextView
+                    android:id="@+id/tvDetailPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="💰 25,000,000 ₫"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Category & Condition Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="20dp">
+
+                    <TextView
+                        android:id="@+id/tvDetailCategory"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="📂 Electronics"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_secondary"
+                        android:background="@drawable/info_tag_background"
+                        android:padding="8dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvDetailCondition"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="✨ Like New"
+                        android:textSize="16sp"
+                        android:textColor="@color/success"
+                        android:background="@drawable/success_tag_background"
+                        android:padding="8dp"
+                        android:layout_marginStart="8dp" />
+                </LinearLayout>
+
+                <!-- Description -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Description"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/tvDetailDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Excellent condition iPhone 15 Pro Max with all original accessories..."
+                    android:textSize="16sp"
+                    android:textColor="@color/text_primary"
+                    android:lineSpacingExtra="4dp"
+                    android:layout_marginBottom="20dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Seller Info Card -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/surface">
 
-        <!-- Action Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:gravity="center_vertical">
+
+                <!-- Avatar -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    app:cardCornerRadius="30dp"
+                    app:cardElevation="3dp"
+                    android:layout_marginEnd="16dp">
+
+                    <ImageView
+                        android:id="@+id/ivOwnerAvatar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_avatar_placeholder"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="Seller Avatar" />
+                </androidx.cardview.widget.CardView>
+
+                <!-- Seller Info -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Seller"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvOwnerName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="👤 John Doe"
+                        android:textSize="18sp"
+                        android:textColor="@color/text_primary"
+                        android:textStyle="bold"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <!-- View Profile Button -->
+                <Button
+                    android:id="@+id/btnViewProfile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="View Profile"
+                    android:textSize="12sp"
+                    android:backgroundTint="@color/surface_variant"
+                    android:textColor="@color/text_primary"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:minHeight="0dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Owner Actions (Only visible to listing owner) -->
         <LinearLayout
+            android:id="@+id/layoutOwnerActions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone">
 
-            <!-- Make Offer Button -->
             <Button
-                android:id="@+id/btnMakeOffer"
+                android:id="@+id/btnEditListing"
                 android:layout_width="0dp"
-                android:layout_height="56dp"
+                android:layout_height="48dp"
                 android:layout_weight="1"
-                android:text="💰 Make Offer"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:backgroundTint="@color/primary"
-                android:textColor="@android:color/white"
+                android:text="✏️ Edit"
+                android:textSize="14sp"
+                android:backgroundTint="@color/warning"
+                android:textColor="@color/white"
                 android:layout_marginEnd="8dp"
                 style="@style/Widget.Material3.Button" />
 
-            <!-- Share Button -->
             <Button
-                android:id="@+id/btnShare"
+                android:id="@+id/btnManageOffers"
                 android:layout_width="0dp"
-                android:layout_height="56dp"
+                android:layout_height="48dp"
                 android:layout_weight="1"
-                android:text="📤 Share"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_marginStart="8dp" />
+                android:text="💰 Offers"
+                android:textSize="14sp"
+                android:backgroundTint="@color/primary"
+                android:textColor="@color/on_primary"
+                android:layout_marginStart="8dp"
+                style="@style/Widget.Material3.Button" />
         </LinearLayout>
 
+        <!-- Action Buttons (For non-owners) -->
+        <LinearLayout
+            android:id="@+id/layoutBuyerActions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp">
+
+            <!-- Primary Actions Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <Button
+                    android:id="@+id/btnChat"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="💬 Chat"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="@color/primary"
+                    android:textColor="@color/on_primary"
+                    android:layout_marginEnd="8dp"
+                    style="@style/Widget.Material3.Button" />
+
+                <Button
+                    android:id="@+id/btnMakeOffer"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="💰 Make Offer"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="@color/accent_orange"
+                    android:textColor="@color/white"
+                    android:layout_marginStart="8dp"
+                    style="@style/Widget.Material3.Button" />
+            </LinearLayout>
+
+            <!-- Secondary Action -->
+            <Button
+                android:id="@+id/btnShare"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="📤 Share this listing"
+                android:textSize="16sp"
+                android:backgroundTint="@color/surface_variant"
+                android:textColor="@color/text_primary"
+                style="@style/Widget.Material3.Button.OutlinedButton" />
+        </LinearLayout>
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginVertical="16dp"
+            android:visibility="gone"
+            android:indeterminateTint="@color/primary" />
+
+        <!-- Bottom Spacing -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="24dp" />
     </LinearLayout>
 </ScrollView>

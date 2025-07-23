@@ -2,194 +2,146 @@ package com.example.tradeup.offers
 
 import android.os.Bundle
 import android.view.View
-import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tradeup.R
 import com.example.tradeup.data.model.Offer
+import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 
 class OffersActivity : AppCompatActivity() {
 
-    private lateinit var btnBack: ImageButton
-    private lateinit var tabReceived: TextView
-    private lateinit var tabSent: TextView
+    private lateinit var tabLayout: TabLayout
     private lateinit var rvOffers: RecyclerView
-    private lateinit var layoutEmpty: LinearLayout
-    private lateinit var progressBar: ProgressBar
+    private lateinit var layoutEmpty: View
+    private lateinit var layoutLoading: View
 
     private val receivedOffers = mutableListOf<Offer>()
     private val sentOffers = mutableListOf<Offer>()
     private lateinit var offersAdapter: OffersAdapter
 
-    private var currentTab = "received" // "received" or "sent"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_offers)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Offers"
+
         initViews()
-        setupClickListeners()
+        setupTabs()
         setupRecyclerView()
         loadOffers()
     }
 
     private fun initViews() {
-        btnBack = findViewById(R.id.btnBack)
-        tabReceived = findViewById(R.id.tabReceived)
-        tabSent = findViewById(R.id.tabSent)
+        tabLayout = findViewById(R.id.tabLayout)
         rvOffers = findViewById(R.id.rvOffers)
         layoutEmpty = findViewById(R.id.layoutEmpty)
-        progressBar = findViewById(R.id.progressBar)
-
-        // Set initial tab
-        updateTabSelection()
+        layoutLoading = findViewById(R.id.layoutLoading)
     }
 
-    private fun setupClickListeners() {
-        btnBack.setOnClickListener { finish() }
+    private fun setupTabs() {
+        tabLayout.addTab(tabLayout.newTab().setText("Received"))
+        tabLayout.addTab(tabLayout.newTab().setText("Sent"))
 
-        tabReceived.setOnClickListener {
-            currentTab = "received"
-            updateTabSelection()
-            updateRecyclerView()
-        }
-
-        tabSent.setOnClickListener {
-            currentTab = "sent"
-            updateTabSelection()
-            updateRecyclerView()
-        }
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when (tab?.position) {
+                    0 -> showReceivedOffers()
+                    1 -> showSentOffers()
+                }
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
     }
 
     private fun setupRecyclerView() {
-        offersAdapter = OffersAdapter(
-            offers = if (currentTab == "received") receivedOffers else sentOffers,
-            isReceivedTab = currentTab == "received",
-            onAcceptOffer = { offer -> acceptOffer(offer) },
-            onRejectOffer = { offer -> rejectOffer(offer) },
-            onWithdrawOffer = { offer -> withdrawOffer(offer) }
-        )
+        offersAdapter = OffersAdapter(emptyList()) { offer, action ->
+            handleOfferAction(offer, action)
+        }
         rvOffers.layoutManager = LinearLayoutManager(this)
         rvOffers.adapter = offersAdapter
     }
 
-    private fun updateTabSelection() {
-        if (currentTab == "received") {
-            tabReceived.setBackgroundResource(R.drawable.edittext_filled_background)
-            tabReceived.setTextColor(getColor(R.color.primary))
-            tabSent.setBackgroundResource(R.drawable.edittext_background)
-            tabSent.setTextColor(getColor(R.color.text_secondary))
-        } else {
-            tabSent.setBackgroundResource(R.drawable.edittext_filled_background)
-            tabSent.setTextColor(getColor(R.color.primary))
-            tabReceived.setBackgroundResource(R.drawable.edittext_background)
-            tabReceived.setTextColor(getColor(R.color.text_secondary))
-        }
-    }
-
-    private fun updateRecyclerView() {
-        offersAdapter = OffersAdapter(
-            offers = if (currentTab == "received") receivedOffers else sentOffers,
-            isReceivedTab = currentTab == "received",
-            onAcceptOffer = { offer -> acceptOffer(offer) },
-            onRejectOffer = { offer -> rejectOffer(offer) },
-            onWithdrawOffer = { offer -> withdrawOffer(offer) }
-        )
-        rvOffers.adapter = offersAdapter
-
-        val isEmpty = if (currentTab == "received") receivedOffers.isEmpty() else sentOffers.isEmpty()
-        layoutEmpty.visibility = if (isEmpty) View.VISIBLE else View.GONE
-    }
-
     private fun loadOffers() {
-        val currentUser = FirebaseAuth.getInstance().currentUser ?: return
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
         showLoading(true)
 
         // Load received offers (where user is seller)
-        FirebaseFirestore.getInstance()
-            .collection("offers")
-            .whereEqualTo("sellerId", currentUser.uid)
-            .orderBy("createdAt", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { documents ->
-                receivedOffers.clear()
-                for (doc in documents) {
-                    val offer = doc.toObject(Offer::class.java)
-                    receivedOffers.add(offer)
+        OfferRepository.getOffersBySeller(currentUserId) { offers ->
+            receivedOffers.clear()
+            receivedOffers.addAll(offers)
+
+            // Load sent offers (where user is buyer)
+            OfferRepository.getOffersByBuyer(currentUserId) { sentOffers ->
+                this.sentOffers.clear()
+                this.sentOffers.addAll(sentOffers)
+
+                showLoading(false)
+                showReceivedOffers() // Default to received offers
+            }
+        }
+    }
+
+    private fun showReceivedOffers() {
+        offersAdapter.updateOffers(receivedOffers, "received")
+        showEmptyState(receivedOffers.isEmpty())
+    }
+
+    private fun showSentOffers() {
+        offersAdapter.updateOffers(sentOffers, "sent")
+        showEmptyState(sentOffers.isEmpty())
+    }
+
+    private fun handleOfferAction(offer: Offer, action: String) {
+        when (action) {
+            "accept" -> {
+                OfferRepository.acceptOffer(offer.id) { success, error ->
+                    if (success) {
+                        loadOffers() // Refresh
+                    } else {
+                        // Show error
+                    }
                 }
-                loadSentOffers(currentUser.uid)
             }
-            .addOnFailureListener {
-                showLoading(false)
-                Toast.makeText(this, "Failed to load offers", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun loadSentOffers(userId: String) {
-        // Load sent offers (where user is buyer)
-        FirebaseFirestore.getInstance()
-            .collection("offers")
-            .whereEqualTo("buyerId", userId)
-            .orderBy("createdAt", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { documents ->
-                sentOffers.clear()
-                for (doc in documents) {
-                    val offer = doc.toObject(Offer::class.java)
-                    sentOffers.add(offer)
+            "reject" -> {
+                OfferRepository.rejectOffer(offer.id) { success, error ->
+                    if (success) {
+                        loadOffers() // Refresh
+                    } else {
+                        // Show error
+                    }
                 }
-                showLoading(false)
-                updateRecyclerView()
             }
-            .addOnFailureListener {
-                showLoading(false)
-                Toast.makeText(this, "Failed to load sent offers", Toast.LENGTH_SHORT).show()
+            "counter" -> {
+                // Show counter offer dialog
+                showCounterOfferDialog(offer)
             }
-    }
-
-    private fun acceptOffer(offer: Offer) {
-        updateOfferStatus(offer, "accepted") {
-            Toast.makeText(this, "✅ Offer accepted!", Toast.LENGTH_SHORT).show()
-            loadOffers()
         }
     }
 
-    private fun rejectOffer(offer: Offer) {
-        updateOfferStatus(offer, "rejected") {
-            Toast.makeText(this, "❌ Offer rejected", Toast.LENGTH_SHORT).show()
-            loadOffers()
-        }
-    }
-
-    private fun withdrawOffer(offer: Offer) {
-        updateOfferStatus(offer, "withdrawn") {
-            Toast.makeText(this, "🔄 Offer withdrawn", Toast.LENGTH_SHORT).show()
-            loadOffers()
-        }
-    }
-
-    private fun updateOfferStatus(offer: Offer, newStatus: String, onSuccess: () -> Unit) {
-        val updatedOffer = offer.copy(
-            status = newStatus,
-            updatedAt = System.currentTimeMillis()
-        )
-
-        FirebaseFirestore.getInstance()
-            .collection("offers")
-            .document(offer.id)
-            .set(updatedOffer)
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener {
-                Toast.makeText(this, "Failed to update offer", Toast.LENGTH_SHORT).show()
-            }
+    private fun showCounterOfferDialog(offer: Offer) {
+        // Implementation for counter offer dialog
+        // This would show a dialog to enter counter offer amount and message
     }
 
     private fun showLoading(show: Boolean) {
-        progressBar.visibility = if (show) View.VISIBLE else View.GONE
+        layoutLoading.visibility = if (show) View.VISIBLE else View.GONE
         rvOffers.visibility = if (show) View.GONE else View.VISIBLE
+        layoutEmpty.visibility = View.GONE
+    }
+
+    private fun showEmptyState(show: Boolean) {
+        layoutEmpty.visibility = if (show) View.VISIBLE else View.GONE
+        rvOffers.visibility = if (show) View.GONE else View.VISIBLE
+        layoutLoading.visibility = View.GONE
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 }

@@ -1,5 +1,3 @@
-// app/src/main/java/com/example/tradeup/data/remote/UserRepository.kt
-
 package com.example.tradeup.data.remote
 
 import com.example.tradeup.data.model.User
@@ -39,12 +37,44 @@ object UserRepository {
             "stars" to stars,
             "timestamp" to FieldValue.serverTimestamp()
         )
+
+        // Save individual rating
         db.collection("users").document(targetUserId)
             .collection("ratings")
             .document(raterId)
             .set(ratingData)
-            .addOnSuccessListener { onComplete(true) }
+            .addOnSuccessListener {
+                // Update user's aggregate rating
+                updateUserRating(targetUserId)
+                onComplete(true)
+            }
             .addOnFailureListener { onComplete(false) }
+    }
+
+    // ✅ NEW: Update user's aggregate rating
+    private fun updateUserRating(userId: String) {
+        db.collection("users").document(userId)
+            .collection("ratings")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val ratings = snapshot.documents.mapNotNull {
+                    it.getDouble("stars")?.toFloat()
+                }
+
+                if (ratings.isNotEmpty()) {
+                    val averageRating = ratings.average()
+                    val ratingCount = ratings.size
+
+                    // Update user document with new rating
+                    db.collection("users").document(userId)
+                        .update(
+                            mapOf(
+                                "rating" to averageRating,
+                                "ratingCount" to ratingCount
+                            )
+                        )
+                }
+            }
     }
 
     fun fetchAverageRating(userId: String, onResult: (Float) -> Unit) {
@@ -75,14 +105,21 @@ object UserRepository {
                 // Step 2: Delete user's listings
                 deleteUserListings(uid) { listingsDeleted ->
                     if (listingsDeleted) {
-                        // Step 3: Delete Firebase Auth account
-                        currentUser.delete()
-                            .addOnSuccessListener {
-                                onComplete(true, null)
+                        // Step 3: Delete user's ratings
+                        deleteUserRatings(uid) { ratingsDeleted ->
+                            if (ratingsDeleted) {
+                                // Step 4: Delete Firebase Auth account
+                                currentUser.delete()
+                                    .addOnSuccessListener {
+                                        onComplete(true, null)
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        onComplete(false, "Failed to delete account: ${exception.message}")
+                                    }
+                            } else {
+                                onComplete(false, "Failed to delete user ratings")
                             }
-                            .addOnFailureListener { exception ->
-                                onComplete(false, "Failed to delete account: ${exception.message}")
-                            }
+                        }
                     } else {
                         onComplete(false, "Failed to delete user listings")
                     }
@@ -107,6 +144,36 @@ object UserRepository {
 
                 batch.commit()
                     .addOnSuccessListener { onComplete(true) }
+                    .addOnFailureListener { onComplete(false) }
+            }
+            .addOnFailureListener { onComplete(false) }
+    }
+
+    // 🆕 NEW: Helper method to delete user's ratings
+    private fun deleteUserRatings(userId: String, onComplete: (Boolean) -> Unit) {
+        // Delete ratings given by this user
+        db.collection("user_reviews")
+            .whereEqualTo("fromUserId", userId)
+            .get()
+            .addOnSuccessListener { fromDocuments ->
+                val batch = db.batch()
+                for (document in fromDocuments) {
+                    batch.delete(document.reference)
+                }
+
+                // Delete ratings given to this user
+                db.collection("user_reviews")
+                    .whereEqualTo("toUserId", userId)
+                    .get()
+                    .addOnSuccessListener { toDocuments ->
+                        for (document in toDocuments) {
+                            batch.delete(document.reference)
+                        }
+
+                        batch.commit()
+                            .addOnSuccessListener { onComplete(true) }
+                            .addOnFailureListener { onComplete(false) }
+                    }
                     .addOnFailureListener { onComplete(false) }
             }
             .addOnFailureListener { onComplete(false) }
