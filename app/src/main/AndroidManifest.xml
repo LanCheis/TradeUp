@@ -149,6 +149,8 @@
             android:name="firebase_analytics_collection_deactivated"
             android:value="true" />
 
+
+
         <!-- Cloudinary configuration -->
         <meta-data
             android:name="com.cloudinary.android.CLOUD_NAME"

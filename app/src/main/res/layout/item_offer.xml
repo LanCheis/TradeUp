@@ -4,187 +4,178 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginVertical="6dp"
-    android:layout_marginHorizontal="8dp"
-    app:cardCornerRadius="16dp"
+    android:layout_marginHorizontal="4dp"
+    app:cardCornerRadius="12dp"
     app:cardElevation="3dp"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
     app:cardBackgroundColor="@color/surface">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:padding="16dp">
 
-        <!-- Header Row -->
+        <!-- Status Indicator -->
+        <View
+            android:id="@+id/statusIndicator"
+            android:layout_width="4dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="12dp"
+            android:background="@color/primary" />
+
+        <!-- Item Image -->
+        <ImageView
+            android:id="@+id/ivItemImage"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginEnd="12dp"
+            android:scaleType="centerCrop"
+            android:background="@drawable/rounded_image_background"
+            android:src="@drawable/ic_image_placeholder" />
+
+        <!-- Offer Details -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="12dp">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-            <!-- Listing Image -->
-            <ImageView
-                android:id="@+id/ivListing"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginEnd="12dp"
-                android:scaleType="centerCrop"
-                android:background="@drawable/rounded_image_background" />
-
-            <!-- Listing Info -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvListingTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="iPhone 15 Pro Max"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:maxLines="2"
-                    android:ellipsize="end" />
-
-                <TextView
-                    android:id="@+id/tvUserName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="From: John Doe"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginTop="4dp" />
-            </LinearLayout>
-
-            <!-- Status Badge -->
+            <!-- Item Title -->
             <TextView
-                android:id="@+id/tvStatus"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvItemTitle"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Pending"
-                android:textSize="12sp"
+                android:text="iPhone 15 Pro Max"
                 android:textStyle="bold"
-                android:textColor="@color/primary"
-                android:background="@drawable/status_badge_background"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="4dp" />
-        </LinearLayout>
+                android:textSize="16sp"
+                android:textColor="@color/text_primary"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginBottom="4dp" />
 
-        <!-- Price Info -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
-
+            <!-- Price Information -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tvOriginalPrice"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Offer Amount"
+                    android:layout_weight="1"
+                    android:text="Original: 25,000,000 ₫"
                     android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
-                    android:textStyle="bold" />
+                    android:textColor="@color/text_secondary" />
 
                 <TextView
-                    android:id="@+id/tvOfferAmount"
+                    android:id="@+id/tvOfferPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="25,000,000 ₫"
-                    android:textSize="18sp"
+                    android:text="Offer: 22,000,000 ₫"
+                    android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="@color/primary" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tvOriginalPrice"
-                android:layout_width="wrap_content"
+            <!-- User and Status -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Original: 30,000,000 ₫"
-                android:textSize="14sp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/tvUserName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="From: John Doe"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary" />
+
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🟡 Pending"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Date and Message -->
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dec 20, 14:30"
+                android:textSize="11sp"
+                android:textColor="@color/text_tertiary"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="I'm really interested in this item!"
+                android:textSize="12sp"
                 android:textColor="@color/text_secondary"
-                android:gravity="end" />
-        </LinearLayout>
+                android:textStyle="italic"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginBottom="8dp" />
 
-        <!-- Message -->
-        <TextView
-            android:id="@+id/tvMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Is the price negotiable? I'm really interested!"
-            android:textSize="14sp"
-            android:textColor="@color/text_primary"
-            android:background="@drawable/message_background"
-            android:padding="12dp"
-            android:layout_marginBottom="12dp"
-            android:maxLines="3"
-            android:ellipsize="end" />
+            <!-- Action Buttons (for received offers) -->
+            <LinearLayout
+                android:id="@+id/layoutActions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
 
-        <!-- Date -->
-        <TextView
-            android:id="@+id/tvDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Dec 25, 2024"
-            android:textSize="12sp"
-            android:textColor="@color/text_tertiary"
-            android:layout_marginBottom="12dp" />
+                <Button
+                    android:id="@+id/btnAccept"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:text="✅ Accept"
+                    android:textSize="11sp"
+                    android:backgroundTint="@color/success"
+                    android:textColor="@color/white"
+                    android:minHeight="0dp"
+                    style="@style/Widget.Material3.Button" />
 
-        <!-- Action Buttons -->
-        <LinearLayout
-            android:id="@+id/layoutActions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone">
+                <Button
+                    android:id="@+id/btnCounter"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="2dp"
+                    android:text="🔄 Counter"
+                    android:textSize="11sp"
+                    android:backgroundTint="@color/primary"
+                    android:textColor="@color/white"
+                    android:minHeight="0dp"
+                    style="@style/Widget.Material3.Button" />
 
-            <Button
-                android:id="@+id/btnReject"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_weight="1"
-                android:text="Reject"
-                android:textSize="12sp"
-                android:backgroundTint="@color/error"
-                android:textColor="@color/white"
-                android:layout_marginEnd="4dp"
-                style="@style/Widget.Material3.Button"
-                android:minHeight="0dp" />
-
-            <Button
-                android:id="@+id/btnCounter"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_weight="1"
-                android:text="Counter"
-                android:textSize="12sp"
-                android:backgroundTint="@color/warning"
-                android:textColor="@color/white"
-                android:layout_marginHorizontal="4dp"
-                style="@style/Widget.Material3.Button"
-                android:minHeight="0dp" />
-
-            <Button
-                android:id="@+id/btnAccept"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_weight="1"
-                android:text="Accept"
-                android:textSize="12sp"
-                android:backgroundTint="@color/success"
-                android:textColor="@color/white"
-                android:layout_marginStart="4dp"
-                style="@style/Widget.Material3.Button"
-                android:minHeight="0dp" />
+                <Button
+                    android:id="@+id/btnReject"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:text="❌ Reject"
+                    android:textSize="11sp"
+                    android:backgroundTint="@color/error"
+                    android:textColor="@color/white"
+                    android:minHeight="0dp"
+                    style="@style/Widget.Material3.Button" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -1,12 +1,12 @@
-package com.example.tradeup.offers
+// app/src/main/java/com/example/tradeup/offer/OffersAdapter.kt
 
-import android.graphics.Color
+package com.example.tradeup.offer
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.tradeup.R
@@ -16,25 +16,25 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class OffersAdapter(
-    private var offers: List<Offer>,
+    private var offers: MutableList<Offer>,
+    private var tabType: String, // "received" or "sent"
     private val onOfferAction: (Offer, String) -> Unit
 ) : RecyclerView.Adapter<OffersAdapter.OfferViewHolder>() {
 
-    private var viewType = "received" // "received" or "sent"
-
     inner class OfferViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val ivListing: ImageView = view.findViewById(R.id.ivListing)
-        val tvListingTitle: TextView = view.findViewById(R.id.tvListingTitle)
-        val tvOfferAmount: TextView = view.findViewById(R.id.tvOfferAmount)
+        val ivItemImage: ImageView = view.findViewById(R.id.ivItemImage)
+        val tvItemTitle: TextView = view.findViewById(R.id.tvItemTitle)
         val tvOriginalPrice: TextView = view.findViewById(R.id.tvOriginalPrice)
+        val tvOfferPrice: TextView = view.findViewById(R.id.tvOfferPrice)
         val tvUserName: TextView = view.findViewById(R.id.tvUserName)
-        val tvMessage: TextView = view.findViewById(R.id.tvMessage)
         val tvStatus: TextView = view.findViewById(R.id.tvStatus)
         val tvDate: TextView = view.findViewById(R.id.tvDate)
+        val tvMessage: TextView = view.findViewById(R.id.tvMessage)
+        val layoutActions: LinearLayout = view.findViewById(R.id.layoutActions)
         val btnAccept: Button = view.findViewById(R.id.btnAccept)
         val btnReject: Button = view.findViewById(R.id.btnReject)
         val btnCounter: Button = view.findViewById(R.id.btnCounter)
-        val layoutActions: View = view.findViewById(R.id.layoutActions)
+        val statusIndicator: View = view.findViewById(R.id.statusIndicator)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OfferViewHolder {
@@ -47,23 +47,28 @@ class OffersAdapter(
         val offer = offers[position]
         val context = holder.itemView.context
 
-        // Load listing image
+        // Load item image
         Glide.with(context)
             .load(offer.listingImageUrl)
             .placeholder(R.drawable.ic_image_placeholder)
-            .into(holder.ivListing)
+            .error(R.drawable.ic_image_placeholder)
+            .into(holder.ivItemImage)
 
         // Set basic info
-        holder.tvListingTitle.text = offer.listingTitle
-        holder.tvOfferAmount.text = formatPrice(offer.offerPrice)
+        holder.tvItemTitle.text = offer.listingTitle
         holder.tvOriginalPrice.text = "Original: ${formatPrice(offer.originalPrice)}"
+        holder.tvOfferPrice.text = "Offer: ${formatPrice(offer.offeredPrice)}"
 
-        // Set user name based on view type
-        holder.tvUserName.text = if (viewType == "received") {
+        // Set user name based on tab type
+        holder.tvUserName.text = if (tabType == "received") {
             "From: ${offer.buyerName}"
         } else {
             "To: ${offer.sellerName}"
         }
+
+        // Set date
+        val dateFormat = SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault())
+        holder.tvDate.text = dateFormat.format(Date(offer.createdAt))
 
         // Set message
         holder.tvMessage.text = if (offer.message.isNotEmpty()) {
@@ -71,42 +76,84 @@ class OffersAdapter(
         } else {
             "No message"
         }
+        holder.tvMessage.visibility = if (offer.message.isNotEmpty()) View.VISIBLE else View.GONE
 
-        // Set status
-        holder.tvStatus.text = offer.getDisplayStatus()
-        holder.tvStatus.setTextColor(Color.parseColor(offer.getStatusColor()))
+        // Set status and status indicator
+        setStatusAppearance(holder, offer.status)
 
-        // Set date
-        val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-        holder.tvDate.text = dateFormat.format(Date(offer.createdAt))
+        // Configure action buttons
+        configureActionButtons(holder, offer)
+    }
 
-        // Show/hide action buttons
-        val showActions = viewType == "received" && offer.status == "pending" && !offer.isExpired()
-        holder.layoutActions.visibility = if (showActions) View.VISIBLE else View.GONE
+    private fun setStatusAppearance(holder: OfferViewHolder, status: String) {
+        val context = holder.itemView.context
 
-        if (showActions) {
-            holder.btnAccept.setOnClickListener {
-                onOfferAction(offer, "accept")
+        when (status) {
+            "pending" -> {
+                holder.tvStatus.text = "🟡 Pending"
+                holder.tvStatus.setTextColor(ContextCompat.getColor(context, android.R.color.holo_orange_dark))
+                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_orange_dark))
             }
-            holder.btnReject.setOnClickListener {
-                onOfferAction(offer, "reject")
+            "accepted" -> {
+                holder.tvStatus.text = "✅ Accepted"
+                holder.tvStatus.setTextColor(ContextCompat.getColor(context, android.R.color.holo_green_dark))
+                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_green_dark))
             }
-            holder.btnCounter.setOnClickListener {
-                onOfferAction(offer, "counter")
+            "rejected" -> {
+                holder.tvStatus.text = "❌ Rejected"
+                holder.tvStatus.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_dark))
+                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_red_dark))
+            }
+            "countered" -> {
+                holder.tvStatus.text = "🔄 Countered"
+                holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.primary))
+                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.primary))
+            }
+            else -> {
+                holder.tvStatus.text = "❓ Unknown"
+                holder.tvStatus.setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray))
+                holder.statusIndicator.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray))
             }
         }
     }
 
-    override fun getItemCount() = offers.size
+    private fun configureActionButtons(holder: OfferViewHolder, offer: Offer) {
+        // Show action buttons only for received offers that are pending
+        if (tabType == "received" && offer.status == "pending") {
+            holder.layoutActions.visibility = View.VISIBLE
 
-    fun updateOffers(newOffers: List<Offer>, type: String) {
-        offers = newOffers
-        viewType = type
-        notifyDataSetChanged()
+            holder.btnAccept.setOnClickListener {
+                onOfferAction(offer, "accept")
+            }
+
+            holder.btnReject.setOnClickListener {
+                onOfferAction(offer, "reject")
+            }
+
+            holder.btnCounter.setOnClickListener {
+                onOfferAction(offer, "counter")
+            }
+        } else {
+            holder.layoutActions.visibility = View.GONE
+        }
+
+        // Add click listener for viewing details
+        holder.itemView.setOnClickListener {
+            onOfferAction(offer, "view")
+        }
     }
 
     private fun formatPrice(price: Double): String {
         val formatter = NumberFormat.getNumberInstance(Locale("vi", "VN"))
         return "${formatter.format(price)} ₫"
     }
+
+    fun updateOffers(newOffers: List<Offer>, newTabType: String) {
+        offers.clear()
+        offers.addAll(newOffers)
+        tabType = newTabType
+        notifyDataSetChanged()
+    }
+
+    override fun getItemCount() = offers.size
 }
