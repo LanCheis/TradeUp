@@ -12,7 +12,7 @@ data class User(
     val address: String = "",
     val rating: Double = 0.0,
     val reviewCount: Int = 0,
-    val isEmailVerified: Boolean = false,
+    val emailVerified: Boolean = false,
     val createdAt: Timestamp = Timestamp.now(),
     val updatedAt: Timestamp = Timestamp.now()
 )

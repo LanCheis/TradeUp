@@ -158,30 +158,47 @@ class ProfileFragment : Fragment() {
     }
 
     // 🔧 SIMPLIFIED: Profile image loading without complex listener
+    // 🔧 IMPROVED: Better error handling and logging
     private fun loadProfileImage(imageUrl: String, timestamp: Long) {
         Log.d("ProfileFragment", "🔍 loadProfileImage called:")
-        Log.d("ProfileFragment", "   - imageUrl: '$imageUrl'")
-        Log.d("ProfileFragment", "   - timestamp: $timestamp")
+        Log.d("ProfileFragment", "     - imageUrl: '$imageUrl'")
+        Log.d("ProfileFragment", "     - timestamp: $timestamp")
 
         if (imageUrl.isNotEmpty()) {
-            Log.d("ProfileFragment", "✅ Loading image with Glide...")
-
-            // Try loading with cache busting first
+            Log.d("ProfileFragment", "📸 Loading image from URL")
             Glide.with(this)
                 .load(imageUrl)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true) // Skip memory cache completely
+                .skipMemoryCache(false)
+                .signature(ObjectKey(timestamp))
                 .placeholder(R.drawable.ic_avatar_placeholder)
                 .error(R.drawable.ic_avatar_placeholder)
+                .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                    override fun onLoadFailed(
+                        e: com.bumptech.glide.load.engine.GlideException?,
+                        model: Any?,
+                        target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        Log.e("ProfileFragment", "❌ Glide load failed: ${e?.message}")
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: android.graphics.drawable.Drawable?,
+                        model: Any?,
+                        target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
+                        dataSource: com.bumptech.glide.load.DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        Log.d("ProfileFragment", "✅ Image loaded successfully")
+                        return false
+                    }
+                })
                 .into(ivProfilePic)
-
-            // Also show a toast so you know it's trying to load
-            Toast.makeText(context, "Loading profile image...", Toast.LENGTH_SHORT).show()
-
         } else {
             Log.w("ProfileFragment", "⚠️ Image URL is empty, showing placeholder")
             ivProfilePic.setImageResource(R.drawable.ic_avatar_placeholder)
-            Toast.makeText(context, "No profile image set", Toast.LENGTH_SHORT).show()
         }
     }
 
