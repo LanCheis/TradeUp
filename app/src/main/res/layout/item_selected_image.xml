@@ -1,32 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="80dp"
-    android:layout_height="80dp"
-    android:layout_margin="4dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:layout_margin="4dp">
 
-    <RelativeLayout
+    <!-- Image Preview -->
+    <ImageView
+        android:id="@+id/ivImage"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:background="@drawable/rounded_image_background"
+        android:contentDescription="@string/preview_image" />
 
-        <ImageView
-            android:id="@+id/ivSelectedImage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
+    <!-- Remove Button -->
+    <ImageView
+        android:id="@+id/btnRemove"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="4dp"
+        android:src="@drawable/ic_close_circle"
+        android:background="@drawable/circle_background_red"
+        android:padding="4dp"
+        android:contentDescription="@string/remove_image"
+        android:elevation="2dp" />
 
-        <ImageButton
-            android:id="@+id/btnRemoveImage"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="4dp"
-            android:background="@drawable/remove_button_background"
-            android:src="@drawable/ic_close"
-            android:contentDescription="Remove image" />
-
-    </RelativeLayout>
-</androidx.cardview.widget.CardView>
+</FrameLayout>

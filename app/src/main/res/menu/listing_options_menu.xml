@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_edit"
+        android:title="✏️ Edit Listing"
+        android:icon="@drawable/ic_edit" />
+
+    <item
+        android:id="@+id/action_change_status"
+        android:title="🔄 Change Status"
+        android:icon="@drawable/ic_swap_horiz" />
+
+    <item
+        android:id="@+id/action_view_analytics"
+        android:title="📊 View Analytics"
+        android:icon="@drawable/ic_analytics" />
+
+    <item
+        android:id="@+id/action_delete"
+        android:title="🗑️ Delete"
+        android:icon="@drawable/ic_delete" />
+
+</menu>
