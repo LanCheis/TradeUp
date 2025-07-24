@@ -2,7 +2,6 @@ package com.example.tradeup.profile
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -111,14 +110,9 @@ class ProfileFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
-                Log.d("ProfileFragment", "🔍 Loading profile for user: ${currentUser.uid}")
                 val userProfile = userRepository.getUserProfile(currentUser.uid)
 
                 if (userProfile != null) {
-                    Log.d("ProfileFragment", "✅ Profile loaded successfully")
-                    Log.d("ProfileFragment", "🔍 Profile picture URL: '${userProfile.profilePictureUrl}'")
-                    Log.d("ProfileFragment", "🔍 Updated timestamp: ${userProfile.updatedAt.seconds}")
-
                     // FR-1.2.1: Display all profile information
                     tvDisplayName.text = userProfile.displayName.ifEmpty { "No name set" }
                     tvBio.text = userProfile.bio.ifEmpty { "No bio added yet" }
@@ -139,11 +133,10 @@ class ProfileFragment : Fragment() {
                         tvRatingText.text = "No reviews yet"
                     }
 
-                    // 🔧 SIMPLIFIED: Load profile picture
+                    // Load profile picture with cache busting
                     loadProfileImage(userProfile.profilePictureUrl, userProfile.updatedAt.seconds)
 
                 } else {
-                    Log.e("ProfileFragment", "❌ Profile not found in database")
                     Toast.makeText(context, "Profile not found", Toast.LENGTH_SHORT).show()
                 }
 
@@ -151,53 +144,24 @@ class ProfileFragment : Fragment() {
 
             } catch (e: Exception) {
                 showLoading(false)
-                Log.e("ProfileFragment", "❌ Error loading profile: ${e.message}")
                 Toast.makeText(context, "Error loading profile: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    // 🔧 SIMPLIFIED: Profile image loading without complex listener
-    // 🔧 IMPROVED: Better error handling and logging
+    // Load profile image with cache control
     private fun loadProfileImage(imageUrl: String, timestamp: Long) {
-        Log.d("ProfileFragment", "🔍 loadProfileImage called:")
-        Log.d("ProfileFragment", "     - imageUrl: '$imageUrl'")
-        Log.d("ProfileFragment", "     - timestamp: $timestamp")
-
         if (imageUrl.isNotEmpty()) {
-            Log.d("ProfileFragment", "📸 Loading image from URL")
             Glide.with(this)
                 .load(imageUrl)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(false)
-                .signature(ObjectKey(timestamp))
+                .diskCacheStrategy(DiskCacheStrategy.NONE) // Don't cache to disk
+                .skipMemoryCache(false) // Allow memory cache but use signature
+                .signature(ObjectKey(timestamp)) // Use timestamp as cache key
                 .placeholder(R.drawable.ic_avatar_placeholder)
                 .error(R.drawable.ic_avatar_placeholder)
-                .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
-                    override fun onLoadFailed(
-                        e: com.bumptech.glide.load.engine.GlideException?,
-                        model: Any?,
-                        target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Log.e("ProfileFragment", "❌ Glide load failed: ${e?.message}")
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                        resource: android.graphics.drawable.Drawable?,
-                        model: Any?,
-                        target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
-                        dataSource: com.bumptech.glide.load.DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Log.d("ProfileFragment", "✅ Image loaded successfully")
-                        return false
-                    }
-                })
                 .into(ivProfilePic)
         } else {
-            Log.w("ProfileFragment", "⚠️ Image URL is empty, showing placeholder")
+            // Load default avatar
             ivProfilePic.setImageResource(R.drawable.ic_avatar_placeholder)
         }
     }
@@ -231,18 +195,21 @@ class ProfileFragment : Fragment() {
         scrollView.visibility = if (show) View.GONE else View.VISIBLE
     }
 
+    // Handle result from EditProfileActivity
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == EDIT_PROFILE_REQUEST && resultCode == android.app.Activity.RESULT_OK) {
-            Log.d("ProfileFragment", "🔄 Profile was updated, refreshing display...")
+            // Profile was updated, refresh the display
             loadUserProfile()
         }
     }
 
+    // Refresh when fragment becomes visible
     override fun onResume() {
         super.onResume()
+        // Only reload if we have views initialized
         if (::auth.isInitialized) {
-            Log.d("ProfileFragment", "🔄 Fragment resumed, reloading profile...")
             loadUserProfile()
         }
     }

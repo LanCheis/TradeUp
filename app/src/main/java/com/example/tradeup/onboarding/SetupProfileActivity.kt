@@ -223,7 +223,7 @@ class SetupProfileActivity : AppCompatActivity() {
                     address = address,
                     rating = existingProfile?.rating ?: 0.0,
                     reviewCount = existingProfile?.reviewCount ?: 0,
-                    isEmailVerified = currentUser.isEmailVerified,
+                    emailVerified = currentUser.isEmailVerified, // ✅ FIXED: Changed to emailVerified
                     createdAt = existingProfile?.createdAt ?: com.google.firebase.Timestamp.now(),
                     updatedAt = com.google.firebase.Timestamp.now()
                 )

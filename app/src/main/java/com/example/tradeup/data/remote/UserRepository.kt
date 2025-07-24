@@ -40,7 +40,7 @@ class UserRepository {
         }
     }
 
-    // 🔧 UPDATED: Upload profile image using Cloudinary (with Context parameter)
+    // Upload profile image using Cloudinary (with Context parameter)
     suspend fun uploadProfileImage(context: Context, imageUri: Uri, userId: String): String? {
         return try {
             CloudinaryHelper.uploadProfileImage(context, imageUri, userId)
@@ -55,7 +55,7 @@ class UserRepository {
             uid = uid,
             email = email,
             displayName = email.substringBefore("@"), // Default display name
-            isEmailVerified = auth.currentUser?.isEmailVerified ?: false
+            emailVerified = auth.currentUser?.isEmailVerified ?: false // ✅ FIXED: Changed to emailVerified
         )
         return saveUserProfile(user)
     }
