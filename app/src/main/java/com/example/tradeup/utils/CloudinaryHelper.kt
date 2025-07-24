@@ -17,7 +17,7 @@ object CloudinaryHelper {
         if (!isInitialized) {
             val config = mapOf(
                 "cloud_name" to "dovf2zc0u",
-                "api_key" to "123456789012345",
+                "api_key" to "954889699447999",
                 "api_secret" to "jePY1jqFFEM3pbAmBo0i9XuVgQo"
             )
 
@@ -50,15 +50,8 @@ object CloudinaryHelper {
             "public_id" to publicId,
             "folder" to "tradeup_profiles",
             "resource_type" to "image",
-            "overwrite" to true, // Allow overwriting existing images
-            "transformation" to mapOf(
-                "width" to 400,
-                "height" to 400,
-                "crop" to "fill",
-                "gravity" to "face",
-                "quality" to "auto",
-                "format" to "jpg"
-            )
+            "overwrite" to true,
+            "transformation" to "w_400,h_400,c_fill,g_face,q_auto,f_jpg" // ✅ FIXED: String format
         )
 
         try {
@@ -96,6 +89,67 @@ object CloudinaryHelper {
 
         } catch (e: Exception) {
             println("❌ Exception during upload: ${e.message}")
+            continuation.resume(null)
+        }
+    }
+
+    // 🔥 NEW: Upload listing images with proper transformation
+    suspend fun uploadListingImage(
+        context: Context,
+        imageUri: Uri,
+        listingId: String
+    ): String? = suspendCancellableCoroutine { continuation ->
+
+        if (!isInitialized) {
+            initialize(context)
+        }
+
+        // Create unique public ID for listing image
+        val publicId = "listing_${listingId}_${System.currentTimeMillis()}"
+
+        val uploadOptions = mapOf(
+            "public_id" to publicId,
+            "folder" to "tradeup_listings",
+            "resource_type" to "image",
+            "overwrite" to true,
+            "transformation" to "w_800,h_600,c_fill,q_auto,f_jpg" // Different size for listings
+        )
+
+        try {
+            println("🔄 Starting listing image upload: $publicId")
+
+            MediaManager.get().upload(imageUri)
+                .options(uploadOptions)
+                .callback(object : UploadCallback {
+                    override fun onStart(requestId: String) {
+                        println("📤 Listing upload started: $requestId")
+                    }
+
+                    override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {
+                        val progress = (bytes * 100 / totalBytes).toInt()
+                        println("📊 Listing upload progress: $progress%")
+                    }
+
+                    override fun onSuccess(requestId: String, resultData: Map<*, *>) {
+                        val imageUrl = resultData["secure_url"] as? String
+                        println("✅ Listing upload successful: $imageUrl")
+                        continuation.resume(imageUrl)
+                    }
+
+                    override fun onError(requestId: String, error: ErrorInfo) {
+                        println("❌ Listing upload error: ${error.description}")
+                        continuation.resume(null)
+                    }
+
+                    override fun onReschedule(requestId: String, error: ErrorInfo) {
+                        println("🔄 Listing upload rescheduled: ${error.description}")
+                        continuation.resume(null)
+                    }
+                })
+                .dispatch()
+
+        } catch (e: Exception) {
+            println("❌ Exception during listing upload: ${e.message}")
             continuation.resume(null)
         }
     }

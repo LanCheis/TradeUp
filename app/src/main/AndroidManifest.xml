@@ -84,6 +84,19 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
+
+        <!--Listing Activities -->
+        <activity
+            android:name=".listing.AddListingActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".listing.PreviewListingActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".listing.AddListingActivity" />
     </application>
 
 </manifest>

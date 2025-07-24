@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:layout_margin="4dp">
+
+    <!-- Image -->
+    <ImageView
+        android:id="@+id/ivImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:background="@drawable/rounded_image_background"
+        android:contentDescription="@string/preview_image" />
+
+    <!-- Delete Button -->
+    <ImageView
+        android:id="@+id/btnRemove"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="4dp"
+        android:background="@drawable/delete_button_background"
+        android:src="@drawable/ic_close"
+        android:padding="4dp"
+        android:contentDescription="@string/remove_image" />
+
+</FrameLayout>

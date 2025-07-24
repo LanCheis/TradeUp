@@ -12,253 +12,291 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- FR-2.1.1: Basic Information Section -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/basic_information"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Title Field -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- 📝 BASIC INFORMATION SECTION -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:boxStrokeColor="@color/primary"
-            app:hintTextColor="@color/primary">
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="0dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/what_are_you_selling"
-                android:maxLines="2"
-                android:inputType="textCapSentences" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Price Field -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:boxStrokeColor="@color/primary"
-            app:hintTextColor="@color/primary"
-            app:prefixText="₫ ">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPrice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/price_vnd"
-                android:inputType="numberDecimal" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Category and Condition Row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
-
-            <!-- Category Spinner -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:orientation="vertical"
-                android:layout_marginEnd="8dp">
+                android:padding="20dp">
 
+                <!-- Section Header -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/category_required"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginBottom="4dp" />
+                    android:text="✏️ Basic Information"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:layout_marginBottom="16dp" />
 
-                <Spinner
-                    android:id="@+id/spinnerCategory"
+                <!-- Title Field -->
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@drawable/spinner_background"
-                    android:padding="12dp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxStrokeColor="@color/primary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="What are you selling? *"
+                        android:inputType="textCapSentences"
+                        android:maxLines="2" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Price Field -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxStrokeColor="@color/primary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Price (VND) *"
+                        android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Category & Condition in Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Category *"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginBottom="8dp" />
+
+                        <Spinner
+                            android:id="@+id/spinnerCategory"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:background="@drawable/rounded_background"
+                            android:padding="12dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Condition *"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginBottom="8dp" />
+
+                        <Spinner
+                            android:id="@+id/spinnerCondition"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:background="@drawable/rounded_background"
+                            android:padding="12dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Description Field -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxStrokeColor="@color/primary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:hint="Describe your item *"
+                        android:gravity="top"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxLines="6" />
+                </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-            <!-- Condition Spinner -->
+        <!-- 📍 LOCATION & SETTINGS SECTION -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="0dp">
+
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:orientation="vertical"
-                android:layout_marginStart="8dp">
+                android:padding="20dp">
 
+                <!-- Section Header -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/condition_required"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginBottom="4dp" />
+                    android:text="📍 Location &amp; Settings"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:layout_marginBottom="16dp" />
 
-                <Spinner
-                    android:id="@+id/spinnerCondition"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@drawable/spinner_background"
-                    android:padding="12dp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Description Field -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:boxStrokeColor="@color/primary"
-            app:hintTextColor="@color/primary">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etDescription"
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:hint="@string/describe_your_item"
-                android:gravity="top"
-                android:inputType="textMultiLine|textCapSentences"
-                android:maxLines="6" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- FR-2.1.3: Location & Settings Section -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/location_and_settings"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Location Field with GPS Button -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                app:boxStrokeColor="@color/primary"
-                app:hintTextColor="@color/primary">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etLocation"
+                <!-- Location Field with GPS Button -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/where_is_item_located"
-                    android:inputType="textPostalAddress" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
 
-            <Button
-                android:id="@+id/btnGetLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="56dp"
-                android:text="@string/use_current_location"
-                android:textSize="12sp"
-                android:backgroundTint="@color/blue_500"
-                android:textColor="@android:color/white"
-                android:layout_marginStart="8dp"
-                android:contentDescription="@string/get_location_button" />
-        </LinearLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeColor="@color/primary">
 
-        <!-- FR-2.1.2: Price Negotiable Switch -->
-        <LinearLayout
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etLocation"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Where is your item located? *"
+                            android:inputType="textPostalAddress" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnGetLocation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="56dp"
+                        android:text="GPS"
+                        android:textSize="16sp"
+                        android:backgroundTint="@color/teal_700"
+                        android:textColor="@android:color/white"
+                        style="@style/Widget.Material3.Button.TonalButton" />
+                </LinearLayout>
+
+                <!-- Negotiable Switch -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="8dp"
+                    android:background="@drawable/rounded_background">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Negotiable?"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Allow buyers to make offers"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginEnd="12dp" />
+
+                    <Switch
+                        android:id="@+id/switchNegotiable"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 📷 PHOTOS SECTION -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="24dp"
-            android:padding="12dp"
-            android:background="@drawable/rounded_background">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/price_negotiable"
-                android:textSize="16sp"
-                android:textColor="@color/text_primary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/allow_buyers_offers"
-                android:textSize="12sp"
-                android:textColor="@color/text_secondary"
-                android:layout_marginEnd="8dp" />
-
-            <Switch
-                android:id="@+id/switchNegotiable"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/price_negotiable_switch" />
-        </LinearLayout>
-
-        <!-- FR-2.1.4: Add Photos Section -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/add_photos"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Choose Photos Button -->
-        <Button
-            android:id="@+id/btnChoosePhotos"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="@string/choose_photos"
-            android:textColor="@color/primary"
-            android:backgroundTint="@color/background"
             android:layout_marginBottom="16dp"
-            android:drawableStart="@drawable/ic_add_photo"
-            android:drawableTint="@color/primary"
-            android:gravity="center"
-            android:contentDescription="@string/choose_photos_button"
-            style="@style/Widget.Material3.Button.OutlinedButton" />
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="0dp">
 
-        <!-- Selected Images Recycler -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerImages"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginBottom="24dp"
-            android:visibility="gone" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
 
-        <!-- FR-2.1.5: Preview & Post Section -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/preview_and_post"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_marginBottom="16dp" />
+                <!-- Section Header -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📷 Add Photos"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:layout_marginBottom="16dp" />
 
-        <!-- Preview Button -->
+                <!-- Choose Photos Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnChoosePhotos"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Choose Photos (0/10)"
+                    android:textColor="@color/blue_700"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="16dp"
+                    android:drawableStart="@drawable/ic_add_photo"
+                    android:drawableTint="@color/blue_700"
+                    android:gravity="center"
+                    android:contentDescription="@string/choose_photos_button"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    app:strokeColor="@color/blue_700"
+                    app:strokeWidth="2dp" />
+
+                <!-- Image Preview RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerImages"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 🚀 PREVIEW & POST SECTION -->
         <Button
             android:id="@+id/btnPreview"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:text="@string/preview_your_listing"
             android:textColor="@android:color/white"
-            android:backgroundTint="@color/primary"
+            android:backgroundTint="@color/green_500"
             android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginBottom="16dp" />
@@ -269,8 +307,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:visibility="gone"
-            android:indeterminateTint="@color/primary" />
+            android:visibility="gone" />
 
     </LinearLayout>
 </ScrollView>

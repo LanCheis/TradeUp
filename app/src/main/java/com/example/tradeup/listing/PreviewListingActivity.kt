@@ -182,20 +182,21 @@ class PreviewListingActivity : AppCompatActivity() {
     private suspend fun uploadImages(): List<String> {
         val uploadedUrls = mutableListOf<String>()
 
-        for (uriString in previewData.imageUris) {
+        for ((index, uriString) in previewData.imageUris.withIndex()) {
             try {
                 val uri = Uri.parse(uriString)
-                // Use CloudinaryHelper object method with unique listing ID
-                val listingId = "listing_${System.currentTimeMillis()}_${uploadedUrls.size}"
-                val result = CloudinaryHelper.uploadProfileImage(this, uri, listingId)
+                // 🔥 FIX: Use new listing upload method with unique ID
+                val listingId = "${System.currentTimeMillis()}_$index"
+                val result = CloudinaryHelper.uploadListingImage(this, uri, listingId)
 
                 if (result != null) {
                     uploadedUrls.add(result)
+                    println("✅ Image ${index + 1} uploaded: $result")
                 } else {
-                    throw Exception("Failed to upload image")
+                    throw Exception("Failed to upload image ${index + 1}")
                 }
             } catch (e: Exception) {
-                throw Exception("Image upload failed: ${e.message}")
+                throw Exception("Image ${index + 1} upload failed: ${e.message}")
             }
         }
 

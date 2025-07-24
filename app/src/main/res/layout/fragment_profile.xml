@@ -25,230 +25,284 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Header with Profile Picture -->
+            <!-- 🎨 HERO SECTION WITH LARGE AVATAR -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="290dp"
                 android:background="@drawable/gradient_header_background"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:padding="24dp">
+                android:padding="32dp">
 
+                <!-- Large Profile Picture -->
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/ivProfilePic"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
                     android:src="@drawable/ic_avatar_placeholder"
-                    app:civ_border_width="3dp"
+                    app:civ_border_width="4dp"
                     app:civ_border_color="@color/white"
-                    android:layout_marginBottom="12dp" />
+                    android:layout_marginBottom="16dp"
+                    android:elevation="8dp" />
 
+                <!-- User Name -->
                 <TextView
                     android:id="@+id/tvDisplayName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="User Name"
-                    android:textSize="22sp"
+                    android:textSize="28sp"
                     android:textStyle="bold"
                     android:textColor="@color/white"
-                    android:layout_marginBottom="4dp" />
+                    android:layout_marginBottom="4dp"
+                    android:elevation="4dp" />
 
+                <!-- Email -->
                 <TextView
                     android:id="@+id/tvEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:alpha="0.9"
+                    android:elevation="4dp"
                     android:text="user@example.com"
-                    android:textSize="14sp"
-                    android:textColor="#E8F5E8" />
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
 
+                <!-- Rating Section -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <RatingBar
+                        android:id="@+id/ratingBar"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        android:rating="4.5"
+                        android:isIndicator="true"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvRatingText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="4.5 (23 reviews)"
+                        android:textSize="14sp"
+                        android:textColor="@color/white"
+                        android:alpha="0.9" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Profile Details Card -->
-            <androidx.cardview.widget.CardView
+            <!-- 📋 PROFILE DETAILS CARDS -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-20dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                android:backgroundTint="@color/white">
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <LinearLayout
+                <!-- About Me Card -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeWidth="0dp">
 
-                    <!-- Rating Section -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:background="@drawable/rating_section_background"
-                        android:padding="12dp"
-                        android:layout_marginBottom="20dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="⭐ Rating:"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:layout_marginEnd="8dp" />
-
-                        <RatingBar
-                            android:id="@+id/ratingBar"
-                            style="?android:attr/ratingBarStyleSmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:numStars="5"
-                            android:stepSize="0.1"
-                            android:isIndicator="true"
-                            android:layout_marginEnd="8dp" />
-
-                        <TextView
-                            android:id="@+id/tvRatingText"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="No ratings yet"
-                            android:textSize="12sp"
-                            android:textColor="@color/text_secondary" />
-
-                    </LinearLayout>
-
-                    <!-- Bio Section -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
+                        android:padding="20dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="📝 Bio"
-                            android:textSize="14sp"
+                            android:text="✍️ About Me"
+                            android:textSize="18sp"
                             android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:layout_marginBottom="4dp" />
+                            android:textColor="@color/primary"
+                            android:layout_marginBottom="12dp" />
 
                         <TextView
                             android:id="@+id/tvBio"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="No bio added yet"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_secondary"
-                            android:background="@drawable/info_background"
-                            android:padding="12dp" />
-
+                            android:text="No bio available"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"
+                            android:lineSpacingExtra="4dp" />
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Contact Info Section -->
+                <!-- Contact Information Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeWidth="0dp">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
+                        android:padding="20dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="📞 Contact Info"
-                            android:textSize="14sp"
+                            android:text="📞 Contact Information"
+                            android:textSize="18sp"
                             android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:layout_marginBottom="8dp" />
+                            android:textColor="@color/primary"
+                            android:layout_marginBottom="16dp" />
 
+                        <!-- Phone -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:background="@drawable/info_background"
-                            android:padding="12dp">
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="12dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_phone"
+                                android:tint="@color/primary"
+                                android:layout_marginEnd="12dp" />
 
                             <TextView
                                 android:id="@+id/tvPhone"
-                                android:layout_width="match_parent"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:text="No phone number"
-                                android:textSize="14sp"
-                                android:textColor="@color/text_secondary"
-                                android:drawableStart="@drawable/ic_phone"
-                                android:drawablePadding="8dp"
-                                android:layout_marginBottom="8dp" />
+                                android:textSize="16sp"
+                                android:textColor="@color/text_primary" />
+                        </LinearLayout>
+
+                        <!-- Address -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_location"
+                                android:tint="@color/primary"
+                                android:layout_marginEnd="12dp" />
 
                             <TextView
                                 android:id="@+id/tvAddress"
-                                android:layout_width="match_parent"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:text="No address set"
-                                android:textSize="14sp"
-                                android:textColor="@color/text_secondary"
-                                android:drawableStart="@drawable/ic_location"
-                                android:drawablePadding="8dp" />
-
+                                android:textSize="16sp"
+                                android:textColor="@color/text_primary" />
                         </LinearLayout>
-
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Member Since -->
-                    <TextView
-                        android:id="@+id/tvMemberSince"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Member since Jan 2024"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_tertiary"
-                        android:gravity="center"
-                        android:layout_marginBottom="20dp" />
+                <!-- Account Details Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeWidth="0dp">
 
-                    <!-- Action Buttons -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <Button
-                            android:id="@+id/btnEditProfile"
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:text="✏️ Edit Profile"
-                            android:textColor="@color/white"
-                            android:background="@drawable/button_primary"
-                            android:layout_marginBottom="8dp" />
-
-                        <Button
-                            android:id="@+id/btnAccountSettings"
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:text="⚙️ Account Settings"
-                            android:textColor="@color/primary"
-                            android:background="@drawable/button_outline"
-                            android:layout_marginBottom="16dp" />
+                        android:orientation="vertical"
+                        android:padding="20dp">
 
                         <TextView
-                            android:id="@+id/btnLogout"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🚪 Logout"
-                            android:textSize="16sp"
-                            android:textColor="@color/error"
+                            android:text="📅 Account Details"
+                            android:textSize="18sp"
                             android:textStyle="bold"
-                            android:layout_gravity="center"
-                            android:padding="12dp"
-                            android:background="?attr/selectableItemBackground" />
+                            android:textColor="@color/primary"
+                            android:layout_marginBottom="12dp" />
 
+                        <TextView
+                            android:id="@+id/tvMemberSince"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Member since Jan 2024"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_secondary"
+                            android:drawableStart="@drawable/ic_calendar"
+                            android:drawableTint="@color/primary"
+                            android:drawablePadding="12dp"
+                            android:gravity="center_vertical" />
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 🎯 ACTION BUTTONS SECTION -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Edit Profile Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEditProfile"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:text="✏️ Edit Profile"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp"
+                        style="@style/Widget.Material3.Button" />
+
+                    <!-- Account Settings Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAccountSettings"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:text="⚙️ Account Settings"
+                        android:textSize="16sp"
+                        android:layout_marginBottom="16dp"
+                        style="@style/Widget.Material3.Button.OutlinedButton" />
+
+                    <!-- Logout Button -->
+                    <TextView
+                        android:id="@+id/btnLogout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🚪 Logout"
+                        android:textSize="16sp"
+                        android:textColor="@color/error"
+                        android:textStyle="bold"
+                        android:layout_gravity="center"
+                        android:padding="16dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:drawableStart="@drawable/ic_logout"
+                        android:drawableTint="@color/error"
+                        android:drawablePadding="8dp" />
 
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
+                <!-- Bottom Spacing -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

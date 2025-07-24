@@ -107,6 +107,30 @@ class AddListingActivity : AppCompatActivity() {
         spinnerCondition.adapter = conditionAdapter
     }
 
+    // Show/hide image preview with smooth animation
+    private fun updateImageVisibility() {
+        if (selectedImages.isEmpty()) {
+            // No images - hide recycler smoothly
+            recyclerImages.animate()
+                .alpha(0f)
+                .setDuration(200)
+                .withEndAction {
+                    recyclerImages.visibility = View.GONE
+                }
+        } else {
+            // Images exist - show recycler smoothly
+            if (recyclerImages.visibility == View.GONE) {
+                recyclerImages.visibility = View.VISIBLE
+                recyclerImages.alpha = 0f
+                recyclerImages.animate()
+                    .alpha(1f)
+                    .setDuration(200)
+            }
+        }
+    }
+
+
+
     private fun setupImageAdapter() {
         imagesAdapter = SelectedImagesAdapter(selectedImages) { position ->
             selectedImages.removeAt(position)
@@ -217,7 +241,12 @@ class AddListingActivity : AppCompatActivity() {
     }
 
     private fun updateImageCounter() {
-        btnChoosePhotos.text = "📷 Choose Photos (${selectedImages.size}/$MAX_IMAGES)"
+        val text = if (selectedImages.isEmpty()) {
+            "📷 Choose Photos (0/10)"
+        } else {
+            "📷 Choose Photos (${selectedImages.size}/10) ✅"
+        }
+        btnChoosePhotos.text = text
     }
 
     private fun validateForm(): Boolean {
