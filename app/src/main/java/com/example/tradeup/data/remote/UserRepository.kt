@@ -180,6 +180,15 @@ class UserRepository {
             deleteUserData(userId, callback)
         }
 
+        // ✅ Additional methods for ProfileFragment compatibility
+        fun getUserData(userId: String, callback: (Boolean, Map<String, Any>?) -> Unit) {
+            getUserProfile(userId, callback)
+        }
+
+        fun getUserById(userId: String, callback: (User?) -> Unit) {
+            getUserProfile(userId, callback)
+        }
+
         // ✅ PRIVATE HELPER METHODS
         private fun updateUserRating(userId: String, callback: (Boolean) -> Unit) {
             firestore.collection("ratings")

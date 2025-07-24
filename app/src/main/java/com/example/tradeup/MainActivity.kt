@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.tradeup.listing.CreateListingActivity
+import com.example.tradeup.profile.ProfileFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,6 +34,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var labelAdd: TextView
     private lateinit var labelChat: TextView
     private lateinit var labelProfile: TextView
+
+    // Fragment instances
+    private val profileFragment = ProfileFragment()
 
     // Current selected tab
     private var currentTab = 0
@@ -150,7 +154,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadProfileFragment() {
-        loadSimpleFragment("👤 Profile", "Manage your profile and listings.\n\nFeature coming soon!")
+        // 🆕 Load the actual ProfileFragment
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.nav_host_fragment, profileFragment)
+            .commit()
     }
 
     private fun loadSimpleFragment(title: String, description: String) {
@@ -159,5 +166,11 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.nav_host_fragment, fragment)
             .commit()
+    }
+
+    // 🆕 Helper method for other fragments to navigate to profile
+    fun navigateToProfile() {
+        selectTab(4)
+        loadProfileFragment()
     }
 }

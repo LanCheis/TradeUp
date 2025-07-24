@@ -1,5 +1,3 @@
-// File: app/src/main/java/com/example/tradeup/profile/ProfileFragment.kt
-
 package com.example.tradeup.profile
 
 import android.content.Intent
@@ -10,14 +8,16 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.tradeup.R
 import com.example.tradeup.auth.LoginActivity
 import com.example.tradeup.data.remote.UserRepository
+import com.example.tradeup.data.model.User
 import com.example.tradeup.offers.MyOffersActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ProfileFragment : Fragment() {
 
@@ -33,6 +33,9 @@ class ProfileFragment : Fragment() {
     private lateinit var tvBirthday: TextView
     private lateinit var tvInterest: TextView
     private lateinit var tvJoinedDate: TextView
+    private lateinit var tvRating: TextView
+    private lateinit var tvTotalTransactions: TextView
+    private lateinit var ratingBar: RatingBar
     private lateinit var btnLogout: Button
     private lateinit var btnEditProfile: Button
     private lateinit var btnDeleteAccount: Button
@@ -74,6 +77,16 @@ class ProfileFragment : Fragment() {
         tvBirthday = view.findViewById(R.id.tvBirthday)
         tvInterest = view.findViewById(R.id.tvInterest)
         tvJoinedDate = view.findViewById(R.id.tvJoinedDate)
+
+        // Rating views (add these to layout if missing)
+        try {
+            tvRating = view.findViewById(R.id.tvRating)
+            tvTotalTransactions = view.findViewById(R.id.tvTotalTransactions)
+            ratingBar = view.findViewById(R.id.ratingBar)
+        } catch (e: Exception) {
+            // Views don't exist in layout, that's okay
+        }
+
         btnLogout = view.findViewById(R.id.btnLogout)
         btnEditProfile = view.findViewById(R.id.btnEditProfile)
         btnDeleteAccount = view.findViewById(R.id.btnDeleteAccount)
@@ -83,14 +96,10 @@ class ProfileFragment : Fragment() {
     private fun setupClickListeners() {
         // Edit Profile Button
         btnEditProfile.setOnClickListener {
-            try {
-                findNavController().navigate(R.id.action_profileFragment_to_editProfileFragment)
-            } catch (e: Exception) {
-                Toast.makeText(context, "Navigation error: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(context, "Edit Profile feature coming soon!", Toast.LENGTH_SHORT).show()
         }
 
-        // ✅ FIXED: My Offers Button with explicit Intent creation
+        // My Offers Button
         btnMyOffers.setOnClickListener {
             val intent = Intent(requireContext(), MyOffersActivity::class.java)
             startActivity(intent)
@@ -119,75 +128,46 @@ class ProfileFragment : Fragment() {
             return
         }
 
-        // ✅ FIXED: Explicitly declare the callback type to resolve ambiguity
-        val callback: (Boolean, Map<String, Any>?) -> Unit = { success, userData ->
-            if (success && userData != null) {
-                updateUIWithUserData(userData)
+        // 🆕 Use the updated UserRepository method
+        UserRepository.getUserProfile(currentUser.uid) { user ->
+            if (user != null) {
+                updateUIWithUserData(user)
             } else {
-                // Use Firebase Auth data as fallback
+                // If no Firestore data, use Firebase Auth data
                 updateUIWithAuthData(currentUser)
             }
         }
-
-        UserRepository.getUserProfile(currentUser.uid, callback)
     }
 
-    private fun updateUIWithUserData(userData: Map<String, Any>) {
-        // Display Name
-        val displayName = userData["name"] as? String ?: "Unknown User"
-        tvDisplayName.text = displayName
+    private fun updateUIWithUserData(user: User) {
+        tvDisplayName.text = user.name.ifEmpty { "No Name" }
+        tvName.text = user.name.ifEmpty { "No Name Set" }
+        tvEmail.text = user.email.ifEmpty { "No Email" }
+        tvPhone.text = user.phone.ifEmpty { "No Phone" }
+        tvAddress.text = user.address.ifEmpty { "No Address" }
+        tvBio.text = user.bio.ifEmpty { "No Bio" }
+        tvUsername.text = user.username.ifEmpty { "No Username" }
+        tvGender.text = user.gender.ifEmpty { "Not Specified" }
+        tvBirthday.text = user.birthday.ifEmpty { "Not Set" }
+        tvInterest.text = user.interests.ifEmpty { "No Interests" }
 
-        // Email
-        val email = userData["email"] as? String ?: "No email"
-        tvEmail.text = email
+        // Format join date
+        val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+        tvJoinedDate.text = "Joined ${dateFormat.format(Date(user.joinedDate))}"
 
-        // Name
-        val name = userData["name"] as? String ?: displayName
-        tvName.text = name
-
-        // Username
-        val username = userData["username"] as? String ?: "Not set"
-        tvUsername.text = username
-
-        // Phone
-        val phone = userData["phone"] as? String ?: "Not provided"
-        tvPhone.text = phone
-
-        // Address
-        val address = userData["address"] as? String ?: "Not provided"
-        tvAddress.text = address
-
-        // Bio
-        val bio = userData["bio"] as? String ?: "No bio available"
-        tvBio.text = bio
-
-        // Gender
-        val gender = userData["gender"] as? String ?: "Not specified"
-        tvGender.text = gender
-
-        // Birthday
-        val birthday = userData["birthday"] as? String ?: "Not provided"
-        tvBirthday.text = birthday
-
-        // Interests
-        val interests = userData["interests"] as? String ?: "Not specified"
-        tvInterest.text = interests
-
-        // Joined Date
-        val joinedDate = userData["createdAt"] as? com.google.firebase.Timestamp
-        if (joinedDate != null) {
-            val date = joinedDate.toDate()
-            val formatter = java.text.SimpleDateFormat("MMMM yyyy", java.util.Locale.getDefault())
-            tvJoinedDate.text = "Joined ${formatter.format(date)}"
-        } else {
-            tvJoinedDate.text = "Joined recently"
+        // Update rating info if views exist
+        try {
+            tvRating.text = String.format("%.1f", user.rating)
+            tvTotalTransactions.text = "${user.totalTransactions} transactions"
+            ratingBar.rating = user.rating.toFloat()
+        } catch (e: Exception) {
+            // Rating views don't exist
         }
 
-        // Profile Picture
-        val profileImageUrl = userData["profileImageUrl"] as? String
-        if (!profileImageUrl.isNullOrEmpty()) {
+        // Load profile image
+        if (user.profileImageUrl.isNotEmpty()) {
             Glide.with(this)
-                .load(profileImageUrl)
+                .load(user.profileImageUrl)
                 .placeholder(R.drawable.ic_avatar_placeholder)
                 .error(R.drawable.ic_avatar_placeholder)
                 .into(ivAvatar)
@@ -198,6 +178,7 @@ class ProfileFragment : Fragment() {
         tvDisplayName.text = user.displayName ?: "Unknown User"
         tvEmail.text = user.email ?: "No email"
         tvName.text = user.displayName ?: "Unknown User"
+        tvJoinedDate.text = "Recently Joined"
 
         // Load profile photo from Auth
         if (user.photoUrl != null) {
@@ -232,32 +213,30 @@ class ProfileFragment : Fragment() {
     }
 
     private fun showFinalDeleteConfirmation() {
+        val input = EditText(requireContext())
+        input.hint = "Type 'DELETE' to confirm"
+        input.setPadding(50, 20, 50, 20)
+
         AlertDialog.Builder(requireContext())
             .setTitle("⚠️ Final Confirmation")
             .setMessage("Type 'DELETE' to confirm account deletion")
-            .setView(createDeleteConfirmationInput())
-            .setPositiveButton("Delete Account", null) // Set in show() to prevent auto-dismiss
+            .setView(input)
+            .setPositiveButton("Delete Account") { _, _ ->
+                if (input.text.toString().uppercase() == "DELETE") {
+                    performDeleteAccount()
+                } else {
+                    Toast.makeText(context, "Please type 'DELETE' to confirm", Toast.LENGTH_SHORT).show()
+                }
+            }
             .setNegativeButton("Cancel", null)
             .show()
-    }
-
-    private fun createDeleteConfirmationInput(): View {
-        val editText = EditText(requireContext())
-        editText.hint = "Type 'DELETE' here"
-        editText.setPadding(50, 20, 50, 20)
-        return editText
     }
 
     private fun performLogout() {
         try {
             FirebaseAuth.getInstance().signOut()
-
-            val intent = Intent(context, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-
-            // Hiển thị thông báo thành công
             Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
+            redirectToLogin()
         } catch (e: Exception) {
             Toast.makeText(context, "Logout failed: ${e.message}", Toast.LENGTH_SHORT).show()
         }
@@ -270,16 +249,10 @@ class ProfileFragment : Fragment() {
             return
         }
 
-        // Show loading dialog
-        val progressDialog = createProgressDialog("Deleting account...")
-        progressDialog.show()
-
-        // ✅ FIXED: Explicitly declare the callback type
-        val deleteCallback: (Boolean) -> Unit = { success ->
+        // Use the updated UserRepository method
+        UserRepository.deleteUserData(currentUser.uid) { success ->
             if (success) {
-                // Then delete the authentication account
                 currentUser.delete().addOnCompleteListener { task ->
-                    progressDialog.dismiss()
                     if (task.isSuccessful) {
                         Toast.makeText(context, "Account deleted successfully", Toast.LENGTH_SHORT).show()
                         redirectToLogin()
@@ -288,19 +261,9 @@ class ProfileFragment : Fragment() {
                     }
                 }
             } else {
-                progressDialog.dismiss()
                 Toast.makeText(context, "Failed to delete user data", Toast.LENGTH_SHORT).show()
             }
         }
-
-        UserRepository.deleteUserData(currentUser.uid, deleteCallback)
-    }
-
-    private fun createProgressDialog(message: String): android.app.ProgressDialog {
-        val progressDialog = android.app.ProgressDialog(requireContext())
-        progressDialog.setMessage(message)
-        progressDialog.setCancelable(false)
-        return progressDialog
     }
 
     private fun redirectToLogin() {

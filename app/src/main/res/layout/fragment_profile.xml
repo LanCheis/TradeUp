@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
+    android:background="@color/background"
     android:fillViewport="true">
 
     <LinearLayout
@@ -16,26 +16,26 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="16dp"
             app:cardElevation="8dp"
-            app:cardBackgroundColor="#1DB954">
+            app:cardBackgroundColor="@color/primary">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:padding="24dp">
+                android:padding="28dp">
 
                 <!-- Avatar Container -->
                 <androidx.cardview.widget.CardView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="50dp"
-                    app:cardElevation="4dp"
-                    app:cardBackgroundColor="#FFFFFF">
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginBottom="20dp"
+                    app:cardCornerRadius="60dp"
+                    app:cardElevation="6dp"
+                    app:cardBackgroundColor="@color/white">
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -49,17 +49,18 @@
                             android:contentDescription="Profile Avatar"
                             android:src="@drawable/ic_avatar_placeholder"
                             android:clickable="true"
+                            android:focusable="true"
                             android:foreground="?android:attr/selectableItemBackground" />
 
                         <!-- Camera Icon Overlay -->
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
                             android:layout_gravity="bottom|end"
-                            android:layout_margin="4dp"
+                            android:layout_margin="8dp"
                             android:src="@drawable/ic_camera"
-                            android:background="@drawable/circle_background"
-                            android:padding="4dp"
+                            android:background="@drawable/circle_background_white"
+                            android:padding="6dp"
                             android:contentDescription="Change photo" />
                     </FrameLayout>
                 </androidx.cardview.widget.CardView>
@@ -70,66 +71,74 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="User Name"
-                    android:textSize="24sp"
+                    android:textSize="26sp"
                     android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:layout_marginBottom="4dp" />
+                    android:textColor="@color/white"
+                    android:layout_marginBottom="8dp" />
 
-                <!-- Rating Stars -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="8dp">
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_star_filled"
-                        android:layout_marginEnd="2dp"
-                        android:contentDescription="Star" />
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_star_filled"
-                        android:layout_marginEnd="2dp"
-                        android:contentDescription="Star" />
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_star_filled"
-                        android:layout_marginEnd="2dp"
-                        android:contentDescription="Star" />
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_star_filled"
-                        android:layout_marginEnd="2dp"
-                        android:contentDescription="Star" />
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_star_empty"
-                        android:contentDescription="Star" />
-                </LinearLayout>
-
-                <!-- Joined Date -->
-                <TextView
-                    android:id="@+id/tvJoinedDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Joined January 2024"
-                    android:textSize="14sp"
-                    android:textColor="#B3FFFFFF" />
-
+                <!-- Email -->
                 <TextView
                     android:id="@+id/tvEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="user@example.com"
-                    android:textSize="14sp"
-                    android:textColor="#B3FFFFFF"
-                    android:layout_marginTop="4dp" />
+                    android:textSize="16sp"
+                    android:textColor="#E8F5E8"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Rating Section -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <RatingBar
+                        android:id="@+id/ratingBar"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        android:stepSize="0.1"
+                        android:rating="4.2"
+                        android:isIndicator="true"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="4.2"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+                <!-- Stats Row -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tvTotalTransactions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12 transactions"
+                        android:textSize="14sp"
+                        android:textColor="#E8F5E8"
+                        android:layout_marginEnd="16dp" />
+
+                    <TextView
+                        android:id="@+id/tvJoinedDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Joined Jan 2024"
+                        android:textSize="14sp"
+                        android:textColor="#E8F5E8" />
+                </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -137,40 +146,55 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="16dp"
             app:cardElevation="4dp"
-            app:cardBackgroundColor="#1E1E1E">
+            app:cardBackgroundColor="@color/surface">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="24dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Personal Information"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:layout_marginBottom="16dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="20dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_person_info"
+                        android:layout_marginEnd="12dp"
+                        android:contentDescription="Personal Info" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Personal Information"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+                </LinearLayout>
 
                 <!-- Name Field -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Full Name"
                         android:textSize="12sp"
-                        android:textColor="#B3B3B3"
-                        android:textStyle="bold" />
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold"
+                        android:textAllCaps="true" />
 
                     <TextView
                         android:id="@+id/tvName"
@@ -178,8 +202,10 @@
                         android:layout_height="wrap_content"
                         android:text="John Doe"
                         android:textSize="16sp"
-                        android:textColor="#FFFFFF"
-                        android:layout_marginTop="4dp" />
+                        android:textColor="@color/text_primary"
+                        android:layout_marginTop="4dp"
+                        android:padding="8dp"
+                        android:background="@drawable/info_field_background" />
                 </LinearLayout>
 
                 <!-- Username Field -->
@@ -187,15 +213,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Username"
                         android:textSize="12sp"
-                        android:textColor="#B3B3B3"
-                        android:textStyle="bold" />
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold"
+                        android:textAllCaps="true" />
 
                     <TextView
                         android:id="@+id/tvUsername"
@@ -203,8 +230,10 @@
                         android:layout_height="wrap_content"
                         android:text="johndoe"
                         android:textSize="16sp"
-                        android:textColor="#FFFFFF"
-                        android:layout_marginTop="4dp" />
+                        android:textColor="@color/text_primary"
+                        android:layout_marginTop="4dp"
+                        android:padding="8dp"
+                        android:background="@drawable/info_field_background" />
                 </LinearLayout>
 
                 <!-- Phone Field -->
@@ -212,15 +241,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Phone Number"
                         android:textSize="12sp"
-                        android:textColor="#B3B3B3"
-                        android:textStyle="bold" />
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold"
+                        android:textAllCaps="true" />
 
                     <TextView
                         android:id="@+id/tvPhone"
@@ -228,8 +258,10 @@
                         android:layout_height="wrap_content"
                         android:text="+84 123 456 789"
                         android:textSize="16sp"
-                        android:textColor="#FFFFFF"
-                        android:layout_marginTop="4dp" />
+                        android:textColor="@color/text_primary"
+                        android:layout_marginTop="4dp"
+                        android:padding="8dp"
+                        android:background="@drawable/info_field_background" />
                 </LinearLayout>
 
                 <!-- Address Field -->
@@ -237,15 +269,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Address"
                         android:textSize="12sp"
-                        android:textColor="#B3B3B3"
-                        android:textStyle="bold" />
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold"
+                        android:textAllCaps="true" />
 
                     <TextView
                         android:id="@+id/tvAddress"
@@ -253,61 +286,107 @@
                         android:layout_height="wrap_content"
                         android:text="Ho Chi Minh City, Vietnam"
                         android:textSize="16sp"
-                        android:textColor="#FFFFFF"
-                        android:layout_marginTop="4dp" />
+                        android:textColor="@color/text_primary"
+                        android:layout_marginTop="4dp"
+                        android:padding="8dp"
+                        android:background="@drawable/info_field_background" />
                 </LinearLayout>
 
-                <!-- Gender Field -->
+                <!-- Gender & Birthday Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+
+                    <!-- Gender Field -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginEnd="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Gender"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary"
+                            android:textStyle="bold"
+                            android:textAllCaps="true" />
+
+                        <TextView
+                            android:id="@+id/tvGender"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Male"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginTop="4dp"
+                            android:padding="8dp"
+                            android:background="@drawable/info_field_background" />
+                    </LinearLayout>
+
+                    <!-- Birthday Field -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Birthday"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary"
+                            android:textStyle="bold"
+                            android:textAllCaps="true" />
+
+                        <TextView
+                            android:id="@+id/tvBirthday"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Jan 15, 1990"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginTop="4dp"
+                            android:padding="8dp"
+                            android:background="@drawable/info_field_background" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Interests Field -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Gender"
+                        android:text="Interests"
                         android:textSize="12sp"
-                        android:textColor="#B3B3B3"
-                        android:textStyle="bold" />
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold"
+                        android:textAllCaps="true" />
 
                     <TextView
-                        android:id="@+id/tvGender"
+                        android:id="@+id/tvInterest"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Male"
+                        android:text="Technology, Books, Music"
                         android:textSize="16sp"
-                        android:textColor="#FFFFFF"
-                        android:layout_marginTop="4dp" />
+                        android:textColor="@color/text_primary"
+                        android:layout_marginTop="4dp"
+                        android:padding="8dp"
+                        android:background="@drawable/info_field_background" />
                 </LinearLayout>
 
-                <!-- Birthday Field -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Birthday"
-                        android:textSize="12sp"
-                        android:textColor="#B3B3B3"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvBirthday"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="January 15, 1990"
-                        android:textSize="16sp"
-                        android:textColor="#FFFFFF"
-                        android:layout_marginTop="4dp" />
-                </LinearLayout>
-
-                <!-- Interest Field -->
+                <!-- Bio Field -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -316,135 +395,85 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Interests"
-                        android:textSize="12sp"
-                        android:textColor="#B3B3B3"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvInterest"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Technology, Books, Music"
-                        android:textSize="16sp"
-                        android:textColor="#FFFFFF"
-                        android:layout_marginTop="4dp" />
-                </LinearLayout>
-
-                <!-- Bio Section -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
                         android:text="Bio"
                         android:textSize="12sp"
-                        android:textColor="#B3B3B3"
-                        android:textStyle="bold" />
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold"
+                        android:textAllCaps="true" />
 
                     <TextView
                         android:id="@+id/tvBio"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Always looking for great deals!"
+                        android:text="Always looking for great deals and interesting items!"
                         android:textSize="16sp"
-                        android:textColor="#FFFFFF"
-                        android:layout_marginTop="4dp" />
+                        android:textColor="@color/text_primary"
+                        android:layout_marginTop="4dp"
+                        android:padding="12dp"
+                        android:background="@drawable/info_field_background"
+                        android:minLines="2" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Edit Profile Button -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="25dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="#1DB954">
+        <!-- Action Buttons -->
 
-            <Button
-                android:id="@+id/btnEditProfile"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:text="✏️ Edit Profile"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:background="@android:color/transparent"
-                android:elevation="0dp" />
-        </androidx.cardview.widget.CardView>
+        <!-- Edit Profile Button -->
+        <Button
+            android:id="@+id/btnEditProfile"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="✏️ Edit Profile"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@drawable/button_primary"
+            android:layout_marginBottom="12dp"
+            android:drawableStart="@drawable/ic_edit"
+            android:drawablePadding="8dp"
+            android:gravity="center" />
 
         <!-- My Offers Button -->
-        <androidx.cardview.widget.CardView
+        <Button
+            android:id="@+id/btnMyOffers"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
+            android:text="💰 My Offers"
+            android:textSize="16sp"
+            android:textColor="@color/text_primary"
+            android:background="@drawable/button_outline"
             android:layout_marginBottom="12dp"
-            app:cardCornerRadius="25dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="#1E1E1E">
-
-            <Button
-                android:id="@+id/btnMyOffers"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:text="💰 My Offers"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:background="@android:color/transparent"
-                android:elevation="0dp" />
-        </androidx.cardview.widget.CardView>
+            android:drawableStart="@drawable/ic_offer"
+            android:drawablePadding="8dp"
+            android:gravity="center" />
 
         <!-- Logout Button -->
-        <androidx.cardview.widget.CardView
+        <Button
+            android:id="@+id/btnLogout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
+            android:text="🚪 Logout"
+            android:textSize="16sp"
+            android:textColor="@color/accent_orange"
+            android:background="@drawable/button_outline_orange"
             android:layout_marginBottom="12dp"
-            app:cardCornerRadius="25dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="#FF6B35">
-
-            <Button
-                android:id="@+id/btnLogout"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:text="🚪 Logout"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:background="@android:color/transparent"
-                android:elevation="0dp" />
-        </androidx.cardview.widget.CardView>
+            android:drawableStart="@drawable/ic_logout"
+            android:drawablePadding="8dp"
+            android:gravity="center" />
 
         <!-- Delete Account Button -->
-        <androidx.cardview.widget.CardView
+        <Button
+            android:id="@+id/btnDeleteAccount"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="25dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="#E22134">
-
-            <Button
-                android:id="@+id/btnDeleteAccount"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:text="⚠️ Delete Account"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:background="@android:color/transparent"
-                android:elevation="0dp" />
-        </androidx.cardview.widget.CardView>
-
-        <!-- Bottom spacing -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="32dp" />
+            android:layout_height="56dp"
+            android:text="⚠️ Delete Account"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:background="@drawable/button_danger"
+            android:layout_marginBottom="24dp"
+            android:drawableStart="@drawable/ic_delete"
+            android:drawablePadding="8dp"
+            android:gravity="center" />
 
     </LinearLayout>
 </ScrollView>
