@@ -17,12 +17,12 @@ data class User(
     val ratingCount: Int = 0, // Number of ratings received
     val joinedDate: Long = System.currentTimeMillis(), // When user joined
     val isActive: Boolean = true, // FR-1.2.3: Account status for deactivation
-    val lastLoginTime: Long = System.currentTimeMillis(), // Track last login
-
+    val lastLoginTime: Long = System.currentTimeMillis() // Track last login
+) {
     // Additional properties for compatibility
-    val displayName: String = name, // Computed property for compatibility
-    val isProfileComplete: Boolean = name.isNotEmpty() && email.isNotEmpty()
-)
+    val displayName: String get() = if (name.isNotEmpty()) name else username
+    val isProfileComplete: Boolean get() = name.isNotEmpty() && email.isNotEmpty()
+}
 
 // FR-7.1.1 & FR-7.1.2: Rating data model
 data class UserRating(

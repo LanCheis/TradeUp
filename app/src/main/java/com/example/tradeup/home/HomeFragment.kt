@@ -14,7 +14,7 @@ import com.example.tradeup.data.model.Listing
 import com.example.tradeup.data.remote.UserRepository
 import com.example.tradeup.listing.CreateListingActivity
 import com.example.tradeup.listing.HorizontalListingAdapter
-import com.example.tradeup.search.SearchActivity // Add this import
+import com.example.tradeup.search.SearchActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -33,6 +33,7 @@ class HomeFragment : Fragment() {
     private lateinit var rvRecentListings: RecyclerView
     private lateinit var layoutLoading: LinearLayout
     private lateinit var layoutEmpty: LinearLayout
+    private lateinit var layoutComingSoon: LinearLayout
 
     private lateinit var tvWelcome: TextView
     private lateinit var auth: FirebaseAuth
@@ -52,16 +53,68 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         auth = FirebaseAuth.getInstance()
-        tvWelcome = view.findViewById(R.id.tvWelcome)
-
+        initializeViews(view)
+        setupUI()
         loadUserProfile()
+        loadRecentListings()
+    }
+
+    private fun initializeViews(view: View) {
+        tvWelcome = view.findViewById(R.id.tvWelcome)
+        btnSearch = view.findViewById(R.id.btnSearch)
+        btnNotification = view.findViewById(R.id.btnNotification)
+        btnSellItem = view.findViewById(R.id.btnSellItem)
+        btnBrowseCategories = view.findViewById(R.id.btnBrowseCategories)
+        tvSeeAll = view.findViewById(R.id.tvSeeAll)
+        rvRecentListings = view.findViewById(R.id.rvRecentListings)
+        layoutLoading = view.findViewById(R.id.layoutLoading)
+        layoutEmpty = view.findViewById(R.id.layoutEmpty)
+        layoutComingSoon = view.findViewById(R.id.layoutComingSoon)
+    }
+
+    private fun setupUI() {
+        // Setup RecyclerView
+        listingAdapter = HorizontalListingAdapter(recentListings) { listing ->
+            // Handle item click
+            // Navigate to listing details
+        }
+        rvRecentListings.adapter = listingAdapter
+        rvRecentListings.layoutManager = LinearLayoutManager(
+            context,
+            LinearLayoutManager.HORIZONTAL,
+            false
+        )
+
+        // Setup click listeners
+        btnSearch.setOnClickListener {
+            startActivity(Intent(context, SearchActivity::class.java))
+        }
+
+        btnSellItem.setOnClickListener {
+            startActivity(Intent(context, CreateListingActivity::class.java))
+        }
+
+        btnBrowseCategories.setOnClickListener {
+            startActivity(Intent(context, SearchActivity::class.java))
+        }
+
+        tvSeeAll.setOnClickListener {
+            startActivity(Intent(context, SearchActivity::class.java))
+        }
+
+        // Show coming soon announcement
+        showComingSoonAnnouncement()
+    }
+
+    private fun showComingSoonAnnouncement() {
+        layoutComingSoon.visibility = View.VISIBLE
     }
 
     private fun loadUserProfile() {
         val currentUser = auth.currentUser
         if (currentUser != null) {
-            // ✅ FIXED: Explicitly declare callback type to resolve ambiguity
-            val profileCallback: (Boolean, Map<String, Any>?) -> Unit = { success, userData ->
+            // Fixed callback with explicit type declaration
+            UserRepository.getUserProfile(currentUser.uid) { success, userData ->
                 if (success && userData != null) {
                     val name = userData["name"] as? String ?: "User"
                     tvWelcome.text = "Welcome $name"
@@ -71,12 +124,51 @@ class HomeFragment : Fragment() {
                     tvWelcome.text = "Welcome $displayName"
                 }
             }
-
-            UserRepository.getUserProfile(currentUser.uid, profileCallback)
         } else {
             tvWelcome.text = "Welcome to TradeUp"
         }
     }
 
+    private fun loadRecentListings() {
+        layoutLoading.visibility = View.VISIBLE
+        layoutEmpty.visibility = View.GONE
 
+        val db = FirebaseFirestore.getInstance()
+        db.collection("listings")
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .limit(10)
+            .get()
+            .addOnSuccessListener { documents ->
+                layoutLoading.visibility = View.GONE
+                recentListings.clear()
+
+                for (document in documents) {
+                    try {
+                        val listing = document.toObject(Listing::class.java)
+                        listing.id = document.id
+                        recentListings.add(listing)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+
+                if (recentListings.isEmpty()) {
+                    layoutEmpty.visibility = View.VISIBLE
+                } else {
+                    layoutEmpty.visibility = View.GONE
+                }
+
+                listingAdapter.notifyDataSetChanged()
+            }
+            .addOnFailureListener { exception ->
+                layoutLoading.visibility = View.GONE
+                layoutEmpty.visibility = View.VISIBLE
+                Toast.makeText(context, "Failed to load listings", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadRecentListings()
+    }
 }

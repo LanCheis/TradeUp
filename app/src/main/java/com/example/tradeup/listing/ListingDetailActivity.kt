@@ -6,7 +6,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.example.tradeup.R
-import com.example.tradeup.offers.MakeOfferActivity
 import com.example.tradeup.chat.MessageActivity
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth

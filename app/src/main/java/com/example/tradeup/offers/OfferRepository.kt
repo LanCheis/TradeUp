@@ -1,6 +1,5 @@
 package com.example.tradeup.offers
 
-import com.example.tradeup.data.model.Offer
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 
