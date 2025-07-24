@@ -91,12 +91,14 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(this, "Google Sign-In coming soon!", Toast.LENGTH_SHORT).show()
         }
 
+        // 🆕 Connect to ForgotPasswordActivity
         forgotPasswordText.setOnClickListener {
-            Toast.makeText(this, "Forgot password feature coming soon!", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
         }
 
+        // 🆕 Connect to RegisterActivity
         goToRegisterText.setOnClickListener {
-            Toast.makeText(this, "Registration coming soon!", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
 

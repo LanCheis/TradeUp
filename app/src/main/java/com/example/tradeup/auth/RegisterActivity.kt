@@ -1,5 +1,3 @@
-// File: app/src/main/java/com/example/tradeup/auth/RegisterActivity.kt
-
 package com.example.tradeup.auth
 
 import android.content.Intent
@@ -11,7 +9,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tradeup.R
 import com.example.tradeup.onboarding.SetupProfileActivity
-import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
@@ -19,11 +16,11 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 
 class RegisterActivity : AppCompatActivity() {
 
-    private lateinit var etEmail: TextInputEditText
-    private lateinit var etPassword: TextInputEditText
-    private lateinit var etConfirmPassword: TextInputEditText
+    private lateinit var etEmail: EditText
+    private lateinit var etPassword: EditText
+    private lateinit var etConfirmPassword: EditText
     private lateinit var btnRegister: Button
-    private lateinit var btnLogin: Button
+    private lateinit var btnGoToLogin: TextView
     private lateinit var tvError: TextView
     private lateinit var progressBar: ProgressBar
 
@@ -33,7 +30,6 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance()
 
         initViews()
@@ -46,7 +42,7 @@ class RegisterActivity : AppCompatActivity() {
         etPassword = findViewById(R.id.etPassword)
         etConfirmPassword = findViewById(R.id.etConfirmPassword)
         btnRegister = findViewById(R.id.btnRegister)
-        btnLogin = findViewById(R.id.btnLogin)
+        btnGoToLogin = findViewById(R.id.btnGoToLogin)
         tvError = findViewById(R.id.tvError)
         progressBar = findViewById(R.id.progressBar)
 
@@ -76,22 +72,27 @@ class RegisterActivity : AppCompatActivity() {
 
         val isEmailValid = email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
         val isPasswordValid = password.isNotEmpty() && password.length >= 6
-        val doPasswordsMatch = password == confirmPassword
+        val doPasswordsMatch = password == confirmPassword && confirmPassword.isNotEmpty()
 
         btnRegister.isEnabled = isEmailValid && isPasswordValid && doPasswordsMatch
 
-        // Show password mismatch error
-        if (confirmPassword.isNotEmpty() && !doPasswordsMatch) {
-            etConfirmPassword.error = "Passwords do not match"
+        // Show real-time validation feedback
+        if (email.isNotEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setBackgroundResource(R.drawable.edittext_error_background)
         } else {
-            etConfirmPassword.error = null
+            etEmail.setBackgroundResource(R.drawable.edittext_background)
         }
 
-        // Show password length error
         if (password.isNotEmpty() && password.length < 6) {
-            etPassword.error = "Password must be at least 6 characters"
+            etPassword.setBackgroundResource(R.drawable.edittext_error_background)
         } else {
-            etPassword.error = null
+            etPassword.setBackgroundResource(R.drawable.edittext_background)
+        }
+
+        if (confirmPassword.isNotEmpty() && !doPasswordsMatch) {
+            etConfirmPassword.setBackgroundResource(R.drawable.edittext_error_background)
+        } else {
+            etConfirmPassword.setBackgroundResource(R.drawable.edittext_background)
         }
     }
 
@@ -100,7 +101,7 @@ class RegisterActivity : AppCompatActivity() {
             performRegistration()
         }
 
-        btnLogin.setOnClickListener {
+        btnGoToLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
@@ -111,56 +112,22 @@ class RegisterActivity : AppCompatActivity() {
         val password = etPassword.text.toString().trim()
         val confirmPassword = etConfirmPassword.text.toString().trim()
 
-        // Validate input
-        if (email.isEmpty()) {
-            etEmail.error = "Email is required"
-            etEmail.requestFocus()
+        // Final validation
+        if (!validateInput(email, password, confirmPassword)) {
             return
         }
-
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail.error = "Please enter a valid email"
-            etEmail.requestFocus()
-            return
-        }
-
-        if (password.isEmpty()) {
-            etPassword.error = "Password is required"
-            etPassword.requestFocus()
-            return
-        }
-
-        if (password.length < 6) {
-            etPassword.error = "Password must be at least 6 characters"
-            etPassword.requestFocus()
-            return
-        }
-
-        if (password != confirmPassword) {
-            etConfirmPassword.error = "Passwords do not match"
-            etConfirmPassword.requestFocus()
-            return
-        }
-
 
         showLoading(true)
-        tvError.visibility = View.GONE
+        hideError()
 
-        // ✅ FIXED: Direct Firebase Auth call instead of FirebaseAuthHelper
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 showLoading(false)
 
                 if (task.isSuccessful) {
                     // Registration successful
-                    Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
-
-                    // Send email verification
                     sendEmailVerification()
-
-                    // Navigate to profile setup
-                    startActivity(Intent(this, SetupProfileActivity::class.java))
-                    finish()
+                    navigateToProfileSetup()
                 } else {
                     // Registration failed
                     handleRegistrationError(task.exception)
@@ -168,32 +135,86 @@ class RegisterActivity : AppCompatActivity() {
             }
     }
 
+    private fun validateInput(email: String, password: String, confirmPassword: String): Boolean {
+        when {
+            email.isEmpty() -> {
+                showError("Please enter your email address")
+                etEmail.requestFocus()
+                return false
+            }
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                showError("Please enter a valid email address")
+                etEmail.requestFocus()
+                return false
+            }
+            password.isEmpty() -> {
+                showError("Please enter a password")
+                etPassword.requestFocus()
+                return false
+            }
+            password.length < 6 -> {
+                showError("Password must be at least 6 characters long")
+                etPassword.requestFocus()
+                return false
+            }
+            confirmPassword.isEmpty() -> {
+                showError("Please confirm your password")
+                etConfirmPassword.requestFocus()
+                return false
+            }
+            password != confirmPassword -> {
+                showError("Passwords do not match")
+                etConfirmPassword.requestFocus()
+                return false
+            }
+
+            else -> return true
+        }
+    }
+
     private fun sendEmailVerification() {
         val user = auth.currentUser
         user?.sendEmailVerification()
             ?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Verification email sent to ${user.email}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this,
+                        "Verification email sent to ${user.email}\nPlease check your inbox.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Failed to send verification email. You can resend it later.",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
     }
 
     private fun handleRegistrationError(exception: Exception?) {
         val errorMessage = when (exception) {
-            is FirebaseAuthWeakPasswordException -> "Password is too weak. Please choose a stronger password."
-            is FirebaseAuthInvalidCredentialsException -> "Invalid email format. Please check your email."
-            is FirebaseAuthUserCollisionException -> "An account with this email already exists. Please login instead."
-            else -> exception?.message ?: "Registration failed. Please try again."
+            is FirebaseAuthWeakPasswordException -> "Password is too weak. Please choose a stronger password with a mix of letters, numbers, and symbols."
+            is FirebaseAuthInvalidCredentialsException -> "Invalid email format. Please check your email address."
+            is FirebaseAuthUserCollisionException -> "An account with this email already exists. Please try logging in instead."
+            else -> exception?.message ?: "Registration failed. Please check your internet connection and try again."
         }
 
-        tvError.text = errorMessage
-        tvError.visibility = View.VISIBLE
+        showError(errorMessage)
+    }
+
+    private fun navigateToProfileSetup() {
+        Toast.makeText(this, "Account created successfully! 🎉", Toast.LENGTH_SHORT).show()
+
+        val intent = Intent(this, SetupProfileActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 
     private fun showLoading(show: Boolean) {
         progressBar.visibility = if (show) View.VISIBLE else View.GONE
         btnRegister.isEnabled = !show && validateFormFields()
-        btnLogin.isEnabled = !show
 
         // Disable input fields during loading
         etEmail.isEnabled = !show
@@ -211,5 +232,15 @@ class RegisterActivity : AppCompatActivity() {
                 password.isNotEmpty() &&
                 password.length >= 6 &&
                 password == confirmPassword
+    }
+
+    private fun showError(message: String) {
+        tvError.text = message
+        tvError.visibility = View.VISIBLE
+        tvError.announceForAccessibility(message)
+    }
+
+    private fun hideError() {
+        tvError.visibility = View.GONE
     }
 }

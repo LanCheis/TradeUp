@@ -1,122 +1,216 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     android:fillViewport="true"
-    android:background="@color/background">
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="24dp"
+        android:paddingTop="60dp"
+        android:gravity="center_horizontal">
 
-        <!-- Header -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Create Account"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="48dp"
-            android:layout_marginBottom="32dp" />
-
-        <!-- Email Field -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Header Section -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"
-            android:layout_marginBottom="16dp"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            app:startIconDrawable="@drawable/ic_email">
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginBottom="40dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etRegisterEmail"
-                android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_avatar_placeholder"
+                android:contentDescription="TradeUp Logo"
+                android:layout_marginBottom="24dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:text="Create Account"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp" />
 
-        <!-- Password Field -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Password"
-            android:layout_marginBottom="16dp"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            app:startIconDrawable="@drawable/ic_lock"
-            app:passwordToggleEnabled="true">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etRegisterPassword"
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:text="Join TradeUp to start buying and selling"
+                android:textSize="16sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="center" />
+        </LinearLayout>
 
-        <!-- Confirm Password Field -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Registration Form -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Confirm Password"
-            android:layout_marginBottom="16dp"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            app:startIconDrawable="@drawable/ic_lock"
-            app:passwordToggleEnabled="true">
+            android:orientation="vertical">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <!-- Email Input -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email Address"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Enter your email"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
+                android:textSize="16sp"
+                android:background="@drawable/edittext_background"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"
+                android:drawableStart="@drawable/ic_email"
+                android:drawablePadding="12dp"
+                android:contentDescription="Email address input"
+                android:importantForAccessibility="yes" />
+
+            <!-- Password Input -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Password"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Enter your password"
+                android:inputType="textPassword"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
+                android:textSize="16sp"
+                android:background="@drawable/edittext_background"
+                android:padding="16dp"
+                android:layout_marginBottom="8dp"
+                android:drawableStart="@drawable/ic_lock"
+                android:drawablePadding="12dp"
+                android:contentDescription="Password input"
+                android:importantForAccessibility="yes" />
+
+            <!-- Password Requirements -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Password must be at least 6 characters"
+                android:textSize="12sp"
+                android:textColor="@color/text_tertiary"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Confirm Password Input -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirm Password"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
                 android:id="@+id/etConfirmPassword"
                 android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Confirm your password"
+                android:inputType="textPassword"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
+                android:textSize="16sp"
+                android:background="@drawable/edittext_background"
+                android:padding="16dp"
+                android:layout_marginBottom="20dp"
+                android:drawableStart="@drawable/ic_lock"
+                android:drawablePadding="12dp"
+                android:contentDescription="Confirm password input"
+                android:importantForAccessibility="yes" />
+
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp"
+                android:indeterminateTint="@color/primary"
+                android:contentDescription="Registration in progress" />
 
-        <!-- Email Verification Text -->
-        <TextView
-            android:id="@+id/tvEmailVerification"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="📧 Please check your email and verify your account"
-            android:textColor="@color/accent"
-            android:textSize="14sp"
-            android:padding="12dp"
-            android:background="@drawable/info_background"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone" />
+            <!-- Error Message -->
+            <TextView
+                android:id="@+id/tvError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/error"
+                android:textSize="14sp"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp"
+                android:padding="12dp"
+                android:background="@drawable/error_background"
+                android:contentDescription="Error message"
+                android:importantForAccessibility="yes" />
 
-        <!-- Register Button -->
-        <Button
-            android:id="@+id/btnRegister"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="Create Account"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="24dp"
-            style="@style/Widget.Material3.Button" />
+            <!-- Register Button -->
+            <Button
+                android:id="@+id/btnRegister"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Create Account"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:background="@drawable/button_primary"
+                android:enabled="false"
+                android:layout_marginBottom="32dp"
+                android:contentDescription="Create account button" />
 
-        <!-- Progress Bar -->
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone" />
+            <!-- Login Link -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                android:gravity="center">
 
-        <!-- Login Link -->
-        <TextView
-            android:id="@+id/tvGoToLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Already have an account? Sign In"
-            android:textColor="@color/primary"
-            android:textSize="14sp"
-            android:layout_gravity="center_horizontal"
-            android:padding="12dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Already have an account? "
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary" />
 
+                <TextView
+                    android:id="@+id/btnGoToLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sign In"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="8dp"
+                    android:contentDescription="Go to login"
+                    android:clickable="true"
+                    android:focusable="true" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
