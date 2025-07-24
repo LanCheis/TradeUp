@@ -13,6 +13,11 @@
         <item name="colorOnBackground">@color/text_primary</item>
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="colorError">@color/error</item>
+
+        <!-- Fix TextInputLayout theme issue -->
+        <item name="textInputStyle">@style/Widget.Material3.TextInputLayout.OutlinedBox</item>
+        <item name="materialButtonStyle">@style/Widget.Material3.Button</item>
+        <item name="bottomNavigationStyle">@style/Widget.Material3.BottomNavigationView</item>
     </style>
 
     <!-- Spotify Dark Theme -->
@@ -79,4 +84,65 @@
         <item name="cardBackgroundColor">@color/surface</item>
     </style>
 
+    <!-- Bottom Navigation Indicator -->
+    <style name="BottomNavIndicator">
+        <item name="android:color">@color/primary</item>
+        <item name="android:alpha">0.1</item>
+    </style>
+
+    <!-- Custom TextInputLayout style -->
+    <style name="Widget.TradeUp.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/primary</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="hintTextColor">@color/text_secondary</item>
+    </style>
+
+    <!-- Button Styles -->
+    <style name="Button.Primary" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/button_primary</item>
+        <item name="android:textColor">@color/button_primary_text_color</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:elevation">2dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <style name="Button.Outline" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:background">@drawable/button_outline</item>
+        <item name="android:textColor">@color/button_outline_text_color</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:elevation">0dp</item>
+    </style>
+
+    <style name="Button.Secondary" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/button_secondary</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:elevation">1dp</item>
+    </style>
+
+    <!-- Small Button Variants -->
+    <style name="Button.Primary.Small">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
+
+    <style name="Button.Outline.Small">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
 </resources>

@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA"
+    android:background="@color/background"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="20dp">
 
         <!-- Header -->
         <LinearLayout
@@ -20,21 +20,14 @@
             android:gravity="center"
             android:layout_marginBottom="32dp">
 
-            <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:src="@drawable/ic_avatar_placeholder"
-                android:layout_marginBottom="16dp"
-                app:tint="@color/blue_500" />
-
             <TextView
                 android:id="@+id/tvWelcome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chào mừng đến với TradeUp!"
+                android:text="Complete Your Profile"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="#1a1a1a"
+                android:textColor="@color/text_primary"
                 android:gravity="center"
                 android:layout_marginBottom="8dp" />
 
@@ -42,9 +35,9 @@
                 android:id="@+id/tvStep"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hãy hoàn thành hồ sơ để bắt đầu mua bán"
+                android:text="Complete your profile to start buying and selling"
                 android:textSize="16sp"
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:gravity="center" />
         </LinearLayout>
 
@@ -55,7 +48,7 @@
             android:layout_marginBottom="16dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="@android:color/white">
+            app:cardBackgroundColor="@color/surface">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -67,10 +60,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ảnh đại diện"
+                    android:text="Profile Photo"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="#1a1a1a"
+                    android:textColor="@color/text_primary"
                     android:layout_marginBottom="16dp" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
@@ -79,27 +72,28 @@
                     android:layout_height="120dp"
                     android:src="@drawable/ic_avatar_placeholder"
                     app:civ_border_width="3dp"
-                    app:civ_border_color="@color/blue_500"
+                    app:civ_border_color="@color/primary"
                     android:layout_marginBottom="12dp" />
 
                 <Button
                     android:id="@+id/btnChangeAvatar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Chọn ảnh"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:textColor="@color/blue_500" />
+                    android:text="Change Photo"
+                    android:textColor="@color/primary"
+                    android:background="@drawable/button_outline"
+                    android:padding="12dp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Personal Info Section -->
+        <!-- User Information -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="@android:color/white">
+            app:cardBackgroundColor="@color/surface">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -110,19 +104,19 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Thông tin cá nhân"
+                    android:text="Personal Information"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="#1a1a1a"
+                    android:textColor="@color/text_primary"
                     android:layout_marginBottom="16dp" />
 
                 <!-- Full Name -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Họ và tên *"
+                    android:hint="Full Name *"
                     android:layout_marginBottom="12dp"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etFullName"
@@ -135,9 +129,9 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Số điện thoại *"
+                    android:hint="Phone Number *"
                     android:layout_marginBottom="12dp"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etPhone"
@@ -150,9 +144,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Giới tính *"
+                    android:text="Gender *"
                     android:textStyle="bold"
-                    android:textColor="#1a1a1a"
+                    android:textColor="@color/text_primary"
                     android:layout_marginBottom="8dp" />
 
                 <Spinner
@@ -166,16 +160,17 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Giới thiệu bản thân *"
+                    android:hint="Bio *"
                     android:layout_marginBottom="12dp"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etBio"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textMultiLine"
+                        android:inputType="textMultiLine|textCapSentences"
                         android:minLines="3"
+                        android:maxLines="5"
                         android:gravity="top" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -183,16 +178,15 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Sở thích (ngăn cách bằng dấu phẩy)"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                    android:hint="Interests (Optional)"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etInterests"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text" />
+                        android:inputType="textCapWords" />
                 </com.google.android.material.textfield.TextInputLayout>
-
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -202,29 +196,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:layout_marginBottom="16dp" />
 
         <!-- Continue Button -->
         <Button
             android:id="@+id/btnContinue"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="Hoàn thành và tiếp tục"
+            android:layout_height="56dp"
+            android:text="Continue to TradeUp"
             android:textSize="16sp"
             android:textStyle="bold"
-            style="@style/Widget.Material3.Button"
-            android:backgroundTint="@color/blue_500" />
-
-        <!-- Skip text -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Các trường có dấu * là bắt buộc"
-            android:textSize="14sp"
-            android:textColor="#888888"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp" />
+            android:textColor="@color/white"
+            android:background="@drawable/button_primary"
+            android:layout_marginTop="8dp" />
 
     </LinearLayout>
 </ScrollView>

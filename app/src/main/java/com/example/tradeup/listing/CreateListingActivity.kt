@@ -4,41 +4,72 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.tradeup.R
+import com.example.tradeup.utils.LocationHelper
+import com.example.tradeup.utils.PermissionHelper
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import java.text.NumberFormat
 import java.util.*
 
 class CreateListingActivity : AppCompatActivity() {
 
-    private lateinit var etTitle: EditText
-    private lateinit var etDescription: EditText
-    private lateinit var etPrice: EditText
-    private lateinit var etLocation: EditText
+    // Form Views
+    private lateinit var etTitle: TextInputEditText
+    private lateinit var etDescription: TextInputEditText
+    private lateinit var etPrice: TextInputEditText
+    private lateinit var etLocation: TextInputEditText
     private lateinit var spCategory: Spinner
     private lateinit var spCondition: Spinner
-    private lateinit var ivImage: ImageView
-    private lateinit var btnCreateListing: Button
+    private lateinit var switchNegotiable: SwitchMaterial
+    private lateinit var btnGetLocation: MaterialButton
+    private lateinit var btnPickImages: MaterialButton
+    private lateinit var btnCreateListing: MaterialButton
     private lateinit var progressBar: ProgressBar
+    private lateinit var tvImageCount: TextView
+    private lateinit var rvSelectedImages: RecyclerView
 
-    private var selectedImageUri: Uri? = null
-    private var isNegotiable: Boolean = true // Default value
+    // Preview Views
+    private lateinit var mainFormLayout: ScrollView
+    private lateinit var previewLayout: LinearLayout
+    private lateinit var previewTitle: TextView
+    private lateinit var previewPrice: TextView
+    private lateinit var previewCategory: TextView
+    private lateinit var previewCondition: TextView
+    private lateinit var previewDescription: TextView
+    private lateinit var previewLocation: TextView
+    private lateinit var previewNegotiable: TextView
+    private lateinit var previewImagesRv: RecyclerView
+    private lateinit var btnBackToEdit: MaterialButton
+    private lateinit var btnConfirmPost: MaterialButton
+    private lateinit var previewProgressBar: ProgressBar
 
+    // Data
+    private var selectedImageUris = mutableListOf<Uri>()
+    private var isNegotiable: Boolean = true
+    private var currentLatitude: Double? = null
+    private var currentLongitude: Double? = null
+
+    // Image picker launcher
     private val imagePickerLauncher = registerForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            selectedImageUri = it
-            Glide.with(this)
-                .load(it)
-                .centerCrop()
-                .placeholder(R.drawable.ic_image_placeholder)
-                .into(ivImage)
+        ActivityResultContracts.GetMultipleContents()
+    ) { uris ->
+        if (uris.isNotEmpty()) {
+            selectedImageUris.clear()
+            selectedImageUris.addAll(uris.take(10)) // Max 10 images
+            updateImageCount()
+            updateImageRecyclerView()
         }
     }
 
@@ -49,23 +80,47 @@ class CreateListingActivity : AppCompatActivity() {
         initViews()
         setupSpinners()
         setupClickListeners()
+        setupRecyclerViews()
     }
 
     private fun initViews() {
+        // Form views
         etTitle = findViewById(R.id.etTitle)
         etDescription = findViewById(R.id.etDescription)
         etPrice = findViewById(R.id.etPrice)
         etLocation = findViewById(R.id.etLocation)
         spCategory = findViewById(R.id.spCategory)
         spCondition = findViewById(R.id.spCondition)
-        ivImage = findViewById(R.id.ivImage)
+        switchNegotiable = findViewById(R.id.switchNegotiable)
+        btnGetLocation = findViewById(R.id.btnGetLocation)  // ✅ Matches your layout
+        btnPickImages = findViewById(R.id.btnPickImages)
         btnCreateListing = findViewById(R.id.btnCreateListing)
         progressBar = findViewById(R.id.progressBar)
+        tvImageCount = findViewById(R.id.tvImageCount)
+        rvSelectedImages = findViewById(R.id.rvSelectedImages)
+
+        // Preview views
+        mainFormLayout = findViewById(R.id.mainFormLayout)
+        previewLayout = findViewById(R.id.previewLayout)
+        previewTitle = findViewById(R.id.previewTitle)
+        previewPrice = findViewById(R.id.previewPrice)
+        previewCategory = findViewById(R.id.previewCategory)
+        previewCondition = findViewById(R.id.previewCondition)
+        previewDescription = findViewById(R.id.previewDescription)
+        previewLocation = findViewById(R.id.previewLocation)
+        previewNegotiable = findViewById(R.id.previewNegotiable)
+        previewImagesRv = findViewById(R.id.previewImagesRv)
+        btnBackToEdit = findViewById(R.id.btnBackToEdit)
+        btnConfirmPost = findViewById(R.id.btnConfirmPost)
+        previewProgressBar = findViewById(R.id.previewProgressBar)
     }
 
     private fun setupSpinners() {
         // Category spinner
-        val categories = arrayOf("Select Category", "Electronics", "Clothing", "Home & Garden", "Sports", "Vehicles", "Books", "Other")
+        val categories = arrayOf(
+            "Select Category", "Electronics", "Clothing", "Home & Garden",
+            "Sports", "Vehicles", "Books", "Toys & Games", "Health & Beauty", "Other"
+        )
         val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spCategory.adapter = categoryAdapter
@@ -78,113 +133,226 @@ class CreateListingActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
-        // Handle image selection via ImageView click
-        ivImage.setOnClickListener {
+        // Get current location
+        btnGetLocation.setOnClickListener {
+            getCurrentLocation()
+        }
+
+        // Pick images
+        btnPickImages.setOnClickListener {
             imagePickerLauncher.launch("image/*")
         }
 
+        // Create listing (Preview)
         btnCreateListing.setOnClickListener {
-            if (validateInput()) {
-                createListing()
+            if (validateInputs()) {
+                showPreview()
             }
+        }
+
+        // Negotiable switch
+        switchNegotiable.setOnCheckedChangeListener { _, isChecked ->
+            isNegotiable = isChecked
+        }
+
+        // Preview buttons
+        btnBackToEdit.setOnClickListener {
+            showForm()
+        }
+
+        btnConfirmPost.setOnClickListener {
+            createListing()
         }
     }
 
-    private fun validateInput(): Boolean {
-        val title = etTitle.text.toString().trim()
-        val description = etDescription.text.toString().trim()
-        val priceText = etPrice.text.toString().trim()
-        val location = etLocation.text.toString().trim()
+    private fun setupRecyclerViews() {
+        // Selected images recyclerview (horizontal)
+        rvSelectedImages.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
-        if (title.isEmpty()) {
-            etTitle.error = "Please enter a title"
-            etTitle.requestFocus()
-            return false
+        // Preview images recyclerview (horizontal)
+        previewImagesRv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+    }
+
+    // 🆕 Location functionality
+    private fun getCurrentLocation() {
+        if (LocationHelper.hasLocationPermission(this)) {
+            btnGetLocation.isEnabled = false
+            btnGetLocation.text = "Getting location..."
+
+            LocationHelper.getCurrentLocation(
+                context = this,
+                onSuccess = { locationData ->
+                    etLocation.setText(locationData.address)
+                    currentLatitude = locationData.latitude
+                    currentLongitude = locationData.longitude
+
+                    btnGetLocation.isEnabled = true
+                    btnGetLocation.text = getString(R.string.use_current_location)
+
+                    Toast.makeText(this, "Location updated!", Toast.LENGTH_SHORT).show()
+                },
+                onFailure = { errorMessage ->
+                    Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+                    etLocation.setText("Ho Chi Minh City, Vietnam")
+
+                    btnGetLocation.isEnabled = true
+                    btnGetLocation.text = getString(R.string.use_current_location)
+                }
+            )
+        } else {
+            PermissionHelper.requestLocationPermissions(this)
         }
+    }
 
-        if (description.isEmpty()) {
-            etDescription.error = "Please enter a description"
-            etDescription.requestFocus()
-            return false
+    // 🆕 Permission handling
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        PermissionHelper.handleLocationPermissionResult(
+            requestCode, permissions, grantResults,
+            onGranted = { getCurrentLocation() },
+            onDenied = {
+                PermissionHelper.showLocationPermissionRationale(this, {
+                    PermissionHelper.requestLocationPermissions(this)
+                })
+            },
+            onPermanentlyDenied = {
+                PermissionHelper.showPermissionSettingsDialog(this, "Location")
+            }
+        )
+    }
+
+    private fun updateImageCount() {
+        tvImageCount.text = "${selectedImageUris.size}/10"
+        rvSelectedImages.visibility = if (selectedImageUris.isNotEmpty()) View.VISIBLE else View.GONE
+    }
+
+    private fun updateImageRecyclerView() {
+        // Create simple adapter for selected images
+        // You can implement a proper adapter here
+        updateImageCount()
+    }
+
+    private fun validateInputs(): Boolean {
+        when {
+            etTitle.text.toString().trim().isEmpty() -> {
+                etTitle.error = "Title is required"
+                etTitle.requestFocus()
+                return false
+            }
+            etDescription.text.toString().trim().isEmpty() -> {
+                etDescription.error = "Description is required"
+                etDescription.requestFocus()
+                return false
+            }
+            etPrice.text.toString().trim().isEmpty() -> {
+                etPrice.error = "Price is required"
+                etPrice.requestFocus()
+                return false
+            }
+            etPrice.text.toString().trim().toDoubleOrNull() == null -> {
+                etPrice.error = "Please enter a valid price"
+                etPrice.requestFocus()
+                return false
+            }
+            etLocation.text.toString().trim().isEmpty() -> {
+                etLocation.error = "Location is required"
+                etLocation.requestFocus()
+                return false
+            }
+            spCategory.selectedItemPosition == 0 -> {
+                Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show()
+                return false
+            }
+            spCondition.selectedItemPosition == 0 -> {
+                Toast.makeText(this, "Please select a condition", Toast.LENGTH_SHORT).show()
+                return false
+            }
+            selectedImageUris.isEmpty() -> {
+                Toast.makeText(this, "Please select at least one image", Toast.LENGTH_SHORT).show()
+                return false
+            }
+            else -> return true
         }
+    }
 
-        if (priceText.isEmpty()) {
-            etPrice.error = "Please enter a price"
-            etPrice.requestFocus()
-            return false
-        }
+    private fun showPreview() {
+        // Update preview fields
+        previewTitle.text = etTitle.text.toString().trim()
+        previewPrice.text = formatPrice(etPrice.text.toString().trim().toDouble())
+        previewCategory.text = spCategory.selectedItem.toString()
+        previewCondition.text = spCondition.selectedItem.toString()
+        previewDescription.text = etDescription.text.toString().trim()
+        previewLocation.text = etLocation.text.toString().trim()
+        previewNegotiable.text = if (isNegotiable) "Price is negotiable" else "Fixed price"
 
-        val price = priceText.toDoubleOrNull()
-        if (price == null || price <= 0) {
-            etPrice.error = "Please enter a valid price"
-            etPrice.requestFocus()
-            return false
-        }
+        // Show preview layout
+        mainFormLayout.visibility = View.GONE
+        previewLayout.visibility = View.VISIBLE
+    }
 
-        if (location.isEmpty()) {
-            etLocation.error = "Please enter a location"
-            etLocation.requestFocus()
-            return false
-        }
+    private fun showForm() {
+        previewLayout.visibility = View.GONE
+        mainFormLayout.visibility = View.VISIBLE
+    }
 
-        if (spCategory.selectedItemPosition == 0) {
-            Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show()
-            return false
-        }
-
-        if (spCondition.selectedItemPosition == 0) {
-            Toast.makeText(this, "Please select a condition", Toast.LENGTH_SHORT).show()
-            return false
-        }
-
-        if (selectedImageUri == null) {
-            Toast.makeText(this, "Please select an image by clicking on the image area", Toast.LENGTH_SHORT).show()
-            return false
-        }
-
-        return true
+    private fun formatPrice(price: Double): String {
+        val formatter = NumberFormat.getNumberInstance(Locale("vi", "VN"))
+        return "${formatter.format(price)} ₫"
     }
 
     private fun createListing() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser == null) {
-            Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show()
-            return
-        }
+        showPreviewLoading(true)
 
-        showLoading(true)
-
-        // Upload image first
-        uploadImage { imageUrl ->
-            if (imageUrl != null) {
-                saveListing(imageUrl)
+        // Upload images first
+        uploadImages { imageUrls ->
+            if (imageUrls.isNotEmpty()) {
+                saveListing(imageUrls)
             } else {
-                showLoading(false)
-                Toast.makeText(this, "Failed to upload image", Toast.LENGTH_SHORT).show()
+                showPreviewLoading(false)
+                Toast.makeText(this, "Failed to upload images. Please try again.", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun uploadImage(callback: (String?) -> Unit) {
-        selectedImageUri?.let { uri ->
+    private fun uploadImages(callback: (List<String>) -> Unit) {
+        if (selectedImageUris.isEmpty()) {
+            callback(emptyList())
+            return
+        }
+
+        val uploadedUrls = mutableListOf<String>()
+        var uploadCount = 0
+
+        selectedImageUris.forEach { uri ->
             val fileName = "listings/${UUID.randomUUID()}.jpg"
             val storageRef = FirebaseStorage.getInstance().reference.child(fileName)
 
             storageRef.putFile(uri)
                 .addOnSuccessListener {
                     storageRef.downloadUrl.addOnSuccessListener { downloadUri ->
-                        callback(downloadUri.toString())
-                    }.addOnFailureListener {
-                        callback(null)
+                        uploadedUrls.add(downloadUri.toString())
+                        uploadCount++
+
+                        if (uploadCount == selectedImageUris.size) {
+                            callback(uploadedUrls)
+                        }
                     }
                 }
                 .addOnFailureListener {
-                    callback(null)
+                    uploadCount++
+                    if (uploadCount == selectedImageUris.size) {
+                        callback(uploadedUrls)
+                    }
                 }
-        } ?: callback(null)
+        }
     }
 
-    private fun saveListing(imageUrl: String) {
+    private fun saveListing(imageUrls: List<String>) {
         val currentUser = FirebaseAuth.getInstance().currentUser!!
 
         val listing = hashMapOf(
@@ -195,8 +363,10 @@ class CreateListingActivity : AppCompatActivity() {
             "category" to spCategory.selectedItem.toString(),
             "condition" to spCondition.selectedItem.toString(),
             "location" to etLocation.text.toString().trim(),
-            "imageUrl" to imageUrl,
-            "imageUrls" to listOf(imageUrl),
+            "latitude" to currentLatitude,
+            "longitude" to currentLongitude,
+            "imageUrl" to imageUrls.firstOrNull().orEmpty(),
+            "imageUrls" to imageUrls,
             "ownerUid" to currentUser.uid,
             "ownerName" to (currentUser.displayName ?: "Unknown User"),
             "ownerAvatar" to (currentUser.photoUrl?.toString() ?: ""),
@@ -213,19 +383,20 @@ class CreateListingActivity : AppCompatActivity() {
             .collection("listings")
             .add(listing)
             .addOnSuccessListener {
-                showLoading(false)
+                showPreviewLoading(false)
                 Toast.makeText(this, "Listing created successfully!", Toast.LENGTH_SHORT).show()
                 setResult(Activity.RESULT_OK)
                 finish()
             }
             .addOnFailureListener { e ->
-                showLoading(false)
+                showPreviewLoading(false)
                 Toast.makeText(this, "Failed to create listing: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
-    private fun showLoading(show: Boolean) {
-        progressBar.visibility = if (show) android.view.View.VISIBLE else android.view.View.GONE
-        btnCreateListing.isEnabled = !show
+    private fun showPreviewLoading(show: Boolean) {
+        previewProgressBar.visibility = if (show) View.VISIBLE else View.GONE
+        btnConfirmPost.isEnabled = !show
+        btnBackToEdit.isEnabled = !show
     }
 }
