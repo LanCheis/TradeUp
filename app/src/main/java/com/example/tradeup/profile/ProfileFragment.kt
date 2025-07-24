@@ -2,6 +2,7 @@ package com.example.tradeup.profile
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +18,6 @@ import com.example.tradeup.data.remote.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.launch
-
 
 class ProfileFragment : Fragment() {
 
@@ -111,9 +111,14 @@ class ProfileFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
+                Log.d("ProfileFragment", "🔍 Loading profile for user: ${currentUser.uid}")
                 val userProfile = userRepository.getUserProfile(currentUser.uid)
 
                 if (userProfile != null) {
+                    Log.d("ProfileFragment", "✅ Profile loaded successfully")
+                    Log.d("ProfileFragment", "🔍 Profile picture URL: '${userProfile.profilePictureUrl}'")
+                    Log.d("ProfileFragment", "🔍 Updated timestamp: ${userProfile.updatedAt.seconds}")
+
                     // FR-1.2.1: Display all profile information
                     tvDisplayName.text = userProfile.displayName.ifEmpty { "No name set" }
                     tvBio.text = userProfile.bio.ifEmpty { "No bio added yet" }
@@ -134,10 +139,11 @@ class ProfileFragment : Fragment() {
                         tvRatingText.text = "No reviews yet"
                     }
 
-                    // 🔧 FIXED: Load profile picture with cache busting
+                    // 🔧 SIMPLIFIED: Load profile picture
                     loadProfileImage(userProfile.profilePictureUrl, userProfile.updatedAt.seconds)
 
                 } else {
+                    Log.e("ProfileFragment", "❌ Profile not found in database")
                     Toast.makeText(context, "Profile not found", Toast.LENGTH_SHORT).show()
                 }
 
@@ -145,25 +151,37 @@ class ProfileFragment : Fragment() {
 
             } catch (e: Exception) {
                 showLoading(false)
+                Log.e("ProfileFragment", "❌ Error loading profile: ${e.message}")
                 Toast.makeText(context, "Error loading profile: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    // 🔧 NEW: Separate method for loading profile image with cache control
+    // 🔧 SIMPLIFIED: Profile image loading without complex listener
     private fun loadProfileImage(imageUrl: String, timestamp: Long) {
+        Log.d("ProfileFragment", "🔍 loadProfileImage called:")
+        Log.d("ProfileFragment", "   - imageUrl: '$imageUrl'")
+        Log.d("ProfileFragment", "   - timestamp: $timestamp")
+
         if (imageUrl.isNotEmpty()) {
+            Log.d("ProfileFragment", "✅ Loading image with Glide...")
+
+            // Try loading with cache busting first
             Glide.with(this)
                 .load(imageUrl)
-                .diskCacheStrategy(DiskCacheStrategy.NONE) // Don't cache to disk
-                .skipMemoryCache(false) // Allow memory cache but use signature
-                .signature(ObjectKey(timestamp)) // Use timestamp as cache key
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true) // Skip memory cache completely
                 .placeholder(R.drawable.ic_avatar_placeholder)
                 .error(R.drawable.ic_avatar_placeholder)
                 .into(ivProfilePic)
+
+            // Also show a toast so you know it's trying to load
+            Toast.makeText(context, "Loading profile image...", Toast.LENGTH_SHORT).show()
+
         } else {
-            // Load default avatar
+            Log.w("ProfileFragment", "⚠️ Image URL is empty, showing placeholder")
             ivProfilePic.setImageResource(R.drawable.ic_avatar_placeholder)
+            Toast.makeText(context, "No profile image set", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -196,20 +214,18 @@ class ProfileFragment : Fragment() {
         scrollView.visibility = if (show) View.GONE else View.VISIBLE
     }
 
-    // 🔧 FIXED: Handle result from EditProfileActivity
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == EDIT_PROFILE_REQUEST && resultCode == android.app.Activity.RESULT_OK) {
-            // Profile was updated, refresh the display
+            Log.d("ProfileFragment", "🔄 Profile was updated, refreshing display...")
             loadUserProfile()
         }
     }
 
-    // 🔧 BACKUP: Also refresh when fragment becomes visible
     override fun onResume() {
         super.onResume()
-        // Only reload if we have views initialized
         if (::auth.isInitialized) {
+            Log.d("ProfileFragment", "🔄 Fragment resumed, reloading profile...")
             loadUserProfile()
         }
     }

@@ -16,9 +16,9 @@ object CloudinaryHelper {
     fun initialize(context: Context) {
         if (!isInitialized) {
             val config = mapOf(
-                "cloud_name" to "your_cloud_name", // 🚨 REPLACE WITH YOUR CLOUDINARY CLOUD NAME
-                "api_key" to "your_api_key",       // 🚨 REPLACE WITH YOUR API KEY
-                "api_secret" to "your_api_secret"  // 🚨 REPLACE WITH YOUR API SECRET
+                "cloud_name" to "dovf2zc0u",
+                "api_key" to "954889699447999",
+                "api_secret" to "jePY1jqFFEM3pbAmBo0i9XuVgQo"
             )
 
             try {
