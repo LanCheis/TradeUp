@@ -9,16 +9,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:orientation="vertical">
 
-        <!-- Header -->
+        <!-- Header Section -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="160dp"
+            android:background="@drawable/gradient_header_background"
             android:orientation="vertical"
             android:gravity="center"
-            android:layout_marginBottom="32dp">
+            android:padding="24dp">
 
             <TextView
                 android:id="@+id/tvWelcome"
@@ -27,49 +27,65 @@
                 android:text="Complete Your Profile"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:gravity="center"
+                android:textColor="@color/white"
                 android:layout_marginBottom="8dp" />
 
             <TextView
-                android:id="@+id/tvStep"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Complete your profile to start buying and selling"
+                android:text="Tell us about yourself to get started 🚀"
                 android:textSize="16sp"
-                android:textColor="@color/text_secondary"
+                android:textColor="#E8F5E8"
                 android:gravity="center" />
+
         </LinearLayout>
 
-        <!-- Profile Photo Section -->
-        <androidx.cardview.widget.CardView
+        <!-- Main Content -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/surface">
+            android:orientation="vertical"
+            android:padding="24dp">
 
+            <!-- Error Message -->
+            <TextView
+                android:id="@+id/tvIncompleteMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="14sp"
+                android:textColor="@color/error"
+                android:background="@drawable/error_background"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                android:drawableStart="@drawable/ic_error"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical" />
+
+            <!-- Profile Picture Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/profile_section_background"
                 android:padding="20dp"
-                android:gravity="center">
+                android:layout_marginBottom="24dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Profile Photo"
-                    android:textSize="18sp"
+                    android:text="📸 Profile Photo"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
                     android:layout_marginBottom="16dp" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/ivAvatar"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
                     android:src="@drawable/ic_avatar_placeholder"
                     app:civ_border_width="3dp"
                     app:civ_border_color="@color/primary"
@@ -78,138 +94,151 @@
                 <Button
                     android:id="@+id/btnChangeAvatar"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Change Photo"
+                    android:layout_height="40dp"
+                    android:text="Choose Photo"
+                    android:textSize="14sp"
                     android:textColor="@color/primary"
                     android:background="@drawable/button_outline"
-                    android:padding="12dp" />
+                    android:drawableStart="@drawable/ic_camera"
+                    android:drawablePadding="8dp" />
+
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
 
-        <!-- User Information -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/surface">
+            <!-- Username Field -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="👤 Username *"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp" />
 
-            <LinearLayout
+            <EditText
+                android:id="@+id/etFullName"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Enter your username"
+                android:inputType="textPersonName|textCapWords"
+                android:maxLines="1"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
+                android:background="@drawable/edittext_background"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"
+                android:drawableStart="@drawable/ic_person"
+                android:drawablePadding="12dp" />
+
+            <!-- Phone Field -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📱 Phone Number *"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/etPhone"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Enter your phone number"
+                android:inputType="phone"
+                android:maxLines="1"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
+                android:background="@drawable/edittext_background"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"
+                android:drawableStart="@drawable/ic_phone"
+                android:drawablePadding="12dp" />
+
+            <!-- Bio Field -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="✍️ Bio (minimum 10 characters) *"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/etBio"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:hint="Tell us about yourself..."
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLines="3"
+                android:maxLength="200"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
+                android:background="@drawable/edittext_background"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"
+                android:gravity="top"
+                android:drawableStart="@drawable/ic_edit"
+                android:drawablePadding="12dp" />
+
+            <!-- Address Field -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📍 Address (Optional)"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/etAddress"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Enter your address"
+                android:inputType="textPostalAddress|textCapWords"
+                android:maxLines="2"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
+                android:background="@drawable/edittext_background"
+                android:padding="16dp"
+                android:layout_marginBottom="32dp"
+                android:drawableStart="@drawable/ic_location"
+                android:drawablePadding="12dp" />
+
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp"
+                android:indeterminateTint="@color/primary" />
+
+            <!-- Save Button -->
+            <Button
+                android:id="@+id/btnContinue"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Complete Profile ✨"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:background="@drawable/button_primary" />
+
+            <!-- Required Fields Note -->
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:text="* Required fields"
+                android:textSize="12sp"
+                android:textColor="@color/text_tertiary"
+                android:gravity="center"
+                android:layout_marginTop="12dp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Personal Information"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginBottom="16dp" />
-
-                <!-- Full Name -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Full Name *"
-                    android:layout_marginBottom="12dp"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etFullName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPersonName" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Phone -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Phone Number *"
-                    android:layout_marginBottom="12dp"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etPhone"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="phone" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Gender -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Gender *"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginBottom="8dp" />
-
-                <Spinner
-                    android:id="@+id/spinnerGender"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/edittext_background" />
-
-                <!-- Bio -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Bio *"
-                    android:layout_marginBottom="12dp"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etBio"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textMultiLine|textCapSentences"
-                        android:minLines="3"
-                        android:maxLines="5"
-                        android:gravity="top" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Interests -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Interests (Optional)"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etInterests"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textCapWords" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Progress Bar -->
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Continue Button -->
-        <Button
-            android:id="@+id/btnContinue"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="Continue to TradeUp"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:background="@drawable/button_primary"
-            android:layout_marginTop="8dp" />
+        </LinearLayout>
 
     </LinearLayout>
+
 </ScrollView>

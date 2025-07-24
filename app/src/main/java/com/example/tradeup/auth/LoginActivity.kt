@@ -7,13 +7,19 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.tradeup.MainActivity
 import com.example.tradeup.R
+import com.example.tradeup.data.remote.UserRepository
+import com.example.tradeup.onboarding.SetupProfileActivity
+import com.example.tradeup.utils.ProfileValidator
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var userRepository: UserRepository
     private lateinit var progressBar: ProgressBar
 
     private lateinit var emailField: EditText
@@ -28,8 +34,9 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Initialize Firebase Auth
+        // Initialize Firebase Auth and Repository
         auth = FirebaseAuth.getInstance()
+        userRepository = UserRepository()
 
         initViews()
         setupTextWatchers()
@@ -78,6 +85,8 @@ class LoginActivity : AppCompatActivity() {
 
         // Visual feedback
         if (email.isNotEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailField.setBackgroundResource(R.drawable.edittext_error_background)
+        } else {
             emailField.setBackgroundResource(R.drawable.edittext_background)
         }
     }
@@ -91,12 +100,10 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(this, "Google Sign-In coming soon!", Toast.LENGTH_SHORT).show()
         }
 
-        // 🆕 Connect to ForgotPasswordActivity
         forgotPasswordText.setOnClickListener {
             startActivity(Intent(this, ForgotPasswordActivity::class.java))
         }
 
-        // 🆕 Connect to RegisterActivity
         goToRegisterText.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
@@ -112,54 +119,100 @@ class LoginActivity : AppCompatActivity() {
 
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
-                showProgress(false)
-
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+                    // 🛡️ CHECK PROFILE COMPLETENESS BEFORE PROCEEDING
+                    checkProfileCompletenessAndNavigate()
                 } else {
-                    val error = task.exception?.message ?: "Login failed"
+                    showProgress(false)
+                    val error = task.exception?.message ?: "Login failed. Please try again."
                     showError(error)
                 }
             }
     }
 
-    private fun validateInput(email: String, password: String): Boolean {
-        hideError()
+    /**
+     * 🛡️ Check if user profile is complete before allowing access to main app
+     */
+    private fun checkProfileCompletenessAndNavigate() {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            showProgress(false)
+            showError("Authentication error. Please try again.")
+            return
+        }
 
+        lifecycleScope.launch {
+            try {
+                val userProfile = userRepository.getUserProfile(currentUser.uid)
+
+                showProgress(false)
+
+                if (ProfileValidator.isProfileComplete(userProfile)) {
+                    // ✅ Profile is complete - proceed to main app
+                    Toast.makeText(this@LoginActivity, "Welcome back!", Toast.LENGTH_SHORT).show()
+                    navigateToMain()
+                } else {
+                    // ❌ Profile incomplete - redirect to setup
+                    val missingFields = ProfileValidator.getMissingFields(userProfile)
+                    val message = "Please complete your profile:\n• ${missingFields.joinToString("\n• ")}"
+
+                    Toast.makeText(this@LoginActivity,
+                        "Profile setup required", Toast.LENGTH_LONG).show()
+
+                    navigateToProfileSetup(message)
+                }
+
+            } catch (e: Exception) {
+                showProgress(false)
+                showError("Error checking profile: ${e.message}")
+            }
+        }
+    }
+
+    private fun validateInput(email: String, password: String): Boolean {
         when {
             email.isEmpty() -> {
-                showError("Please enter your email")
-                emailField.requestFocus()
+                showError("Please enter your email address")
                 return false
             }
             !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
                 showError("Please enter a valid email address")
-                emailField.requestFocus()
                 return false
             }
             password.isEmpty() -> {
                 showError("Please enter your password")
-                passwordField.requestFocus()
                 return false
             }
-            password.length < 6 -> {
-                showError("Password must be at least 6 characters")
-                passwordField.requestFocus()
-                return false
-            }
-            else -> return true
         }
+        return true
+    }
+
+    private fun navigateToMain() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToProfileSetup(message: String = "") {
+        val intent = Intent(this, SetupProfileActivity::class.java)
+        if (message.isNotEmpty()) {
+            intent.putExtra("incomplete_message", message)
+        }
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 
     private fun showProgress(show: Boolean) {
         progressBar.visibility = if (show) View.VISIBLE else View.GONE
-        loginBtn.isEnabled = !show && validateFieldsForButton()
-        googleBtn.isEnabled = !show
+        loginBtn.isEnabled = !show && validateFormFields()
+
+        emailField.isEnabled = !show
+        passwordField.isEnabled = !show
     }
 
-    private fun validateFieldsForButton(): Boolean {
+    private fun validateFormFields(): Boolean {
         val email = emailField.text.toString().trim()
         val password = passwordField.text.toString().trim()
 
@@ -170,10 +223,5 @@ class LoginActivity : AppCompatActivity() {
     private fun showError(message: String) {
         errorText.text = message
         errorText.visibility = View.VISIBLE
-        errorText.announceForAccessibility(message)
-    }
-
-    private fun hideError() {
-        errorText.visibility = View.GONE
     }
 }

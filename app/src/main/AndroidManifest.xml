@@ -2,14 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Required permissions -->
+    <!-- Required permissions for Section 1.1 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- Hardware features (optional for wider device support) -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -45,54 +47,39 @@
             android:screenOrientation="portrait"
             android:parentActivityName=".auth.LoginActivity" />
 
-        <!-- Listing Activities -->
         <activity
-            android:name=".listing.CreateListingActivity"
+            android:name=".auth.ForgotPasswordActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".auth.LoginActivity" />
 
+        <!-- Profile Setup -->
         <activity
-            android:name=".listing.ListingDetailActivity"
+            android:name=".onboarding.SetupProfileActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".auth.RegisterActivity" />
 
-        <activity
-            android:name=".listing.MyListingsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity" />
-
-        <!-- Search Activities -->
-        <activity
-            android:name=".search.SearchActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity" />
-
-        <!-- Profile Activities -->
+        <!--Edit profile-->
         <activity
             android:name=".profile.EditProfileActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
 
-        <!-- Offers Activities -->
+        <!--Account setting-->
         <activity
-            android:name=".offers.MakeOfferActivity"
+            android:name=".profile.AccountSettingsActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:parentActivityName=".listing.ListingDetailActivity" />
+            android:parentActivityName=".profile.EditProfileActivity" />
 
+        <!-- View profile -->
         <activity
-            android:name=".offers.OffersActivity"
+            android:name=".profile.ViewPublicProfileActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
-
-        <!-- NOTE: Chat activities removed - will be added in future updates -->
-
     </application>
 
 </manifest>
