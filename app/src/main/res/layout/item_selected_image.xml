@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="100dp"
     android:layout_height="100dp"
     android:layout_margin="4dp">
 
-    <!-- Image Preview -->
+    <!-- Selected Image -->
     <ImageView
-        android:id="@+id/ivImage"
+        android:id="@+id/ivSelectedImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:background="@drawable/rounded_image_background"
-        android:contentDescription="@string/preview_image" />
+        android:background="@drawable/image_background"
+        android:contentDescription="Selected image" />
 
     <!-- Remove Button -->
-    <ImageView
-        android:id="@+id/btnRemove"
+    <ImageButton
+        android:id="@+id/btnRemoveImage"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_gravity="top|end"
         android:layout_margin="4dp"
-        android:src="@drawable/ic_close_circle"
-        android:background="@drawable/circle_background_red"
-        android:padding="4dp"
-        android:contentDescription="@string/remove_image"
-        android:elevation="2dp" />
+        android:background="@drawable/circle_red_background"
+        android:src="@drawable/ic_close_white"
+        android:contentDescription="Remove image"
+        android:padding="4dp" />
 
 </FrameLayout>

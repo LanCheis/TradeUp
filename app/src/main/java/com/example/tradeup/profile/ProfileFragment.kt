@@ -41,7 +41,7 @@ class ProfileFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private lateinit var scrollView: ScrollView
 
-    // FR-1.2.1: Modern activity result launcher (replaces deprecated startActivityForResult)
+    // FR-1.2.1: Modern activity result launcher
     private lateinit var editProfileLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreateView(
@@ -54,7 +54,7 @@ class ProfileFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         userRepository = UserRepository()
 
-        // FR-1.2.2: Set up modern activity result launcher BEFORE using it
+        // Initialize activity launchers BEFORE using them
         initializeActivityLaunchers()
 
         initViews(view)
@@ -65,7 +65,7 @@ class ProfileFragment : Fragment() {
     }
 
     /**
-     * FR-1.2.3: Initialize modern activity result launchers
+     * Initialize modern activity result launchers
      */
     private fun initializeActivityLaunchers() {
         editProfileLauncher = registerForActivityResult(
@@ -100,36 +100,23 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        // FR-1.2.2: Edit profile with clean navigation
+        // Edit profile
         btnEditProfile.setOnClickListener {
             val intent = Intent(requireContext(), EditProfileActivity::class.java)
             editProfileLauncher.launch(intent)
         }
 
-        // FR-1.2.3: Account settings
-        btnAccountSettings.setOnClickListener {
-            val intent = Intent(requireContext(), AccountSettingsActivity::class.java)
-            startActivity(intent)
-        }
-
-        // FR-1.1.5: Logout with confirmation
-        btnLogout.setOnClickListener {
-            showLogoutConfirmation()
-        }
-    }
-
-        // FR-1.2.5: Account settings with error handling
+        // Account settings - graceful fallback if activity doesn't exist
         btnAccountSettings.setOnClickListener {
             try {
-                val intent = Intent(requireContext(), com.example.tradeup.profile.AccountSettingsActivity::class.java)
+                val intent = Intent(requireContext(), AccountSettingsActivity::class.java)
                 startActivity(intent)
             } catch (e: Exception) {
-                // Graceful fallback if AccountSettingsActivity doesn't exist
                 Toast.makeText(requireContext(), "Account settings coming soon!", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // FR-1.1.5: Logout with confirmation
+        // Logout with confirmation
         btnLogout.setOnClickListener {
             showLogoutConfirmation()
         }
@@ -152,7 +139,7 @@ class ProfileFragment : Fragment() {
                 val userProfile = userRepository.getUserProfile(currentUser.uid)
 
                 if (userProfile != null) {
-                    // FR-1.2.1: Display all profile information
+                    // Display all profile information
                     tvDisplayName.text = userProfile.displayName.ifEmpty { "No name set" }
                     tvBio.text = userProfile.bio.ifEmpty { "No bio added yet" }
                     tvPhone.text = userProfile.phoneNumber.ifEmpty { "No phone number" }
@@ -163,7 +150,7 @@ class ProfileFragment : Fragment() {
                         .format(userProfile.createdAt.toDate())
                     tvMemberSince.text = "Member since $memberSince"
 
-                    // FR-1.2.1: Display rating
+                    // Display rating
                     if (userProfile.reviewCount > 0) {
                         ratingBar.rating = userProfile.rating.toFloat()
                         tvRatingText.text = "${String.format("%.1f", userProfile.rating)} (${userProfile.reviewCount} reviews)"
@@ -194,18 +181,16 @@ class ProfileFragment : Fragment() {
             if (imageUrl.isNotEmpty()) {
                 Glide.with(this)
                     .load(imageUrl)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Don't cache to disk
-                    .skipMemoryCache(false) // Allow memory cache but use signature
-                    .signature(ObjectKey(timestamp)) // Use timestamp as cache key
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(false)
+                    .signature(ObjectKey(timestamp))
                     .placeholder(R.drawable.ic_avatar_placeholder)
                     .error(R.drawable.ic_avatar_placeholder)
                     .into(ivProfilePic)
             } else {
-                // Load default avatar
                 ivProfilePic.setImageResource(R.drawable.ic_avatar_placeholder)
             }
         } catch (e: Exception) {
-            // Fallback to default image if Glide fails
             ivProfilePic.setImageResource(R.drawable.ic_avatar_placeholder)
         }
     }
@@ -221,7 +206,6 @@ class ProfileFragment : Fragment() {
                 .setNegativeButton("Cancel", null)
                 .show()
         } catch (e: Exception) {
-            // Fallback: direct logout if dialog fails
             performLogout()
         }
     }
@@ -259,7 +243,6 @@ class ProfileFragment : Fragment() {
     // Refresh when fragment becomes visible
     override fun onResume() {
         super.onResume()
-        // Only reload if we have views initialized
         if (::auth.isInitialized) {
             loadUserProfile()
         }

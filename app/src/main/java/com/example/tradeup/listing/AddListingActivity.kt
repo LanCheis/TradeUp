@@ -1,388 +1,322 @@
 package com.example.tradeup.listing
 
-import android.Manifest
+import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.tradeup.R
-import com.example.tradeup.data.model.Categories
-import com.example.tradeup.data.model.ItemCondition
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
+import com.example.tradeup.data.model.Category
+import com.example.tradeup.data.model.Listing
+import com.example.tradeup.data.remote.ListingRepository
+import com.example.tradeup.utils.CloudinaryHelper
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 class AddListingActivity : AppCompatActivity() {
 
-    // UI Components - matching your XML layout
-    private lateinit var etTitle: TextInputEditText
-    private lateinit var etPrice: TextInputEditText
-    private lateinit var etDescription: TextInputEditText
-    private lateinit var etLocation: TextInputEditText
+    private lateinit var auth: FirebaseAuth
+    private lateinit var listingRepository: ListingRepository
+    private lateinit var cloudinaryHelper: CloudinaryHelper
+
+    // Views - only the essential ones
+    private lateinit var etTitle: EditText
+    private lateinit var etDescription: EditText
+    private lateinit var etPrice: EditText
     private lateinit var spinnerCategory: Spinner
-    private lateinit var spinnerCondition: Spinner
+    private lateinit var etLocation: EditText
     private lateinit var switchNegotiable: Switch
-    private lateinit var btnGetLocation: MaterialButton
-    private lateinit var btnChoosePhotos: MaterialButton
-    private lateinit var btnPreview: Button
-    private lateinit var recyclerImages: RecyclerView
+    private lateinit var btnCreateListing: Button
     private lateinit var progressBar: ProgressBar
 
-    // Data
-    private val selectedImages = mutableListOf<Uri>()
-    private lateinit var imagesAdapter: AddListingImagesAdapter
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private var currentLatitude: Double? = null
-    private var currentLongitude: Double? = null
+    // Optional views (with safe initialization)
+    private var chipGroupCondition: ChipGroup? = null
+    private var btnSelectImages: Button? = null
 
-    companion object {
-        private const val MAX_IMAGES = 10 // FR-2.1.4: Up to 10 images
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
-    }
+    // Data
+    private val selectedImageUris = mutableListOf<Uri>()
+    private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_listing)
 
+        // Initialize Firebase and repositories
+        auth = FirebaseAuth.getInstance()
+        listingRepository = ListingRepository()
+        cloudinaryHelper = CloudinaryHelper()
+
+        // Setup toolbar
         setupToolbar()
-        setupViews()
-        setupSpinners()
+
+        // Initialize views
+        initViews()
+
+        // Setup image picker
         setupImagePicker()
-        setupLocationServices()
+
+        // Setup spinners and chips
+        setupCategorySpinner()
+        setupConditionChips()
+
+        // Setup click listeners
         setupClickListeners()
+
+        Log.d("AddListingActivity", "✅ AddListingActivity created successfully")
     }
 
     private fun setupToolbar() {
+        setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.apply {
             title = "Create New Listing"
             setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
         }
     }
 
-    private fun setupViews() {
-        // Initialize all UI components using IDs from your XML
+    private fun initViews() {
+        // Essential views (must exist)
         etTitle = findViewById(R.id.etTitle)
-        etPrice = findViewById(R.id.etPrice)
         etDescription = findViewById(R.id.etDescription)
-        etLocation = findViewById(R.id.etLocation)
+        etPrice = findViewById(R.id.etPrice)
         spinnerCategory = findViewById(R.id.spinnerCategory)
-        spinnerCondition = findViewById(R.id.spinnerCondition)
+        etLocation = findViewById(R.id.etLocation)
         switchNegotiable = findViewById(R.id.switchNegotiable)
-        btnGetLocation = findViewById(R.id.btnGetLocation)
-        btnChoosePhotos = findViewById(R.id.btnChoosePhotos)
-        btnPreview = findViewById(R.id.btnPreview)
-        recyclerImages = findViewById(R.id.recyclerImages)
+        btnCreateListing = findViewById(R.id.btnCreateListing)
         progressBar = findViewById(R.id.progressBar)
-    }
 
-    private fun setupSpinners() {
-        // FR-2.1.1: Category dropdown setup
-        val categoryAdapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_item,
-            listOf("Select Category") + Categories.ALL
-        )
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerCategory.adapter = categoryAdapter
+        // Optional views (safe initialization)
+        try {
+            chipGroupCondition = findViewById(R.id.chipGroupCondition)
+        } catch (e: Exception) {
+            Log.w("AddListingActivity", "chipGroupCondition not found: ${e.message}")
+        }
 
-        // FR-2.1.1: Condition dropdown setup
-        val conditionList = listOf(
-            "Select Condition",
-            ItemCondition.NEW,
-            ItemCondition.LIKE_NEW,
-            ItemCondition.GOOD,
-            ItemCondition.FAIR,
-            ItemCondition.POOR
-        )
-
-        val conditionAdapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_item,
-            conditionList
-        )
-        conditionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerCondition.adapter = conditionAdapter
+        try {
+            btnSelectImages = findViewById(R.id.btnSelectImages)
+        } catch (e: Exception) {
+            Log.w("AddListingActivity", "btnSelectImages not found: ${e.message}")
+        }
     }
 
     private fun setupImagePicker() {
-        // FR-2.1.4: Setup image selection for up to 10 images
-        imagesAdapter = AddListingImagesAdapter { position ->
-            // Remove image when user clicks the 'X' button
-            selectedImages.removeAt(position)
-            imagesAdapter.updateImages(selectedImages)
-            updateImageCounter()
+        imagePickerLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data = result.data
+                data?.let { intent ->
+                    if (intent.clipData != null) {
+                        // Multiple images selected
+                        val clipData = intent.clipData!!
+                        for (i in 0 until clipData.itemCount) {
+                            val uri = clipData.getItemAt(i).uri
+                            if (selectedImageUris.size < 10) {
+                                selectedImageUris.add(uri)
+                            }
+                        }
+                    } else if (intent.data != null) {
+                        // Single image selected
+                        val uri = intent.data!!
+                        if (selectedImageUris.size < 10) {
+                            selectedImageUris.add(uri)
+                        }
+                    }
 
-            // Show/hide RecyclerView based on image count
-            recyclerImages.visibility = if (selectedImages.isEmpty()) View.GONE else View.VISIBLE
+                    updateImageButtonText()
+                }
+            }
         }
-
-        recyclerImages.layoutManager = GridLayoutManager(this, 3)
-        recyclerImages.adapter = imagesAdapter
     }
 
-    private fun setupLocationServices() {
-        // FR-2.1.3: Initialize GPS location services
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+    private fun setupCategorySpinner() {
+        val categories = Category.getAllCategories().map { it.displayName }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerCategory.adapter = adapter
+    }
+
+    private fun setupConditionChips() {
+        chipGroupCondition?.let { chipGroup ->
+            val conditions = Listing.getAllConditions()
+
+            conditions.forEach { condition ->
+                val chip = Chip(this)
+                chip.text = condition
+                chip.isCheckable = true
+                chip.id = View.generateViewId()
+                chipGroup.addView(chip)
+            }
+
+            // Set single selection
+            chipGroup.isSingleSelection = true
+        }
     }
 
     private fun setupClickListeners() {
-        // FR-2.1.3: Get current location button
-        btnGetLocation.setOnClickListener {
-            requestLocationPermissionAndGetLocation()
-        }
-
-        // FR-2.1.4: Choose photos button
-        btnChoosePhotos.setOnClickListener {
+        btnSelectImages?.setOnClickListener {
             openImagePicker()
         }
 
-        // FR-2.1.5: Preview listing button
-        btnPreview.setOnClickListener {
-            if (validateForm()) {
-                openPreview()
-            }
-        }
-    }
-
-    // FR-2.1.3: Location permission and GPS functionality
-    private fun requestLocationPermissionAndGetLocation() {
-        when {
-            ActivityCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                getCurrentLocation()
-            }
-            else -> {
-                // Request permission
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    LOCATION_PERMISSION_REQUEST_CODE
-                )
-            }
-        }
-    }
-
-    private fun getCurrentLocation() {
-        showLoading(true)
-
-        try {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                showLoading(false)
-                if (location != null) {
-                    currentLatitude = location.latitude
-                    currentLongitude = location.longitude
-
-                    // Format location nicely
-                    val locationText = String.format(
-                        "%.4f, %.4f",
-                        location.latitude,
-                        location.longitude
-                    )
-                    etLocation.setText(locationText)
-
-                    Toast.makeText(this, "📍 Location updated!", Toast.LENGTH_SHORT).show()
-
-                    // Change button text to indicate success
-                    btnGetLocation.text = "✅ GPS"
-                } else {
-                    Toast.makeText(this, "Unable to get location. Try again.", Toast.LENGTH_SHORT).show()
-                }
-            }.addOnFailureListener { exception ->
-                showLoading(false)
-                Toast.makeText(this, "Location error: ${exception.message}", Toast.LENGTH_SHORT).show()
-            }
-        } catch (securityException: SecurityException) {
-            showLoading(false)
-            Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    // FR-2.1.4: Image picker for up to 10 images
-    private val imagePickerLauncher = registerForActivityResult(
-        ActivityResultContracts.GetMultipleContents()
-    ) { uris ->
-        if (uris.isNotEmpty()) {
-            val availableSlots = MAX_IMAGES - selectedImages.size
-            val newImages = uris.take(availableSlots)
-
-            selectedImages.addAll(newImages)
-            imagesAdapter.updateImages(selectedImages)
-            updateImageCounter()
-
-            // Show RecyclerView when images are added
-            recyclerImages.visibility = View.VISIBLE
-
-            if (uris.size > availableSlots) {
-                Toast.makeText(
-                    this,
-                    "Only $availableSlots more images could be added",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+        btnCreateListing.setOnClickListener {
+            createListing()
         }
     }
 
     private fun openImagePicker() {
-        if (selectedImages.size >= MAX_IMAGES) {
-            Toast.makeText(this, "Maximum $MAX_IMAGES images allowed", Toast.LENGTH_SHORT).show()
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png"))
+        }
+
+        imagePickerLauncher.launch(Intent.createChooser(intent, "Select Images"))
+    }
+
+    private fun updateImageButtonText() {
+        btnSelectImages?.text = if (selectedImageUris.isEmpty()) {
+            "Select Images (0/10)"
+        } else {
+            "Select Images (${selectedImageUris.size}/10)"
+        }
+    }
+
+    private fun createListing() {
+        if (!validateInputs()) return
+
+        showLoading(true)
+
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            showError("Please login first")
+            showLoading(false)
             return
         }
-        imagePickerLauncher.launch("image/*")
-    }
 
-    private fun updateImageCounter() {
-        // Update button text to show current count
-        btnChoosePhotos.text = "Choose Photos (${selectedImages.size}/$MAX_IMAGES)"
+        lifecycleScope.launch {
+            try {
+                // Upload images to Cloudinary first
+                val imageUrls = mutableListOf<String>()
 
-        // Change button style based on image count
-        if (selectedImages.isEmpty()) {
-            btnChoosePhotos.setIconResource(R.drawable.ic_add_photo)
-        } else {
-            btnChoosePhotos.setIconResource(R.drawable.ic_check)
-        }
-    }
+                for (uri in selectedImageUris) {
+                    val uploadedUrl = cloudinaryHelper.uploadImage(uri, this@AddListingActivity)
+                    if (uploadedUrl != null) {
+                        imageUrls.add(uploadedUrl)
+                    }
+                }
 
-    // FR-2.1.1: Form validation - ensure all required fields are filled
-    private fun validateForm(): Boolean {
-        var isValid = true
+                // Create listing object
+                val listing = Listing(
+                    id = "", // Firestore will generate this
+                    title = etTitle.text.toString().trim(),
+                    description = etDescription.text.toString().trim(),
+                    price = etPrice.text.toString().toDoubleOrNull() ?: 0.0,
+                    category = getSelectedCategory(),
+                    condition = getSelectedCondition(),
+                    location = etLocation.text.toString().trim(),
+                    imageUrls = imageUrls,
+                    sellerId = currentUser.uid,
+                    sellerName = currentUser.displayName ?: "Unknown",
+                    isNegotiable = switchNegotiable.isChecked,
+                    createdAt = com.google.firebase.Timestamp.now(),
+                    updatedAt = com.google.firebase.Timestamp.now(),
+                    status = "available"
+                )
 
-        // Clear previous errors
-        etTitle.error = null
-        etPrice.error = null
-        etDescription.error = null
-        etLocation.error = null
+                // Save to Firestore
+                val success = listingRepository.createListing(listing)
 
-        // Check title
-        if (etTitle.text.toString().trim().isEmpty()) {
-            etTitle.error = "Title is required"
-            etTitle.requestFocus()
-            isValid = false
-        }
+                showLoading(false)
 
-        // Check price
-        val priceText = etPrice.text.toString().trim()
-        if (priceText.isEmpty()) {
-            etPrice.error = "Price is required"
-            if (isValid) etPrice.requestFocus()
-            isValid = false
-        } else {
-            val price = priceText.toDoubleOrNull()
-            if (price == null || price <= 0) {
-                etPrice.error = "Please enter a valid price"
-                if (isValid) etPrice.requestFocus()
-                isValid = false
+                if (success) {
+                    Toast.makeText(this@AddListingActivity, "Listing created successfully!", Toast.LENGTH_SHORT).show()
+                    setResult(Activity.RESULT_OK)
+                    finish()
+                } else {
+                    showError("Failed to create listing. Please try again.")
+                }
+
+            } catch (e: Exception) {
+                Log.e("AddListingActivity", "Error creating listing: ${e.message}")
+                showLoading(false)
+                showError("Error creating listing: ${e.message}")
             }
         }
-
-        // Check description
-        if (etDescription.text.toString().trim().isEmpty()) {
-            etDescription.error = "Description is required"
-            if (isValid) etDescription.requestFocus()
-            isValid = false
-        }
-
-        // Check location
-        if (etLocation.text.toString().trim().isEmpty()) {
-            etLocation.error = "Location is required"
-            if (isValid) etLocation.requestFocus()
-            isValid = false
-        }
-
-        // Check category
-        if (spinnerCategory.selectedItemPosition == 0) {
-            Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show()
-            isValid = false
-        }
-
-        // Check condition
-        if (spinnerCondition.selectedItemPosition == 0) {
-            Toast.makeText(this, "Please select item condition", Toast.LENGTH_SHORT).show()
-            isValid = false
-        }
-
-        // FR-2.1.1: At least 1 photo required
-        if (selectedImages.isEmpty()) {
-            Toast.makeText(this, "At least 1 photo is required", Toast.LENGTH_SHORT).show()
-            isValid = false
-        }
-
-        return isValid
     }
 
-    // FR-2.1.5: Open preview screen before posting
-    private fun openPreview() {
-        val intent = Intent(this, PreviewListingActivity::class.java).apply {
-            // Required fields
-            putExtra("title", etTitle.text.toString().trim())
-            putExtra("price", etPrice.text.toString().trim().toDoubleOrNull() ?: 0.0)
-            putExtra("category", spinnerCategory.selectedItem.toString())
-            putExtra("condition", spinnerCondition.selectedItem.toString())
-            putExtra("description", etDescription.text.toString().trim())
-            putExtra("location", etLocation.text.toString().trim())
-
-            // FR-2.1.2: Optional fields
-            putExtra("negotiable", switchNegotiable.isChecked)
-
-            // FR-2.1.3: GPS coordinates
-            putExtra("latitude", currentLatitude ?: 0.0)
-            putExtra("longitude", currentLongitude ?: 0.0)
-
-            // FR-2.1.4: Images
-            putStringArrayListExtra("imageUris", ArrayList(selectedImages.map { it.toString() }))
+    private fun validateInputs(): Boolean {
+        when {
+            etTitle.text.toString().trim().isEmpty() -> {
+                etTitle.error = "Please enter a title"
+                etTitle.requestFocus()
+                return false
+            }
+            etDescription.text.toString().trim().isEmpty() -> {
+                etDescription.error = "Please enter a description"
+                etDescription.requestFocus()
+                return false
+            }
+            etPrice.text.toString().trim().isEmpty() -> {
+                etPrice.error = "Please enter a price"
+                etPrice.requestFocus()
+                return false
+            }
+            etPrice.text.toString().toDoubleOrNull() == null || etPrice.text.toString().toDouble() <= 0 -> {
+                etPrice.error = "Please enter a valid price"
+                etPrice.requestFocus()
+                return false
+            }
+            getSelectedCondition().isEmpty() -> {
+                Toast.makeText(this, "Please select a condition", Toast.LENGTH_SHORT).show()
+                return false
+            }
+            etLocation.text.toString().trim().isEmpty() -> {
+                etLocation.error = "Please enter a location"
+                etLocation.requestFocus()
+                return false
+            }
         }
-        startActivity(intent)
+        return true
+    }
+
+    private fun getSelectedCategory(): String {
+        val position = spinnerCategory.selectedItemPosition
+        return Category.getAllCategories()[position].name
+    }
+
+    private fun getSelectedCondition(): String {
+        chipGroupCondition?.let { chipGroup ->
+            val selectedChipId = chipGroup.checkedChipId
+            return if (selectedChipId != View.NO_ID) {
+                findViewById<Chip>(selectedChipId).text.toString()
+            } else {
+                ""
+            }
+        }
+        // Fallback if no chip group - return default condition
+        return "Good"
     }
 
     private fun showLoading(show: Boolean) {
         progressBar.visibility = if (show) View.VISIBLE else View.GONE
-
-        // Disable buttons during loading
-        btnGetLocation.isEnabled = !show
-        btnChoosePhotos.isEnabled = !show
-        btnPreview.isEnabled = !show
-
-        // Show loading text on GPS button
-        if (show) {
-            btnGetLocation.text = "..."
-        }
+        btnCreateListing.isEnabled = !show
+        btnSelectImages?.isEnabled = !show
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getCurrentLocation()
-            } else {
-                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
-                btnGetLocation.text = "GPS (Permission Denied)"
-            }
-        }
+    private fun showError(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
-    }
-
-    // Handle back from preview - refresh image counter
-    override fun onResume() {
-        super.onResume()
-        updateImageCounter()
     }
 }

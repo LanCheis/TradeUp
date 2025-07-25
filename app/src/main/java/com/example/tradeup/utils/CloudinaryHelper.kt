@@ -2,192 +2,218 @@ package com.example.tradeup.utils
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-object CloudinaryHelper {
+/**
+ * FR-2.1.4: Helper class for uploading images to Cloudinary
+ * Supports JPEG/PNG formats and handles up to 10 images per listing
+ */
+class CloudinaryHelper {
 
-    private var isInitialized = false
+    companion object {
+        private const val TAG = "CloudinaryHelper"
+        private const val CLOUD_NAME = "your_cloud_name" // Replace with your Cloudinary cloud name
+        private const val API_KEY = "your_api_key" // Replace with your API key
+        private const val API_SECRET = "your_api_secret" // Replace with your API secret
 
-    // 🔧 Initialize Cloudinary - REPLACE WITH YOUR ACTUAL CREDENTIALS
-    fun initialize(context: Context) {
-        if (!isInitialized) {
-            val config = mapOf(
-                "cloud_name" to "dovf2zc0u",
-                "api_key" to "954889699447999",
-                "api_secret" to "jePY1jqFFEM3pbAmBo0i9XuVgQo"
-            )
+        private var isInitialized = false
 
-            try {
-                MediaManager.init(context, config)
-                isInitialized = true
-                println("✅ Cloudinary initialized successfully")
-            } catch (e: Exception) {
-                println("❌ Cloudinary initialization failed: ${e.message}")
-                e.printStackTrace()
+        fun initialize(context: Context) {
+            if (!isInitialized) {
+                try {
+                    val config = hashMapOf(
+                        "cloud_name" to CLOUD_NAME,
+                        "api_key" to API_KEY,
+                        "api_secret" to API_SECRET
+                    )
+
+                    MediaManager.init(context, config)
+                    isInitialized = true
+                    Log.d(TAG, "✅ Cloudinary initialized successfully")
+                } catch (e: Exception) {
+                    Log.e(TAG, "❌ Failed to initialize Cloudinary: ${e.message}")
+                }
             }
         }
     }
 
-    // 🔧 Upload profile image to Cloudinary
-    suspend fun uploadProfileImage(
-        context: Context,
-        imageUri: Uri,
-        userId: String
-    ): String? = suspendCancellableCoroutine { continuation ->
-
+    /**
+     * Upload an image to Cloudinary and return the URL
+     * FR-2.1.4: Supports JPEG/PNG formats
+     */
+    suspend fun uploadImage(imageUri: Uri, context: Context): String? {
         if (!isInitialized) {
             initialize(context)
         }
 
-        // Simplified upload options to avoid signature issues
-        val publicId = "profile_$userId" // Simple public ID
+        return suspendCancellableCoroutine { continuation ->
+            try {
+                val requestId = MediaManager.get().upload(imageUri)
+                    .option("folder", "tradeup_listings") // Organize uploads in folders
+                    .option("resource_type", "image")
+                    .option("format", "jpg") // Convert to JPG for consistency
+                    .option("quality", "auto:good") // Optimize quality
+                    .option("fetch_format", "auto") // Auto-select best format
+                    .callback(object : UploadCallback {
+                        override fun onStart(requestId: String) {
+                            Log.d(TAG, "🚀 Upload started: $requestId")
+                        }
 
-        val uploadOptions = mapOf(
-            "public_id" to publicId,
-            "folder" to "tradeup_profiles",
-            "resource_type" to "image",
-            "overwrite" to true,
-            "transformation" to "w_400,h_400,c_fill,g_face,q_auto,f_jpg" // ✅ FIXED: String format
-        )
+                        override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {
+                            val progress = (bytes * 100 / totalBytes).toInt()
+                            Log.d(TAG, "📊 Upload progress: $progress%")
+                        }
 
-        try {
-            println("🔄 Starting Cloudinary upload for user: $userId")
+                        override fun onSuccess(requestId: String, resultData: Map<*, *>) {
+                            val imageUrl = resultData["secure_url"] as? String
+                            Log.d(TAG, "✅ Upload successful: $imageUrl")
 
-            MediaManager.get().upload(imageUri)
-                .options(uploadOptions)
-                .callback(object : UploadCallback {
-                    override fun onStart(requestId: String) {
-                        println("📤 Upload started: $requestId")
+                            if (continuation.isActive) {
+                                continuation.resume(imageUrl)
+                            }
+                        }
+
+                        override fun onError(requestId: String, error: ErrorInfo) {
+                            Log.e(TAG, "❌ Upload failed: ${error.description}")
+
+                            if (continuation.isActive) {
+                                continuation.resume(null)
+                            }
+                        }
+
+                        override fun onReschedule(requestId: String, error: ErrorInfo) {
+                            Log.w(TAG, "⏰ Upload rescheduled: ${error.description}")
+                        }
+                    })
+                    .dispatch()
+
+                // Handle cancellation
+                continuation.invokeOnCancellation {
+                    try {
+                        MediaManager.get().cancelRequest(requestId)
+                        Log.d(TAG, "🚫 Upload cancelled: $requestId")
+                    } catch (e: Exception) {
+                        Log.w(TAG, "⚠️ Failed to cancel upload: ${e.message}")
                     }
+                }
 
-                    override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {
-                        val progress = (bytes * 100 / totalBytes).toInt()
-                        println("📊 Upload progress: $progress%")
-                    }
+            } catch (e: Exception) {
+                Log.e(TAG, "💥 Upload exception: ${e.message}")
+                if (continuation.isActive) {
+                    continuation.resume(null)
+                }
+            }
+        }
+    }
 
-                    override fun onSuccess(requestId: String, resultData: Map<*, *>) {
-                        val imageUrl = resultData["secure_url"] as? String
-                        println("✅ Upload successful: $imageUrl")
-                        continuation.resume(imageUrl)
-                    }
+    /**
+     * Upload multiple images and return list of URLs
+     * FR-2.1.4: Supports up to 10 images
+     */
+    suspend fun uploadMultipleImages(imageUris: List<Uri>, context: Context): List<String> {
+        val uploadedUrls = mutableListOf<String>()
 
-                    override fun onError(requestId: String, error: ErrorInfo) {
-                        println("❌ Upload error: ${error.description}")
-                        continuation.resume(null)
-                    }
+        // Limit to 10 images as per FR-2.1.4
+        val limitedUris = imageUris.take(10)
 
-                    override fun onReschedule(requestId: String, error: ErrorInfo) {
-                        println("🔄 Upload rescheduled: ${error.description}")
-                        continuation.resume(null)
-                    }
-                })
-                .dispatch()
+        for (uri in limitedUris) {
+            val uploadedUrl = uploadImage(uri, context)
+            uploadedUrl?.let { url ->
+                uploadedUrls.add(url)
+            }
+        }
 
+        Log.d(TAG, "✅ Uploaded ${uploadedUrls.size} out of ${limitedUris.size} images")
+        return uploadedUrls
+    }
+
+    /**
+     * Delete an image from Cloudinary using its public ID
+     */
+    suspend fun deleteImage(imageUrl: String): Boolean {
+        return try {
+            // Extract public ID from URL
+            val publicId = extractPublicIdFromUrl(imageUrl)
+
+            if (publicId != null) {
+                // Note: Deletion requires server-side implementation for security
+                // This is a placeholder for the deletion logic
+                Log.d(TAG, "🗑️ Image deletion requested: $publicId")
+                true
+            } else {
+                Log.w(TAG, "⚠️ Could not extract public ID from URL: $imageUrl")
+                false
+            }
         } catch (e: Exception) {
-            println("❌ Exception during upload: ${e.message}")
-            continuation.resume(null)
+            Log.e(TAG, "❌ Error deleting image: ${e.message}")
+            false
         }
     }
 
-    // 🔥 NEW: FR-2.1.1 - Upload item images with indexing for multiple photos
-    suspend fun uploadItemImage(
-        context: Context,
-        imageUri: Uri,
-        itemId: String,
-        imageIndex: Int
-    ): String? = suspendCancellableCoroutine { continuation ->
+    /**
+     * Extract Cloudinary public ID from image URL
+     */
+    private fun extractPublicIdFromUrl(imageUrl: String): String? {
+        return try {
+            val urlParts = imageUrl.split("/")
+            val uploadIndex = urlParts.indexOf("upload")
 
-        if (!isInitialized) {
-            initialize(context)
-        }
-
-        // Create unique public ID for each item image with index
-        val publicId = "item_${itemId}_img_${imageIndex}"
-
-        val uploadOptions = mapOf(
-            "public_id" to publicId,
-            "folder" to "tradeup_items",
-            "resource_type" to "image",
-            "overwrite" to true,
-            "transformation" to "w_800,h_600,c_fill,q_auto,f_jpg" // Optimized for item listings
-        )
-
-        try {
-            println("🔄 Starting item image upload: $publicId")
-
-            MediaManager.get().upload(imageUri)
-                .options(uploadOptions)
-                .callback(object : UploadCallback {
-                    override fun onStart(requestId: String) {
-                        println("📤 Item image upload started: $requestId")
-                    }
-
-                    override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {
-                        val progress = (bytes * 100 / totalBytes).toInt()
-                        println("📊 Item image upload progress: $progress%")
-                    }
-
-                    override fun onSuccess(requestId: String, resultData: Map<*, *>) {
-                        val imageUrl = resultData["secure_url"] as? String
-                        println("✅ Item image upload successful: $imageUrl")
-                        continuation.resume(imageUrl)
-                    }
-
-                    override fun onError(requestId: String, error: ErrorInfo) {
-                        println("❌ Item image upload error: ${error.description}")
-                        continuation.resume(null)
-                    }
-
-                    override fun onReschedule(requestId: String, error: ErrorInfo) {
-                        println("🔄 Item image upload rescheduled: ${error.description}")
-                        continuation.resume(null)
-                    }
-                })
-                .dispatch()
-
+            if (uploadIndex != -1 && uploadIndex + 2 < urlParts.size) {
+                // Get the part after /upload/version/
+                val fileNameWithExtension = urlParts[uploadIndex + 2]
+                // Remove file extension
+                fileNameWithExtension.substringBeforeLast(".")
+            } else {
+                null
+            }
         } catch (e: Exception) {
-            println("❌ Exception during item image upload: ${e.message}")
-            continuation.resume(null)
+            Log.e(TAG, "❌ Error extracting public ID: ${e.message}")
+            null
         }
     }
 
-    // 🔥 UPDATED: Upload listing images (kept for backward compatibility)
-    suspend fun uploadListingImage(
-        context: Context,
-        imageUri: Uri,
-        listingId: String
-    ): String? {
-        // Delegate to the new uploadItemImage method with index 0
-        return uploadItemImage(context, imageUri, listingId, 0)
-    }
-
-    // 🔧 Get optimized image URL with transformations
-    fun getOptimizedImageUrl(publicId: String, width: Int = 300, height: Int = 300): String {
-        return "https://res.cloudinary.com/dovf2zc0u/image/upload/w_$width,h_$height,c_fill,g_face,q_auto,f_auto/$publicId"
-    }
-
-    // 🔥 NEW: Get optimized item image URL for different use cases
-    fun getOptimizedItemImageUrl(
-        itemId: String,
-        imageIndex: Int,
-        width: Int = 400,
-        height: Int = 300
+    /**
+     * Get optimized image URL for different use cases
+     */
+    fun getOptimizedImageUrl(
+        originalUrl: String,
+        width: Int? = null,
+        height: Int? = null,
+        quality: String = "auto:good"
     ): String {
-        val publicId = "tradeup_items/item_${itemId}_img_${imageIndex}"
-        return "https://res.cloudinary.com/dovf2zc0u/image/upload/w_$width,h_$height,c_fill,q_auto,f_auto/$publicId"
-    }
+        return try {
+            if (originalUrl.contains("cloudinary.com")) {
+                var optimizedUrl = originalUrl
 
-    // 🔥 NEW: Get thumbnail version for item grid views
-    fun getItemThumbnailUrl(itemId: String, imageIndex: Int = 0): String {
-        return getOptimizedItemImageUrl(itemId, imageIndex, 200, 150)
-    }
+                // Add transformations
+                val transformations = mutableListOf<String>()
 
-    // 🔥 NEW: Get full-size version for item detail views
-    fun getItemFullImageUrl(itemId: String, imageIndex: Int = 0): String {
-        return getOptimizedItemImageUrl(itemId, imageIndex, 800, 600)
+                width?.let { w -> transformations.add("w_$w") }
+                height?.let { h -> transformations.add("h_$h") }
+                transformations.add("q_$quality")
+                transformations.add("f_auto") // Auto format
+
+                if (transformations.isNotEmpty()) {
+                    val uploadIndex = optimizedUrl.indexOf("/upload/")
+                    if (uploadIndex != -1) {
+                        val before = optimizedUrl.substring(0, uploadIndex + 8)
+                        val after = optimizedUrl.substring(uploadIndex + 8)
+                        optimizedUrl = "$before${transformations.joinToString(",")}/$after"
+                    }
+                }
+
+                optimizedUrl
+            } else {
+                originalUrl
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error optimizing image URL: ${e.message}")
+            originalUrl
+        }
     }
 }
