@@ -45,7 +45,7 @@
             </intent-filter>
         </activity>
 
-        <!-- AUTH ACTIVITIES (if they exist) -->
+        <!-- AUTH ACTIVITIES -->
         <activity
             android:name=".auth.LoginActivity"
             android:exported="false"
@@ -55,8 +55,6 @@
             android:name=".auth.RegisterActivity"
             android:exported="false"
             android:theme="@style/Theme.TradeUp" />
-
-        <!-- Add these activities to your AndroidManifest.xml inside <application> tag -->
 
         <activity
             android:name=".auth.ForgotPasswordActivity"
@@ -70,19 +68,9 @@
             android:screenOrientation="portrait"
             android:parentActivityName=".auth.RegisterActivity" />
 
-        <!-- LISTING ACTIVITIES -->
+        <!-- LISTING ACTIVITIES (Only real Activities, not Fragments) -->
         <activity
             android:name=".listing.AddListingActivity"
-            android:exported="false"
-            android:theme="@style/Theme.TradeUp"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-
-        <activity
-            android:name=".listing.UserListingsActivity"
             android:exported="false"
             android:theme="@style/Theme.TradeUp"
             android:parentActivityName=".MainActivity">
@@ -101,27 +89,7 @@
                 android:value=".listing.AddListingActivity" />
         </activity>
 
-        <activity
-            android:name=".listing.EditListingActivity"
-            android:exported="false"
-            android:theme="@style/Theme.TradeUp"
-            android:parentActivityName=".listing.UserListingsActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".listing.UserListingsActivity" />
-        </activity>
-
-        <activity
-            android:name=".listing.ListingAnalyticsActivity"
-            android:exported="false"
-            android:theme="@style/Theme.TradeUp"
-            android:parentActivityName=".listing.UserListingsActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".listing.UserListingsActivity" />
-        </activity>
-
-        <!-- ONBOARDING ACTIVITIES (if they exist) -->
+        <!-- ONBOARDING ACTIVITIES -->
         <activity
             android:name=".onboarding.SetupProfileActivity"
             android:exported="false"

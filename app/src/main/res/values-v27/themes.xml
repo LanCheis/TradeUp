@@ -5,6 +5,8 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/primary_variant</item>
+        <item name="colorOnPrimaryContainer">@color/text_on_primary</item>
 
         <!-- Secondary brand color -->
         <item name="colorSecondary">@color/secondary</item>
@@ -31,29 +33,22 @@
         <item name="android:windowLightNavigationBar">true</item>
 
         <!-- Fix Material Components theme issues -->
-        <item name="textInputStyle">
-            @style/Widget.MaterialComponents.TextInputLayout.OutlinedBox
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox
         </item>
         <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button</item>
-        <item name="bottomNavigationStyle">
-            @style/Widget.MaterialComponents.BottomNavigationView
+        <item name="bottomNavigationStyle">@style/Widget.MaterialComponents.BottomNavigationView
         </item>
         <item name="floatingActionButtonStyle">
             @style/Widget.MaterialComponents.FloatingActionButton
         </item>
 
         <!-- Text appearances -->
-        <item name="textAppearanceHeadline1">
-            @style/TextAppearance.MaterialComponents.Headline1
+        <item name="textAppearanceHeadline1">@style/TextAppearance.MaterialComponents.Headline1
         </item>
-        <item name="textAppearanceHeadline2">
-            @style/TextAppearance.MaterialComponents.Headline2
+        <item name="textAppearanceHeadline2">@style/TextAppearance.MaterialComponents.Headline2
         </item>
-        <item name="textAppearanceBody1">@style/TextAppearance.MaterialComponents.Body1
-        </item>
-        <item name="textAppearanceBody2">@style/TextAppearance.MaterialComponents.Body2
-        </item>
-        <item name="textAppearanceButton">@style/TextAppearance.MaterialComponents.Button
-        </item>
+        <item name="textAppearanceBody1">@style/TextAppearance.MaterialComponents.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.MaterialComponents.Body2</item>
+        <item name="textAppearanceButton">@style/TextAppearance.MaterialComponents.Button</item>
     </style>
 </resources>

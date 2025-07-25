@@ -4,7 +4,15 @@
     <!-- Background Colors -->
     <color name="background_primary">#121212</color> <!-- Dark background -->
     <color name="background_secondary">#1E1E1E</color>
+
+    <!-- Surface Colors -->
     <color name="surface_color">#2A2A2A</color>
+    <color name="surface_primary"></color>
+    <color name="surface_secondary">#F5F5F5</color> <!-- Light Grey -->
+    <color name="surface_tertiary">#EEEEEE</color>
+    <color name="on_surface_variant">#757575</color>
+    <color name="surface_inverse">#212121</color>
+    <color name="on_surface_inverse">#FAFAFA</color>
 
     <!-- Status Colors -->
     <color name="error_color">#F44336</color>
@@ -27,6 +35,7 @@
     <!-- Badge & Chip Colors -->
     <color name="chip_background">#E1F5FE</color>
     <color name="chip_text">#0277BD</color>
+    <color name="chip_border">#C8E6C9</color>
 
     <!-- Main Brand Colors (Spotify-inspired) -->
     <color name="primary">#1DB954</color> <!-- Spotify Green -->
@@ -39,12 +48,16 @@
     <color name="background">#FFFFFF</color>
     <color name="surface">#FFFFFF</color>
     <color name="surface_variant">#F8F9FA</color>
+
+    <!-- Card Colors -->
     <color name="card_background">#FFFFFF</color>
+    <color name="card_border">#E0E0E0</color>
 
     <!-- Text Colors -->
     <color name="text_primary">#191414</color> <!-- Spotify Dark -->
     <color name="text_secondary">#535353</color>
     <color name="text_tertiary">#B3B3B3</color>
+    <color name="text_on_primary">#FFFFFF</color> <!-- White -->
     <color name="text_disabled">#E0E0E0</color>
     <color name="text_hint">#9AA0A6</color>
     <color name="on_error">#FFFFFF</color>
@@ -52,9 +65,13 @@
     <color name="dark_gray">#424242</color>
 
     <!-- Accent Colors -->
+    <color name="accent">#34A853</color>
     <color name="accent_orange">#FF6B35</color>
     <color name="accent_blue">#1E3A8A</color>
     <color name="accent_purple">#7C3AED</color>
+    <color name="accent_primary">#4CAF50</color> <!-- Light Green -->
+    <color name="accent_secondary">#FF9800</color> <!-- Amber -->
+    <color name="blue_accent">#448AFF</color>
 
     <!-- System Colors -->
     <color name="success">#1DB954</color>
@@ -92,7 +109,6 @@
     <color name="blue_700">#1976D2</color>
     <color name="blue_800">#1565C0</color>
     <color name="blue_900">#0D47A1</color>
-    <color name="blue_accent">#448AFF</color>
 
     <!-- Green Colors -->
     <color name="green_50">#E8F5E8</color>
@@ -162,7 +178,7 @@
     <color name="online_status">#1DB954</color>
     <color name="offline_status">#9E9E9E</color>
     <color name="premium_gold">#FFD700</color>
-    <color name="accent">#34A853</color>
+
 
     <!-- Offer Status Colors -->
     <color name="offer_pending">#FFA500</color>

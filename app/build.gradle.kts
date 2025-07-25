@@ -128,4 +128,8 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.8.0")
     androidTestImplementation("androidx.test:runner:1.5.2")
     androidTestImplementation("androidx.test:rules:1.5.0")
+
+    // ==================== IMAGE LOADING TO LIBRARY ====================
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
 }
