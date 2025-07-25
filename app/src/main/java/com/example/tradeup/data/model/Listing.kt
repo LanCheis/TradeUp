@@ -3,45 +3,46 @@ package com.example.tradeup.data.model
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
 
+// FR-2.1.1, FR-2.1.2: Data structure for listings
 data class Listing(
     @DocumentId
     var id: String = "",
 
-    // FR-2.1.1: Required fields
-    val title: String = "",
-    val description: String = "",
-    val price: Double = 0.0,
-    val category: String = "",
-    val condition: String = "",
-    val location: String = "",
+    // FR-2.1.1: Required fields - every listing MUST have these
+    val title: String = "",                    // What item is being sold
+    val description: String = "",              // Details about the item
+    val price: Double = 0.0,                  // How much it costs
+    val category: String = "",                // Electronics, Clothing, etc.
+    val condition: String = "",               // New, Used, Like New, etc.
+    val location: String = "",                // Where item is located
     val imageUrls: List<String> = emptyList(), // At least 1 photo required
 
-    // FR-2.1.2: Optional fields
-    val additionalTags: List<String> = emptyList(),
-    val isNegotiable: Boolean = false, // Item behavior: negotiable pricing
+    // FR-2.1.2: Optional fields - nice to have but not required
+    val additionalTags: List<String> = emptyList(), // Extra keywords for search
+    val isNegotiable: Boolean = false,        // Can buyers make offers?
 
-    // FR-2.1.3: Location data
-    val latitude: Double? = null,
+    // FR-2.1.3: GPS location data (optional)
+    val latitude: Double? = null,             // GPS coordinates
     val longitude: Double? = null,
 
-    // System fields
-    val sellerId: String = "",
+    // System fields - automatically filled
+    val sellerId: String = "",                // Who's selling this
     val sellerName: String = "",
     val sellerImageUrl: String = "",
 
-    // FR-2.2.2: Listing status
-    val status: String = "Available", // Available, Sold, Paused
+    // FR-2.2.2: Listing status management
+    val status: String = "Available",         // Available, Sold, Paused
 
-    // FR-2.2.3: Analytics
-    val views: Int = 0,
-    val interactions: Int = 0, // Messages, offers, etc.
+    // FR-2.2.3: Analytics tracking
+    val views: Int = 0,                       // How many people viewed
+    val interactions: Int = 0,                // Messages, offers, etc.
 
     // Timestamps
     val createdAt: Timestamp = Timestamp.now(),
     val updatedAt: Timestamp = Timestamp.now()
 )
 
-// Helper enums
+// Helper constants to avoid typos
 object ListingStatus {
     const val AVAILABLE = "Available"
     const val SOLD = "Sold"
@@ -58,13 +59,7 @@ object ItemCondition {
 
 object Categories {
     val ALL = listOf(
-        "Electronics",
-        "Clothing",
-        "Home & Garden",
-        "Sports",
-        "Books",
-        "Automotive",
-        "Toys",
-        "Other"
+        "Electronics", "Clothing", "Home & Garden",
+        "Sports", "Books", "Automotive", "Toys", "Other"
     )
 }

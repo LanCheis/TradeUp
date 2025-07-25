@@ -1,42 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
-    app:cardElevation="2dp"
-    app:cardBackgroundColor="@color/surface">
+    app:cardElevation="4dp"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="16dp">
 
-        <!-- Listing Image -->
-        <ImageView
-            android:id="@+id/ivListingImage"
+        <!-- Listing Image with Status Overlay -->
+        <FrameLayout
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_marginEnd="12dp"
-            android:scaleType="centerCrop"
-            android:background="@drawable/rounded_image_background"
-            android:contentDescription="@string/item_image_desc" />
+            android:layout_marginEnd="16dp">
 
-        <!-- Content -->
+            <ImageView
+                android:id="@+id/ivListingImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:background="@drawable/rounded_image_background"
+                android:contentDescription="Listing image" />
+
+            <!-- Status Icon Overlay -->
+            <ImageView
+                android:id="@+id/ivStatusIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="top|end"
+                android:layout_margin="4dp"
+                android:background="@drawable/circle_white_background"
+                android:padding="3dp"
+                android:src="@drawable/ic_available"
+                android:contentDescription="Status icon" />
+
+            <!-- Photo Count Badge -->
+            <TextView
+                android:id="@+id/tvPhotoCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="4dp"
+                android:background="@drawable/photo_count_background"
+                android:text="📷 5"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <!-- Listing Details -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <!-- Title Row -->
+            <!-- Title & Price Row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_marginBottom="8dp">
 
                 <TextView
                     android:id="@+id/tvTitle"
@@ -48,50 +81,89 @@
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
                     android:maxLines="2"
-                    android:ellipsize="end" />
+                    android:ellipsize="end"
+                    android:drawableStart="@drawable/ic_title"
+                    android:drawablePadding="6dp"
+                    android:drawableTint="@color/gray_500" />
 
-                <ImageView
-                    android:id="@+id/btnOptions"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_more_vert"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="4dp"
-                    android:contentDescription="Options"
-                    app:tint="@color/text_secondary" />
+                <TextView
+                    android:id="@+id/tvPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="₫0"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:layout_marginStart="8dp"
+                    android:drawableStart="@drawable/ic_price"
+                    android:drawablePadding="4dp"
+                    android:drawableTint="@color/primary" />
             </LinearLayout>
 
-            <!-- Price -->
-            <TextView
-                android:id="@+id/tvPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="₫0"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/primary"
-                android:layout_marginTop="4dp" />
-
-            <!-- Status and Negotiable -->
+            <!-- Category & Condition Row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                android:gravity="center_vertical">
+                android:layout_marginBottom="8dp">
 
-                <!-- FR-2.2.2: Status Badge -->
                 <TextView
-                    android:id="@+id/tvStatus"
+                    android:id="@+id/tvCategory"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Electronics"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:drawableStart="@drawable/ic_category"
+                    android:drawablePadding="4dp"
+                    android:drawableTint="@color/gray_500" />
+
+                <TextView
+                    android:id="@+id/tvCondition"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Available"
+                    android:text="Good"
                     android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/text_secondary"
+                    android:drawableStart="@drawable/ic_condition"
+                    android:drawablePadding="4dp"
+                    android:drawableTint="@color/gray_500" />
+            </LinearLayout>
+
+            <!-- Status & Features Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <!-- FR-2.2.2: Status Badge with Icon -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     android:background="@drawable/status_available_background"
                     android:paddingHorizontal="8dp"
-                    android:paddingVertical="4dp" />
+                    android:paddingVertical="4dp">
+
+                    <ImageView
+                        android:id="@+id/ivStatusBadgeIcon"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:src="@drawable/ic_available"
+                        android:layout_marginEnd="4dp"
+                        android:layout_gravity="center_vertical" />
+
+                    <TextView
+                        android:id="@+id/tvStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Available"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/green_700" />
+                </LinearLayout>
 
                 <!-- Negotiable Chip -->
                 <TextView
@@ -100,50 +172,166 @@
                     android:layout_height="wrap_content"
                     android:text="💰 Negotiable"
                     android:textSize="10sp"
-                    android:textColor="@color/green_700"
-                    android:background="@drawable/negotiable_badge_background"
+                    android:textColor="@color/orange_700"
+                    android:background="@drawable/chip_negotiable_background"
                     android:paddingHorizontal="6dp"
                     android:paddingVertical="2dp"
                     android:layout_marginStart="8dp"
                     android:visibility="gone" />
+
+                <!-- GPS Location Indicator -->
+                <ImageView
+                    android:id="@+id/ivLocationIndicator"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_location"
+                    android:layout_marginStart="8dp"
+                    android:layout_gravity="center_vertical"
+                    android:contentDescription="Has GPS location"
+                    android:visibility="gone" />
             </LinearLayout>
 
-            <!-- FR-2.2.3: Analytics Row -->
+            <!-- FR-2.2.3: Analytics Row with Icons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                android:gravity="center_vertical">
+                android:layout_marginBottom="4dp">
 
-                <TextView
-                    android:id="@+id/tvViews"
+                <!-- Views -->
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0 views"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
-                    android:drawableStart="@drawable/ic_visibility"
-                    android:drawableTint="@color/text_secondary"
-                    android:drawablePadding="4dp"
-                    android:gravity="center_vertical" />
+                    android:orientation="horizontal"
+                    android:layout_marginEnd="16dp">
 
-                <TextView
-                    android:id="@+id/tvInteractions"
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/ic_eye"
+                        android:layout_marginEnd="4dp"
+                        android:layout_gravity="center_vertical"
+                        android:contentDescription="Views icon" />
+
+                    <TextView
+                        android:id="@+id/tvViews"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 views"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+
+                <!-- Interactions -->
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0 interactions"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
-                    android:drawableStart="@drawable/ic_chat_bubble"
-                    android:drawableTint="@color/text_secondary"
-                    android:drawablePadding="4dp"
-                    android:gravity="center_vertical"
-                    android:layout_marginStart="16dp" />
+                    android:orientation="horizontal"
+                    android:layout_marginEnd="16dp">
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/ic_chat"
+                        android:layout_marginEnd="4dp"
+                        android:layout_gravity="center_vertical"
+                        android:contentDescription="Interactions icon" />
+
+                    <TextView
+                        android:id="@+id/tvInteractions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 chats"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+
+                <!-- Favorites Count -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/ic_favorite"
+                        android:layout_marginEnd="4dp"
+                        android:layout_gravity="center_vertical"
+                        android:contentDescription="Favorites icon" />
+
+                    <TextView
+                        android:id="@+id/tvFavorites"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 saves"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
             </LinearLayout>
 
+            <!-- Created Date with Icon -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:src="@drawable/ic_calendar"
+                    android:layout_marginEnd="4dp"
+                    android:layout_gravity="center_vertical"
+                    android:contentDescription="Date icon" />
+
+                <TextView
+                    android:id="@+id/tvCreatedDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Created: Jan 01, 2024"
+                    android:textSize="11sp"
+                    android:textColor="@color/text_secondary" />
+            </LinearLayout>
         </LinearLayout>
 
-    </LinearLayout>
+        <!-- Quick Actions Column -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="8dp">
 
-</androidx.cardview.widget.CardView>
+            <!-- Options Menu Button -->
+            <ImageView
+                android:id="@+id/btnOptions"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_more_vert"
+                android:background="@drawable/circle_gray_background"
+                android:padding="8dp"
+                android:layout_marginBottom="8dp"
+                android:contentDescription="More options" />
+
+            <!-- Quick Edit Button -->
+            <ImageView
+                android:id="@+id/btnQuickEdit"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_edit"
+                android:background="@drawable/circle_blue_background"
+                android:padding="8dp"
+                android:layout_marginBottom="8dp"
+                android:contentDescription="Quick edit"
+                android:visibility="gone" />
+
+            <!-- Performance Indicator -->
+            <ImageView
+                android:id="@+id/ivPerformanceIndicator"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_trending_up"
+                android:contentDescription="Performance indicator"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

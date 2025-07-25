@@ -2,17 +2,23 @@ package com.example.tradeup
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.tradeup.auth.LoginActivity
 import com.example.tradeup.data.remote.UserRepository
+import com.example.tradeup.listing.AddListingActivity
 import com.example.tradeup.listing.ListingsFragment
+import com.example.tradeup.listing.UserListingsActivity
 import com.example.tradeup.profile.ProfileFragment
 import com.example.tradeup.utils.CloudinaryHelper
 import com.example.tradeup.utils.ProfileValidator
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
@@ -21,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var userRepository: UserRepository
     private lateinit var bottomNav: BottomNavigationView
+    private lateinit var fabCreateListing: FloatingActionButton
 
     // Fragments
     private val profileFragment = ProfileFragment()
@@ -38,11 +45,13 @@ class MainActivity : AppCompatActivity() {
 
         initViews()
         setupBottomNavigation()
+        setupFloatingActionButton()
         checkAuthenticationAndProfile()
     }
 
     private fun initViews() {
         bottomNav = findViewById(R.id.bottomNav)
+        fabCreateListing = findViewById(R.id.fabCreateListing)
     }
 
     private fun setupBottomNavigation() {
@@ -53,12 +62,15 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_search -> {
-                    // TODO: Add search fragment later
                     Toast.makeText(this, "Search coming soon", Toast.LENGTH_SHORT).show()
                     false
                 }
+                R.id.nav_sell -> {
+                    // Navigate to My Listings
+                    startActivity(Intent(this, UserListingsActivity::class.java))
+                    false // Don't change bottom nav selection
+                }
                 R.id.nav_chat -> {
-                    // TODO: Add chat fragment later
                     Toast.makeText(this, "Chat coming soon", Toast.LENGTH_SHORT).show()
                     false
                 }
@@ -72,6 +84,32 @@ class MainActivity : AppCompatActivity() {
 
         // Set default selection
         bottomNav.selectedItemId = R.id.nav_home
+    }
+
+    private fun setupFloatingActionButton() {
+        fabCreateListing.setOnClickListener {
+            startActivity(Intent(this, AddListingActivity::class.java))
+        }
+    }
+
+    // Options menu for additional actions
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_my_listings -> {
+                startActivity(Intent(this, UserListingsActivity::class.java))
+                true
+            }
+            R.id.action_add_listing -> {
+                startActivity(Intent(this, AddListingActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun loadFragment(fragment: Fragment) {
@@ -92,10 +130,8 @@ class MainActivity : AppCompatActivity() {
                 val userProfile = userRepository.getUserProfile(currentUser.uid)
 
                 if (ProfileValidator.isProfileComplete(userProfile)) {
-                    // Profile is complete - load default fragment (listings)
                     loadFragment(listingsFragment)
                 } else {
-                    // Profile incomplete - redirect to setup
                     val missingFields = ProfileValidator.getMissingFields(userProfile)
                     val message = "Complete your profile to continue:\n• ${missingFields.joinToString("\n• ")}"
 
@@ -119,7 +155,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun redirectToProfileSetup(message: String = "") {
         try {
-            // Try to find SetupProfileActivity
             val setupClass = Class.forName("com.example.tradeup.onboarding.SetupProfileActivity")
             val intent = Intent(this, setupClass)
             if (message.isNotEmpty()) {
@@ -129,8 +164,14 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         } catch (e: ClassNotFoundException) {
-            // SetupProfileActivity doesn't exist, just show listings
             Toast.makeText(this, "Please complete your profile", Toast.LENGTH_LONG).show()
+            loadFragment(listingsFragment)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (bottomNav.selectedItemId == R.id.nav_home) {
             loadFragment(listingsFragment)
         }
     }

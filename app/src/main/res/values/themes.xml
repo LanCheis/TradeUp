@@ -1,41 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme -->
-    <style name="Theme.TradeUp" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <!-- Base application theme - CHANGED TO NoActionBar -->
+    <style name="Theme.TradeUp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Secondary brand color -->
         <item name="colorSecondary">@color/secondary</item>
         <item name="colorSecondaryVariant">@color/secondary_variant</item>
         <item name="colorOnSecondary">@color/white</item>
+
+        <!-- Background colors -->
         <item name="android:colorBackground">@color/background</item>
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnBackground">@color/text_primary</item>
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="colorError">@color/error</item>
 
-        <!-- Fix TextInputLayout theme issue -->
-        <item name="textInputStyle">@style/Widget.Material3.TextInputLayout.OutlinedBox</item>
-        <item name="materialButtonStyle">@style/Widget.Material3.Button</item>
-        <item name="bottomNavigationStyle">@style/Widget.Material3.BottomNavigationView</item>
+        <!-- IMPORTANT: Disable window action bar -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Navigation bar -->
+        <item name="android:navigationBarColor">@color/surface</item>
+        <item name="android:windowLightNavigationBar">true</item>
+
+        <!-- Fix Material Components theme issues -->
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
+        <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button</item>
+        <item name="bottomNavigationStyle">@style/Widget.MaterialComponents.BottomNavigationView</item>
+        <item name="floatingActionButtonStyle">@style/Widget.MaterialComponents.FloatingActionButton</item>
+
+        <!-- Text appearances -->
+        <item name="textAppearanceHeadline1">@style/TextAppearance.MaterialComponents.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.MaterialComponents.Headline2</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.MaterialComponents.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.MaterialComponents.Body2</item>
+        <item name="textAppearanceButton">@style/TextAppearance.MaterialComponents.Button</item>
     </style>
 
     <!-- Spotify Dark Theme -->
     <style name="Theme.TradeUp.Spotify" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Secondary brand color -->
         <item name="colorSecondary">@color/secondary</item>
         <item name="colorSecondaryVariant">@color/secondary_variant</item>
         <item name="colorOnSecondary">@color/white</item>
+
+        <!-- Background colors -->
         <item name="android:colorBackground">@color/background</item>
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnBackground">@color/text_primary</item>
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="colorError">@color/error</item>
+
+        <!-- System UI -->
         <item name="android:windowBackground">@color/background</item>
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <!-- Custom Alert Dialog Style -->
@@ -64,17 +98,18 @@
     <!-- Dangerous Button Style -->
     <style name="DangerousButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">@color/error</item>
+        <item name="rippleColor">@color/error</item>
     </style>
 
     <!-- Spotify Button Style -->
     <style name="SpotifyButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:background">@drawable/button_spotify_style</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">16sp</item>
         <item name="android:minHeight">48dp</item>
-        <item name="android:elevation">4dp</item>
         <item name="cornerRadius">25dp</item>
+        <item name="backgroundTint">@color/primary</item>
+        <item name="rippleColor">@color/white</item>
     </style>
 
     <!-- Card View Style -->
@@ -82,53 +117,53 @@
         <item name="cardCornerRadius">12dp</item>
         <item name="cardElevation">4dp</item>
         <item name="cardBackgroundColor">@color/surface</item>
-    </style>
-
-    <!-- Bottom Navigation Indicator -->
-    <style name="BottomNavIndicator">
-        <item name="android:color">@color/primary</item>
-        <item name="android:alpha">0.1</item>
+        <item name="strokeWidth">0dp</item>
     </style>
 
     <!-- Custom TextInputLayout style -->
-    <style name="Widget.TradeUp.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+    <style name="Widget.TradeUp.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/primary</item>
         <item name="boxStrokeWidth">2dp</item>
         <item name="hintTextColor">@color/text_secondary</item>
+        <item name="helperTextTextColor">@color/text_secondary</item>
+        <item name="errorTextColor">@color/error</item>
     </style>
 
-    <!-- Button Styles -->
+    <!-- Enhanced Button Styles -->
     <style name="Button.Primary" parent="Widget.MaterialComponents.Button">
-        <item name="android:background">@drawable/button_primary</item>
-        <item name="android:textColor">@color/button_primary_text_color</item>
+        <item name="backgroundTint">@color/primary</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:minHeight">56dp</item>
         <item name="android:paddingStart">24dp</item>
         <item name="android:paddingEnd">24dp</item>
-        <item name="android:elevation">2dp</item>
-        <item name="android:stateListAnimator">@null</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="rippleColor">@color/white</item>
     </style>
 
     <style name="Button.Outline" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:background">@drawable/button_outline</item>
-        <item name="android:textColor">@color/button_outline_text_color</item>
+        <item name="strokeColor">@color/primary</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:textColor">@color/primary</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:minHeight">56dp</item>
         <item name="android:paddingStart">24dp</item>
         <item name="android:paddingEnd">24dp</item>
-        <item name="android:elevation">0dp</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="rippleColor">@color/primary</item>
     </style>
 
     <style name="Button.Secondary" parent="Widget.MaterialComponents.Button">
-        <item name="android:background">@drawable/button_secondary</item>
+        <item name="backgroundTint">@color/gray_200</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">16sp</item>
         <item name="android:minHeight">56dp</item>
         <item name="android:paddingStart">24dp</item>
         <item name="android:paddingEnd">24dp</item>
-        <item name="android:elevation">1dp</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="rippleColor">@color/text_primary</item>
     </style>
 
     <!-- Small Button Variants -->
@@ -144,5 +179,22 @@
         <item name="android:textSize">14sp</item>
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>
+    </style>
+
+    <!-- Bottom Navigation Enhanced Style -->
+    <style name="Widget.TradeUp.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemIconTint">@color/bottom_nav_color_selector</item>
+        <item name="itemTextColor">@color/bottom_nav_color_selector</item>
+        <item name="android:background">@color/surface</item>
+        <item name="elevation">8dp</item>
+    </style>
+
+    <!-- Floating Action Button Style -->
+    <style name="Widget.TradeUp.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">@color/primary</item>
+        <item name="tint">@color/white</item>
+        <item name="rippleColor">@color/white</item>
+        <item name="elevation">6dp</item>
+        <item name="pressedTranslationZ">12dp</item>
     </style>
 </resources>
