@@ -34,23 +34,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="Reset Password"
+                android:text="Verify Email"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
 
         </RelativeLayout>
 
-        <!-- App Logo/Icon -->
+        <!-- Email Icon -->
         <ImageView
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="24dp"
-            android:src="@mipmap/ic_launcher"
-            android:contentDescription="TradeUp logo" />
+            android:src="@drawable/ic_email_large"
+            android:contentDescription="Email verification"
+            android:tint="@color/primary_color" />
 
-        <!-- Main Content -->
+        <!-- Main Content Card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,53 +60,39 @@
             android:padding="24dp"
             android:layout_marginBottom="16dp">
 
-            <!-- Title & Description -->
+            <!-- Title -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Forgot Your Password?"
+                android:text="Check Your Email"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
                 android:layout_marginBottom="8dp"
                 android:layout_gravity="center_horizontal" />
 
+            <!-- Email Address Display -->
             <TextView
+                android:id="@+id/tvEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Enter your email address and we'll send you a link to reset your password."
+                android:text="We've sent a verification link to:\nyour.email@example.com"
                 android:textSize="14sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginBottom="24dp"
                 android:gravity="center"
                 android:lineSpacingExtra="2dp" />
 
-            <!-- Email Input -->
+            <!-- Instructions -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Email Address"
+                android:text="Click the link in the email to verify your account. This page will automatically update when verified."
                 android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:layout_marginBottom="8dp" />
-
-            <EditText
-                android:id="@+id/etEmail"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:hint="Enter your email"
-                android:inputType="textEmailAddress"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_secondary"
-                android:textSize="16sp"
-                android:background="@drawable/edittext_background"
-                android:padding="16dp"
+                android:textColor="@color/text_secondary"
                 android:layout_marginBottom="24dp"
-                android:drawableStart="@drawable/ic_email"
-                android:drawablePadding="12dp"
-                android:contentDescription="Email input"
-                android:importantForAccessibility="yes" />
+                android:gravity="center"
+                android:lineSpacingExtra="2dp" />
 
             <!-- Error Message -->
             <TextView
@@ -114,26 +101,12 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/error_color"
                 android:textSize="14sp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="16dp"
                 android:visibility="gone"
                 android:drawableStart="@drawable/ic_error"
                 android:drawablePadding="8dp"
                 android:padding="8dp"
                 android:background="@drawable/error_background" />
-
-            <!-- Success Message -->
-            <TextView
-                android:id="@+id/tvSuccess"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/success_color"
-                android:textSize="14sp"
-                android:layout_marginBottom="8dp"
-                android:visibility="gone"
-                android:drawableStart="@drawable/ic_check_circle"
-                android:drawablePadding="8dp"
-                android:padding="8dp"
-                android:background="@drawable/success_background" />
 
             <!-- Progress Bar -->
             <ProgressBar
@@ -144,17 +117,28 @@
                 android:layout_marginVertical="8dp"
                 android:visibility="gone" />
 
-            <!-- Send Reset Button -->
+            <!-- Check Verification Button -->
             <Button
-                android:id="@+id/btnSendReset"
+                android:id="@+id/btnCheckVerification"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="Send Reset Link"
+                android:text="Check Verification Status"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/white"
                 android:background="@drawable/button_primary"
-                android:layout_marginTop="16dp"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Resend Email Button -->
+            <Button
+                android:id="@+id/btnResendEmail"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Resend Email"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_color"
+                android:background="@drawable/button_secondary"
                 android:layout_marginBottom="16dp" />
 
         </LinearLayout>
@@ -165,19 +149,28 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <!-- Back to Login -->
+        <!-- Skip for Now -->
         <TextView
-            android:id="@+id/btnBackToLogin"
+            android:id="@+id/btnSkipForNow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Back to Login"
-            android:textSize="16sp"
-            android:textColor="@color/primary_color"
-            android:textStyle="bold"
+            android:text="Skip for Now"
+            android:textSize="14sp"
+            android:textColor="@color/text_tertiary"
             android:padding="12dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="8dp" />
+
+        <!-- Instructions -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="You can verify your email later in settings"
+            android:textSize="12sp"
+            android:textColor="@color/text_tertiary"
+            android:layout_marginTop="4dp" />
 
     </LinearLayout>
 

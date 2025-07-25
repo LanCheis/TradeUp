@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- app/src/main/res/values/colors.xml -->
 <resources>
+    <!-- Background Colors -->
+    <color name="background_primary">#121212</color> <!-- Dark background -->
+    <color name="background_secondary">#1E1E1E</color>
+    <color name="surface_color">#2A2A2A</color>
+
+    <!-- Status Colors -->
+    <color name="error_color">#F44336</color>
+    <color name="success_color">#4CAF50</color>
+    <color name="warning_color">#FF9800</color>
+
+    <!-- Button States -->
+    <color name="button_disabled">#404040</color>
+    <color name="button_pressed">#158A3E</color>
+
+    <!-- Input Fields -->
+    <color name="input_background">#2A2A2A</color>
+    <color name="input_border">#404040</color>
+    <color name="input_error_border">#F44336</color>
+
     <!-- Transparent Colors -->
     <color name="black_overlay">#80000000</color>
     <color name="white_overlay">#80FFFFFF</color>
@@ -14,6 +33,7 @@
     <color name="primary_variant">#1ED760</color>
     <color name="primary_dark">#169C46</color>
     <color name="primary_light">#4285F4</color>
+    <color name="primary_color">#1DB954</color>
 
     <!-- Dark Theme Colors -->
     <color name="background">#FFFFFF</color>

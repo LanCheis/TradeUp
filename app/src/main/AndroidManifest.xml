@@ -56,6 +56,20 @@
             android:exported="false"
             android:theme="@style/Theme.TradeUp" />
 
+        <!-- Add these activities to your AndroidManifest.xml inside <application> tag -->
+
+        <activity
+            android:name=".auth.ForgotPasswordActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".auth.LoginActivity" />
+
+        <activity
+            android:name=".auth.EmailVerificationActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".auth.RegisterActivity" />
+
         <!-- LISTING ACTIVITIES -->
         <activity
             android:name=".listing.AddListingActivity"
