@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:fillViewport="true">
+    android:background="#F5F5F5">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Header -->
+        <!-- Header - NOW GREEN -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:background="@drawable/gradient_header_background"
+            android:background="@android:color/holo_green_dark"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:padding="16dp">
@@ -24,11 +22,10 @@
                 android:id="@+id/ivBackButton"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/ic_arrow_back"
+                android:src="@android:drawable/ic_menu_revert"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="8dp"
-                android:contentDescription="Back"
-                app:tint="@color/white" />
+                android:contentDescription="Back" />
 
             <TextView
                 android:layout_width="0dp"
@@ -37,7 +34,7 @@
                 android:text="Account Settings"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:textColor="@color/white"
+                android:textColor="@android:color/white"
                 android:gravity="center"
                 android:layout_marginEnd="40dp" />
 
@@ -57,28 +54,29 @@
                 android:text="🔒 Security"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_primary"
+                android:textColor="@android:color/black"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Change Password -->
+            <!-- Change Password - IMPROVED READABILITY -->
             <LinearLayout
                 android:id="@+id/btnChangePassword"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="72dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/setting_item_background"
+                android:background="@android:color/white"
                 android:padding="16dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="12dp"
+                android:elevation="2dp"
                 android:clickable="true"
                 android:focusable="true">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_lock"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@android:drawable/ic_menu_edit"
                     android:layout_marginEnd="16dp"
-                    app:tint="@color/text_secondary" />
+                    android:tint="@android:color/holo_green_dark" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -91,44 +89,47 @@
                         android:layout_height="wrap_content"
                         android:text="Change Password"
                         android:textSize="16sp"
-                        android:textColor="@color/text_primary" />
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Send password reset email"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary" />
+                        android:textSize="14sp"
+                        android:textColor="#666666"
+                        android:layout_marginTop="2dp" />
 
                 </LinearLayout>
 
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_arrow_forward"
-                    app:tint="@color/text_tertiary" />
+                    android:src="@android:drawable/ic_menu_send"
+                    android:tint="@android:color/holo_green_dark" />
 
             </LinearLayout>
 
-            <!-- Email Verification -->
+            <!-- Email Verification - IMPROVED READABILITY -->
             <LinearLayout
                 android:id="@+id/btnEmailVerification"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="72dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/setting_item_background"
+                android:background="@android:color/white"
                 android:padding="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="24dp"
+                android:elevation="2dp"
                 android:clickable="true"
                 android:focusable="true">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_email"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@android:drawable/ic_dialog_email"
                     android:layout_marginEnd="16dp"
-                    app:tint="@color/text_secondary" />
+                    android:tint="@android:color/holo_blue_dark" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -141,134 +142,112 @@
                         android:layout_height="wrap_content"
                         android:text="Email Verification"
                         android:textSize="16sp"
-                        android:textColor="@color/text_primary" />
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
 
                     <TextView
                         android:id="@+id/tvEmailStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="❌ Email not verified"
-                        android:textSize="12sp"
-                        android:textColor="@color/error" />
+                        android:text="⚠️ Email Not Verified"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/holo_orange_dark"
+                        android:layout_marginTop="2dp" />
 
                 </LinearLayout>
 
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_arrow_forward"
-                    app:tint="@color/text_tertiary" />
+                    android:src="@android:drawable/ic_menu_send"
+                    android:tint="@android:color/holo_blue_dark" />
 
             </LinearLayout>
 
-            <!-- Danger Zone Section -->
+            <!-- Danger Zone -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="⚠️ Danger Zone"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/error"
-                android:layout_marginTop="24dp"
+                android:textColor="@android:color/holo_red_dark"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Deactivate Account -->
+            <!-- Deactivate Account - SIMPLIFIED & READABLE -->
             <LinearLayout
                 android:id="@+id/btnDeactivateAccount"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="64dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/setting_item_warning_background"
+                android:background="#FFF8E1"
                 android:padding="16dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="12dp"
+                android:elevation="1dp"
                 android:clickable="true"
                 android:focusable="true">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_pause"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@android:drawable/ic_media_pause"
                     android:layout_marginEnd="16dp"
-                    app:tint="@color/warning" />
+                    android:tint="@android:color/holo_orange_dark" />
 
-                <LinearLayout
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Deactivate Account"
-                        android:textSize="16sp"
-                        android:textColor="@color/warning" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Temporarily disable your account"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary" />
-
-                </LinearLayout>
+                    android:text="Deactivate Account"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/holo_orange_dark" />
 
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_arrow_forward"
-                    app:tint="@color/warning" />
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    android:tint="@android:color/holo_orange_dark" />
 
             </LinearLayout>
 
-            <!-- Delete Account -->
+            <!-- Delete Account - SIMPLIFIED & READABLE -->
             <LinearLayout
                 android:id="@+id/btnDeleteAccount"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="64dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/setting_item_danger_background"
+                android:background="#FFEBEE"
                 android:padding="16dp"
                 android:layout_marginBottom="24dp"
+                android:elevation="1dp"
                 android:clickable="true"
                 android:focusable="true">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_delete"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@android:drawable/ic_menu_delete"
                     android:layout_marginEnd="16dp"
-                    app:tint="@color/error" />
+                    android:tint="@android:color/holo_red_dark" />
 
-                <LinearLayout
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Delete Account"
-                        android:textSize="16sp"
-                        android:textColor="@color/error" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Permanently delete your account"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary" />
-
-                </LinearLayout>
+                    android:text="Delete Account Permanently"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/holo_red_dark" />
 
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_arrow_forward"
-                    app:tint="@color/error" />
+                    android:src="@android:drawable/ic_delete"
+                    android:tint="@android:color/holo_red_dark" />
 
             </LinearLayout>
 
@@ -279,7 +258,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:visibility="gone"
-                android:indeterminateTint="@color/primary" />
+                android:layout_marginTop="16dp"
+                android:indeterminateTint="@android:color/holo_green_dark" />
 
         </LinearLayout>
 

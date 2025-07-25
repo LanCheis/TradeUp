@@ -284,7 +284,7 @@
                         android:id="@+id/btnLogout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🚪 Logout"
+                        android:text="Logout"
                         android:textSize="16sp"
                         android:textColor="@color/error"
                         android:textStyle="bold"

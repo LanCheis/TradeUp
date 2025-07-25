@@ -9,15 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.tradeup.R
 import com.example.tradeup.auth.LoginActivity
-import com.example.tradeup.data.remote.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
+// FR-1.2.3: Account settings with deactivation and deletion options
 class AccountSettingsActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private lateinit var userRepository: UserRepository
     private lateinit var firestore: FirebaseFirestore
 
     // Views
@@ -26,15 +25,14 @@ class AccountSettingsActivity : AppCompatActivity() {
     private lateinit var btnEmailVerification: LinearLayout
     private lateinit var btnDeactivateAccount: LinearLayout
     private lateinit var btnDeleteAccount: LinearLayout
-    private lateinit var tvEmailStatus: TextView
     private lateinit var progressBar: ProgressBar
+    private lateinit var tvEmailStatus: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_account_settings)
 
         auth = FirebaseAuth.getInstance()
-        userRepository = UserRepository()
         firestore = FirebaseFirestore.getInstance()
 
         initViews()
@@ -48,8 +46,8 @@ class AccountSettingsActivity : AppCompatActivity() {
         btnEmailVerification = findViewById(R.id.btnEmailVerification)
         btnDeactivateAccount = findViewById(R.id.btnDeactivateAccount)
         btnDeleteAccount = findViewById(R.id.btnDeleteAccount)
-        tvEmailStatus = findViewById(R.id.tvEmailStatus)
         progressBar = findViewById(R.id.progressBar)
+        tvEmailStatus = findViewById(R.id.tvEmailStatus)
     }
 
     private fun setupClickListeners() {
@@ -75,61 +73,68 @@ class AccountSettingsActivity : AppCompatActivity() {
     }
 
     private fun updateEmailVerificationStatus() {
-        val user = auth.currentUser
-        if (user != null) {
-            if (user.isEmailVerified) {
-                tvEmailStatus.text = "✅ Email verified"
-                tvEmailStatus.setTextColor(getColor(R.color.success))
-                btnEmailVerification.alpha = 0.6f
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            if (currentUser.isEmailVerified) {
+                tvEmailStatus.text = "✅ Email Verified"
+                tvEmailStatus.setTextColor(getColor(android.R.color.holo_green_dark))
+                // Disable email verification button if already verified
                 btnEmailVerification.isEnabled = false
+                btnEmailVerification.alpha = 0.5f
             } else {
-                tvEmailStatus.text = "❌ Email not verified"
-                tvEmailStatus.setTextColor(getColor(R.color.error))
+                tvEmailStatus.text = "⚠️ Email Not Verified"
+                tvEmailStatus.setTextColor(getColor(android.R.color.holo_orange_dark))
             }
         }
     }
 
     private fun sendPasswordResetEmail() {
-        val user = auth.currentUser
-        val userEmail = user?.email // This is String?
+        val currentUser = auth.currentUser
+        // ✅ FIXED: Safe null check for email
+        val userEmail = currentUser?.email
 
         if (userEmail.isNullOrEmpty()) {
-            Toast.makeText(this, "No email found", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "No email found for current user", Toast.LENGTH_SHORT).show()
             return
         }
 
         showLoading(true)
 
-        // ✅ Use non-null userEmail (now guaranteed to be non-null)
+        // ✅ FIXED: Use non-null userEmail
         auth.sendPasswordResetEmail(userEmail)
             .addOnCompleteListener { task ->
                 showLoading(false)
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Password reset email sent to $userEmail", Toast.LENGTH_LONG).show()
                 } else {
-                    Toast.makeText(this, "Failed to send reset email: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Failed to send password reset email: ${task.exception?.message ?: "Unknown error"}", Toast.LENGTH_SHORT).show()
                 }
             }
     }
 
     private fun sendEmailVerification() {
-        val user = auth.currentUser
-        if (user == null) {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
             Toast.makeText(this, "No user found", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (currentUser.isEmailVerified) {
+            Toast.makeText(this, "Email is already verified", Toast.LENGTH_SHORT).show()
             return
         }
 
         showLoading(true)
 
-        user.sendEmailVerification()
+        currentUser.sendEmailVerification()
             .addOnCompleteListener { task ->
                 showLoading(false)
                 if (task.isSuccessful) {
-                    // ✅ Safe handling of nullable email
-                    val emailText = user.email ?: "your email"
+                    // ✅ FIXED: Safe handling of nullable email
+                    val emailText = currentUser.email ?: "your email"
                     Toast.makeText(this, "Verification email sent to $emailText", Toast.LENGTH_LONG).show()
                 } else {
-                    Toast.makeText(this, "Failed to send verification email: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Failed to send verification email: ${task.exception?.message ?: "Unknown error"}", Toast.LENGTH_SHORT).show()
                 }
             }
     }
@@ -185,6 +190,9 @@ class AccountSettingsActivity : AppCompatActivity() {
             try {
                 // For deactivation, we just logout - account stays but user can't access
                 auth.signOut()
+
+                showLoading(false)
+
                 Toast.makeText(this@AccountSettingsActivity, "Account deactivated. You can reactivate by logging back in.", Toast.LENGTH_LONG).show()
 
                 val intent = Intent(this@AccountSettingsActivity, LoginActivity::class.java)
@@ -194,7 +202,7 @@ class AccountSettingsActivity : AppCompatActivity() {
 
             } catch (e: Exception) {
                 showLoading(false)
-                Toast.makeText(this@AccountSettingsActivity, "Error deactivating account: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@AccountSettingsActivity, "Error deactivating account: ${e.message ?: "Unknown error"}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -210,28 +218,36 @@ class AccountSettingsActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                // ✅ Use safe user.uid (non-null)
-                firestore.collection("users").document(user.uid).delete()
+                // ✅ FIXED: user.uid is non-null in Firebase, but we'll be safe
+                val userId = user.uid
 
-                // Delete user authentication account
-                user.delete()
-                    .addOnCompleteListener { task ->
+                // Delete user data from Firestore first
+                firestore.collection("users").document(userId).delete()
+                    .addOnSuccessListener {
+                        // After Firestore deletion succeeds, delete auth account
+                        user.delete()
+                            .addOnCompleteListener { task ->
+                                showLoading(false)
+                                if (task.isSuccessful) {
+                                    Toast.makeText(this@AccountSettingsActivity, "Account deleted permanently", Toast.LENGTH_LONG).show()
+
+                                    val intent = Intent(this@AccountSettingsActivity, LoginActivity::class.java)
+                                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    startActivity(intent)
+                                    finish()
+                                } else {
+                                    Toast.makeText(this@AccountSettingsActivity, "Failed to delete account. You may need to re-login and try again.", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                    }
+                    .addOnFailureListener { exception ->
                         showLoading(false)
-                        if (task.isSuccessful) {
-                            Toast.makeText(this@AccountSettingsActivity, "Account deleted permanently", Toast.LENGTH_LONG).show()
-
-                            val intent = Intent(this@AccountSettingsActivity, LoginActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            startActivity(intent)
-                            finish()
-                        } else {
-                            Toast.makeText(this@AccountSettingsActivity, "Failed to delete account. You may need to re-login and try again.", Toast.LENGTH_LONG).show()
-                        }
+                        Toast.makeText(this@AccountSettingsActivity, "Error deleting user data: ${exception.message ?: "Unknown error"}", Toast.LENGTH_SHORT).show()
                     }
 
             } catch (e: Exception) {
                 showLoading(false)
-                Toast.makeText(this@AccountSettingsActivity, "Error deleting account: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@AccountSettingsActivity, "Error deleting account: ${e.message ?: "Unknown error"}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -242,5 +258,10 @@ class AccountSettingsActivity : AppCompatActivity() {
         btnEmailVerification.isEnabled = !show && !(auth.currentUser?.isEmailVerified ?: false)
         btnDeactivateAccount.isEnabled = !show
         btnDeleteAccount.isEnabled = !show
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 }

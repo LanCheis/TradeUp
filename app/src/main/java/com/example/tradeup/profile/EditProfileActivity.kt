@@ -15,15 +15,13 @@ import com.example.tradeup.data.remote.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.launch
-import kotlin.text.get
-import kotlin.toString
 
 class EditProfileActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var userRepository: UserRepository
 
-    // Views
+    // ✅ PROPERLY DECLARED Views
     private lateinit var ivBackButton: ImageView
     private lateinit var ivAvatar: CircleImageView
     private lateinit var btnChangePhoto: Button
@@ -55,22 +53,29 @@ class EditProfileActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         userRepository = UserRepository()
 
+        // Initialize views FIRST
         initViews()
         setupClickListeners()
         loadCurrentProfile()
     }
 
+    // ✅ FIXED: Proper view initialization
     private fun initViews() {
-        ivBackButton = findViewById(R.id.ivBackButton)
-        ivAvatar = findViewById(R.id.ivAvatar)
-        btnChangePhoto = findViewById(R.id.btnChangePhoto)
-        etDisplayName = findViewById(R.id.etDisplayName)
-        etPhone = findViewById(R.id.etPhone)
-        etBio = findViewById(R.id.etBio)
-        etAddress = findViewById(R.id.etAddress)
-        btnSave = findViewById(R.id.btnSave)
-        btnCancel = findViewById(R.id.btnCancel)
-        progressBar = findViewById(R.id.progressBar)
+        try {
+            ivBackButton = findViewById(R.id.ivBackButton)
+            ivAvatar = findViewById(R.id.ivAvatar)
+            btnChangePhoto = findViewById(R.id.btnChangePhoto)
+            etDisplayName = findViewById(R.id.etDisplayName)
+            etPhone = findViewById(R.id.etPhone)
+            etBio = findViewById(R.id.etBio)
+            etAddress = findViewById(R.id.etAddress)
+            btnSave = findViewById(R.id.btnSave)
+            btnCancel = findViewById(R.id.btnCancel)
+            progressBar = findViewById(R.id.progressBar)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error initializing views: ${e.message}", Toast.LENGTH_LONG).show()
+            finish()
+        }
     }
 
     private fun setupClickListeners() {
@@ -89,6 +94,11 @@ class EditProfileActivity : AppCompatActivity() {
         btnCancel.setOnClickListener {
             finish()
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 
     private fun openImagePicker() {
@@ -181,7 +191,7 @@ class EditProfileActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                // 🔧 UPDATED: Upload new image using Cloudinary with context
+                // Upload new image using Cloudinary
                 var profileImageUrl = existingUser.profilePictureUrl
                 selectedImageUri?.let { uri ->
                     val newImageUrl = userRepository.uploadProfileImage(this@EditProfileActivity, uri, firebaseUser.uid)
@@ -190,14 +200,14 @@ class EditProfileActivity : AppCompatActivity() {
                     }
                 }
 
-                // FR-1.2.2: Update user profile
+                // Update user profile
                 val updatedUser = existingUser.copy(
                     displayName = displayName,
                     phoneNumber = phone,
                     bio = bio,
                     address = address,
                     profilePictureUrl = profileImageUrl,
-                    updatedAt = com.google.firebase.Timestamp.now() // Always update timestamp
+                    updatedAt = com.google.firebase.Timestamp.now()
                 )
 
                 val success = userRepository.saveUserProfile(updatedUser)
@@ -205,9 +215,8 @@ class EditProfileActivity : AppCompatActivity() {
                 showLoading(false)
 
                 if (success) {
-                    // Clear image cache if new image was uploaded - simplified version
+                    // Clear image cache if new image was uploaded
                     if (selectedImageUri != null) {
-                        // Just clear memory cache on background thread to be safe
                         Thread {
                             try {
                                 Glide.get(applicationContext).clearDiskCache()
@@ -218,7 +227,7 @@ class EditProfileActivity : AppCompatActivity() {
                     }
 
                     Toast.makeText(this@EditProfileActivity, "Profile updated successfully! ✨", Toast.LENGTH_SHORT).show()
-                    setResult(RESULT_OK) // Set result for ProfileFragment
+                    setResult(RESULT_OK)
                     finish()
                 } else {
                     Toast.makeText(this@EditProfileActivity, "Failed to update profile. Please try again.", Toast.LENGTH_SHORT).show()
