@@ -1,197 +1,169 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:fillViewport="true">
+    android:orientation="vertical">
 
-    <LinearLayout
+    <!-- Modern Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/surface"
+        android:elevation="4dp"
+        app:title="Edit Profile"
+        app:titleTextColor="@color/text_primary"
+        app:navigationIcon="@drawable/ic_arrow_back" />
 
-        <!-- Header -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@drawable/gradient_header_background"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="16dp">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-            <ImageView
-                android:id="@+id/ivBackButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_arrow_back"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="8dp"
-                android:contentDescription="Back"
-                app:tint="@color/white" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Edit Profile"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/white"
-                android:gravity="center"
-                android:layout_marginEnd="40dp" />
-
-        </LinearLayout>
-
-        <!-- Form Content -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Profile Picture Section -->
+            <!-- Profile Photo Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:gravity="center"
-                android:background="@drawable/profile_section_background"
-                android:padding="20dp"
-                android:layout_marginBottom="24dp">
+                android:orientation="vertical"
+                android:layout_marginBottom="32dp">
+
+                <RelativeLayout
+                    android:layout_width="120dp"
+                    android:layout_height="120dp">
+
+                    <ImageView
+                        android:id="@+id/ivProfilePhoto"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:background="@drawable/circle_background"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_profile_placeholder"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
+                        android:background="@drawable/circle_primary_background"
+                        android:src="@drawable/ic_camera"
+                        android:tint="@color/white"
+                        android:padding="8dp" />
+
+                </RelativeLayout>
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="📸 Profile Photo"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginBottom="16dp" />
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/ivAvatar"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/ic_avatar_placeholder"
-                    app:civ_border_width="3dp"
-                    app:civ_border_color="@color/primary"
-                    android:layout_marginBottom="12dp" />
-
-                <Button
                     android:id="@+id/btnChangePhoto"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="Change Photo"
-                    android:textSize="14sp"
+                    android:layout_height="wrap_content"
+                    android:text="📷 Change Photo"
                     android:textColor="@color/primary"
-                    android:background="@drawable/button_outline"
-                    android:drawableStart="@drawable/ic_camera"
-                    android:drawablePadding="8dp" />
+                    android:textSize="16sp"
+                    android:layout_marginTop="12dp"
+                    android:padding="8dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true" />
 
             </LinearLayout>
 
-            <!-- Display Name -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="👤 Display Name *"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:layout_marginBottom="8dp" />
-
-            <EditText
-                android:id="@+id/etDisplayName"
+            <!-- Form Fields -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:hint="Enter your display name"
-                android:inputType="textPersonName|textCapWords"
-                android:maxLines="1"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_secondary"
-                android:background="@drawable/edittext_background"
-                android:padding="16dp"
-                android:layout_marginBottom="16dp"
-                android:drawableStart="@drawable/ic_person"
-                android:drawablePadding="12dp" />
-
-            <!-- Phone Number -->
-            <TextView
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="📱 Phone Number *"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:layout_marginBottom="8dp" />
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/etPhone"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:hint="Enter your phone number"
-                android:inputType="phone"
-                android:maxLines="1"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_secondary"
-                android:background="@drawable/edittext_background"
-                android:padding="16dp"
-                android:layout_marginBottom="16dp"
-                android:drawableStart="@drawable/ic_phone"
-                android:drawablePadding="12dp" />
+                <!-- Display Name -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Display Name *"
+                    app:startIconDrawable="@drawable/ic_person"
+                    app:startIconTint="@color/primary"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-            <!-- Bio -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="✍️ Bio (minimum 10 characters) *"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:layout_marginBottom="8dp" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etDisplayName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName|textCapWords"
+                        android:maxLength="30" />
 
-            <EditText
-                android:id="@+id/etBio"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:hint="Tell us about yourself..."
-                android:inputType="textMultiLine|textCapSentences"
-                android:maxLines="3"
-                android:maxLength="200"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_secondary"
-                android:background="@drawable/edittext_background"
-                android:padding="16dp"
-                android:layout_marginBottom="16dp"
-                android:gravity="top"
-                android:drawableStart="@drawable/ic_edit"
-                android:drawablePadding="12dp" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Address -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="📍 Address (Optional)"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_secondary"
-                android:layout_marginBottom="8dp" />
+                <!-- Bio -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Bio (Optional)"
+                    app:startIconDrawable="@drawable/ic_edit"
+                    app:startIconTint="@color/primary"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="150"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-            <EditText
-                android:id="@+id/etAddress"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:hint="Enter your address"
-                android:inputType="textPostalAddress|textCapWords"
-                android:maxLines="2"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_secondary"
-                android:background="@drawable/edittext_background"
-                android:padding="16dp"
-                android:layout_marginBottom="32dp"
-                android:drawableStart="@drawable/ic_location"
-                android:drawablePadding="12dp" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etBio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxLines="3"
+                        android:maxLength="150"
+                        android:gravity="top" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Phone -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Phone Number (Optional)"
+                    app:startIconDrawable="@drawable/ic_phone"
+                    app:startIconTint="@color/primary"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="phone"
+                        android:maxLength="15" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Address -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp"
+                    android:hint="Address (Optional)"
+                    app:startIconDrawable="@drawable/ic_location"
+                    app:startIconTint="@color/primary"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPostalAddress|textCapWords"
+                        android:maxLines="2" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
 
             <!-- Progress Bar -->
             <ProgressBar
@@ -207,33 +179,32 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center">
 
-                <TextView
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCancel"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="56dp"
                     android:layout_weight="1"
                     android:text="Cancel"
                     android:textSize="16sp"
-                    android:textColor="@color/text_secondary"
-                    android:gravity="center"
-                    android:background="?attr/selectableItemBackground"
-                    android:layout_marginEnd="8dp" />
+                    android:layout_marginEnd="8dp"
+                    style="@style/Widget.Material3.Button.OutlinedButton" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSave"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="56dp"
                     android:layout_weight="2"
                     android:text="Save Changes ✨"
-                    android:textColor="@color/white"
-                    android:background="@drawable/button_primary"
-                    android:layout_marginStart="8dp" />
+                    android:textSize="16sp"
+                    android:layout_marginStart="8dp"
+                    style="@style/Widget.Material3.Button" />
 
             </LinearLayout>
 
-            <!-- Required Fields Note -->
+            <!-- Required Note -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -241,10 +212,10 @@
                 android:textSize="12sp"
                 android:textColor="@color/text_tertiary"
                 android:gravity="center"
-                android:layout_marginTop="12dp" />
+                android:layout_marginTop="16dp" />
 
         </LinearLayout>
 
-    </LinearLayout>
+    </ScrollView>
 
-</ScrollView>
+</LinearLayout>

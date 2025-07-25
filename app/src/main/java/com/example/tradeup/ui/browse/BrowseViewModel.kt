@@ -30,7 +30,7 @@ class BrowseViewModel : ViewModel() {
     private var currentMaxPrice = Double.MAX_VALUE
     private var currentCondition = ""
 
-    // FR-3.2.2: Load initial listings from Firebase (with debug logging)
+    // FR-3.2.2: Load initial listings from Firebase
     fun loadListings() {
         viewModelScope.launch {
             _isLoading.value = true

@@ -1,10 +1,11 @@
 package com.example.tradeup.profile
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.widget.*
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -12,28 +13,17 @@ import com.bumptech.glide.Glide
 import com.example.tradeup.R
 import com.example.tradeup.data.model.User
 import com.example.tradeup.data.remote.UserRepository
+import com.example.tradeup.databinding.ActivityEditProfileBinding
+import com.example.tradeup.utils.CloudinaryHelper
 import com.google.firebase.auth.FirebaseAuth
-import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.launch
-import kotlin.text.get
-import kotlin.toString
 
+// FR-1.2.2: Modern profile editing with clean UI
 class EditProfileActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityEditProfileBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var userRepository: UserRepository
-
-    // Views
-    private lateinit var ivBackButton: ImageView
-    private lateinit var ivAvatar: CircleImageView
-    private lateinit var btnChangePhoto: Button
-    private lateinit var etDisplayName: EditText
-    private lateinit var etPhone: EditText
-    private lateinit var etBio: EditText
-    private lateinit var etAddress: EditText
-    private lateinit var btnSave: Button
-    private lateinit var btnCancel: TextView
-    private lateinit var progressBar: ProgressBar
 
     private var selectedImageUri: Uri? = null
     private var currentUser: User? = null
@@ -41,72 +31,63 @@ class EditProfileActivity : AppCompatActivity() {
     // Image picker launcher
     private val imagePickerLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
+    ) { uri ->
         uri?.let {
             selectedImageUri = it
-            displaySelectedImage(it)
+            updateProfileImagePreview(it)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_profile)
+        binding = ActivityEditProfileBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
         userRepository = UserRepository()
 
-        initViews()
+        setupToolbar()
         setupClickListeners()
         loadCurrentProfile()
     }
 
-    private fun initViews() {
-        ivBackButton = findViewById(R.id.ivBackButton)
-        ivAvatar = findViewById(R.id.ivAvatar)
-        btnChangePhoto = findViewById(R.id.btnChangePhoto)
-        etDisplayName = findViewById(R.id.etDisplayName)
-        etPhone = findViewById(R.id.etPhone)
-        etBio = findViewById(R.id.etBio)
-        etAddress = findViewById(R.id.etAddress)
-        btnSave = findViewById(R.id.btnSave)
-        btnCancel = findViewById(R.id.btnCancel)
-        progressBar = findViewById(R.id.progressBar)
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+            title = "Edit Profile"
+        }
+
+        binding.toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
     }
 
     private fun setupClickListeners() {
-        ivBackButton.setOnClickListener {
-            finish()
+        // Profile photo selection
+        binding.ivProfilePhoto.setOnClickListener {
+            imagePickerLauncher.launch("image/*")
         }
 
-        btnChangePhoto.setOnClickListener {
-            openImagePicker()
+        binding.btnChangePhoto.setOnClickListener {
+            imagePickerLauncher.launch("image/*")
         }
 
-        btnSave.setOnClickListener {
+        // Save changes
+        binding.btnSave.setOnClickListener {
             saveProfile()
         }
 
-        btnCancel.setOnClickListener {
-            finish()
+        // Cancel
+        binding.btnCancel.setOnClickListener {
+            onBackPressed()
         }
-    }
-
-    private fun openImagePicker() {
-        imagePickerLauncher.launch("image/*")
-    }
-
-    private fun displaySelectedImage(uri: Uri) {
-        Glide.with(this)
-            .load(uri)
-            .placeholder(R.drawable.ic_avatar_placeholder)
-            .error(R.drawable.ic_avatar_placeholder)
-            .into(ivAvatar)
     }
 
     private fun loadCurrentProfile() {
         val firebaseUser = auth.currentUser
         if (firebaseUser == null) {
-            Toast.makeText(this, "Authentication error", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -115,130 +96,128 @@ class EditProfileActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val userProfile = userRepository.getUserProfile(firebaseUser.uid)
-
-                if (userProfile != null) {
-                    currentUser = userProfile
-
-                    // Pre-fill form with current data
-                    etDisplayName.setText(userProfile.displayName)
-                    etPhone.setText(userProfile.phoneNumber)
-                    etBio.setText(userProfile.bio)
-                    etAddress.setText(userProfile.address)
-
-                    // Load current profile picture
-                    if (userProfile.profilePictureUrl.isNotEmpty()) {
-                        Glide.with(this@EditProfileActivity)
-                            .load(userProfile.profilePictureUrl)
-                            .placeholder(R.drawable.ic_avatar_placeholder)
-                            .error(R.drawable.ic_avatar_placeholder)
-                            .into(ivAvatar)
+                userRepository.getUserProfile(firebaseUser.uid).fold(
+                    onSuccess = { user ->
+                        currentUser = user
+                        populateFields(user)
+                        showLoading(false)
+                    },
+                    onFailure = { exception ->
+                        Log.e("EditProfile", "Failed to load profile: ${exception.message}")
+                        Toast.makeText(this@EditProfileActivity,
+                            "Failed to load profile", Toast.LENGTH_SHORT).show()
+                        showLoading(false)
                     }
-                } else {
-                    Toast.makeText(this@EditProfileActivity, "Profile not found", Toast.LENGTH_SHORT).show()
-                    finish()
-                }
-
-                showLoading(false)
-
+                )
             } catch (e: Exception) {
+                Log.e("EditProfile", "Error loading profile: ${e.message}")
                 showLoading(false)
-                Toast.makeText(this@EditProfileActivity, "Error loading profile: ${e.message}", Toast.LENGTH_SHORT).show()
-                finish()
             }
         }
     }
 
+    private fun populateFields(user: User) {
+        binding.apply {
+            etDisplayName.setText(user.displayName)
+            etBio.setText(user.bio)
+            etPhone.setText(user.phoneNumber)
+            etAddress.setText(user.address)
+
+            // Load profile image
+            if (user.profileImageUrl.isNotEmpty()) {
+                Glide.with(this@EditProfileActivity)
+                    .load(user.profileImageUrl)
+                    .placeholder(R.drawable.ic_profile_placeholder)
+                    .error(R.drawable.ic_profile_placeholder)
+                    .circleCrop()
+                    .into(ivProfilePhoto)
+            }
+        }
+    }
+
+    private fun updateProfileImagePreview(uri: Uri) {
+        Glide.with(this)
+            .load(uri)
+            .circleCrop()
+            .into(binding.ivProfilePhoto)
+    }
+
     private fun saveProfile() {
-        val displayName = etDisplayName.text.toString().trim()
-        val phone = etPhone.text.toString().trim()
-        val bio = etBio.text.toString().trim()
-        val address = etAddress.text.toString().trim()
-
-        // Validation
-        if (displayName.isEmpty()) {
-            etDisplayName.error = "Display name is required"
-            etDisplayName.requestFocus()
-            return
-        }
-
-        if (phone.isEmpty()) {
-            etPhone.error = "Phone number is required"
-            etPhone.requestFocus()
-            return
-        }
-
-        if (bio.isEmpty() || bio.length < 10) {
-            etBio.error = "Bio must be at least 10 characters"
-            etBio.requestFocus()
-            return
-        }
-
-        val firebaseUser = auth.currentUser ?: return
-        val existingUser = currentUser ?: return
+        if (!validateInputs()) return
 
         showLoading(true)
 
         lifecycleScope.launch {
             try {
-                // 🔧 UPDATED: Upload new image using Cloudinary with context
-                var profileImageUrl = existingUser.profilePictureUrl
-                selectedImageUri?.let { uri ->
-                    val newImageUrl = userRepository.uploadProfileImage(this@EditProfileActivity, uri, firebaseUser.uid)
-                    if (newImageUrl != null) {
-                        profileImageUrl = newImageUrl
-                    }
+                var profileImageUrl = currentUser?.profileImageUrl ?: ""
+
+                // Upload new image if selected
+                if (selectedImageUri != null) {
+                    val uploadResult = CloudinaryHelper.uploadProfileImage(
+                        this@EditProfileActivity,
+                        selectedImageUri!!,
+                        auth.currentUser!!.uid
+                    )
+                    profileImageUrl = uploadResult ?: profileImageUrl
                 }
 
-                // FR-1.2.2: Update user profile
-                val updatedUser = existingUser.copy(
-                    displayName = displayName,
-                    phoneNumber = phone,
-                    bio = bio,
-                    address = address,
-                    profilePictureUrl = profileImageUrl,
-                    updatedAt = com.google.firebase.Timestamp.now() // Always update timestamp
+                // Create updated user object
+                val updatedUser = currentUser?.copy(
+                    displayName = binding.etDisplayName.text.toString().trim(),
+                    bio = binding.etBio.text.toString().trim(),
+                    phoneNumber = binding.etPhone.text.toString().trim(),
+                    address = binding.etAddress.text.toString().trim(),
+                    profileImageUrl = profileImageUrl
+                ) ?: return@launch
+
+                // Save to Firebase
+                userRepository.updateUserProfile(updatedUser).fold(
+                    onSuccess = {
+                        Toast.makeText(this@EditProfileActivity,
+                            "Profile updated successfully! ✨", Toast.LENGTH_SHORT).show()
+                        setResult(Activity.RESULT_OK)
+                        finish()
+                    },
+                    onFailure = { exception ->
+                        Log.e("EditProfile", "Failed to save: ${exception.message}")
+                        Toast.makeText(this@EditProfileActivity,
+                            "Failed to save profile", Toast.LENGTH_SHORT).show()
+                        showLoading(false)
+                    }
                 )
 
-                val success = userRepository.saveUserProfile(updatedUser)
-
-                showLoading(false)
-
-                if (success) {
-                    // Clear image cache if new image was uploaded - simplified version
-                    if (selectedImageUri != null) {
-                        // Just clear memory cache on background thread to be safe
-                        Thread {
-                            try {
-                                Glide.get(applicationContext).clearDiskCache()
-                            } catch (e: Exception) {
-                                // Ignore errors
-                            }
-                        }.start()
-                    }
-
-                    Toast.makeText(this@EditProfileActivity, "Profile updated successfully! ✨", Toast.LENGTH_SHORT).show()
-                    setResult(RESULT_OK) // Set result for ProfileFragment
-                    finish()
-                } else {
-                    Toast.makeText(this@EditProfileActivity, "Failed to update profile. Please try again.", Toast.LENGTH_SHORT).show()
-                }
-
             } catch (e: Exception) {
+                Log.e("EditProfile", "Error saving profile: ${e.message}")
+                Toast.makeText(this@EditProfileActivity,
+                    "Error saving profile", Toast.LENGTH_SHORT).show()
                 showLoading(false)
-                Toast.makeText(this@EditProfileActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun showLoading(show: Boolean) {
-        progressBar.visibility = if (show) View.VISIBLE else View.GONE
-        btnSave.isEnabled = !show
-        btnChangePhoto.isEnabled = !show
+    private fun validateInputs(): Boolean {
+        binding.apply {
+            if (etDisplayName.text.toString().trim().isEmpty()) {
+                etDisplayName.error = "Display name is required"
+                etDisplayName.requestFocus()
+                return false
+            }
 
-        etDisplayName.isEnabled = !show
-        etPhone.isEnabled = !show
-        etBio.isEnabled = !show
-        etAddress.isEnabled = !show
+            val phone = etPhone.text.toString().trim()
+            if (phone.isNotEmpty() && phone.length < 10) {
+                etPhone.error = "Please enter a valid phone number"
+                etPhone.requestFocus()
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun showLoading(show: Boolean) {
+        binding.apply {
+            progressBar.visibility = if (show) android.view.View.VISIBLE else android.view.View.GONE
+            btnSave.isEnabled = !show
+            btnSave.alpha = if (show) 0.5f else 1.0f
+        }
     }
 }

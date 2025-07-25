@@ -100,38 +100,23 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        // FR-1.2.4: Edit profile with modern launcher and bulletproof error handling
+        // FR-1.2.2: Edit profile with clean navigation
         btnEditProfile.setOnClickListener {
-            try {
-                // Method 1: Try with explicit class reference
-                val intent = Intent(requireContext(), com.example.tradeup.profile.EditProfileActivity::class.java)
-                editProfileLauncher.launch(intent)
-            } catch (e: Exception) {
-                try {
-                    // Method 2: Try with string-based class name
-                    val intent = Intent()
-                    intent.setClassName(requireContext(), "com.example.tradeup.profile.EditProfileActivity")
-                    editProfileLauncher.launch(intent)
-                } catch (e2: Exception) {
-                    try {
-                        // Method 3: Try with component name
-                        val intent = Intent()
-                        intent.component = android.content.ComponentName(
-                            requireContext(),
-                            "com.example.tradeup.profile.EditProfileActivity"
-                        )
-                        editProfileLauncher.launch(intent)
-                    } catch (e3: Exception) {
-                        // Method 4: Final fallback with user-friendly message
-                        Toast.makeText(
-                            requireContext(),
-                            "Edit Profile feature is temporarily unavailable. Please try again later.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }
+            val intent = Intent(requireContext(), EditProfileActivity::class.java)
+            editProfileLauncher.launch(intent)
         }
+
+        // FR-1.2.3: Account settings
+        btnAccountSettings.setOnClickListener {
+            val intent = Intent(requireContext(), AccountSettingsActivity::class.java)
+            startActivity(intent)
+        }
+
+        // FR-1.1.5: Logout with confirmation
+        btnLogout.setOnClickListener {
+            showLogoutConfirmation()
+        }
+    }
 
         // FR-1.2.5: Account settings with error handling
         btnAccountSettings.setOnClickListener {

@@ -58,7 +58,46 @@ class MainActivity : AppCompatActivity() {
         setupFloatingActionButton()
         checkAuthenticationAndProfile()
     }
+    // Add this method to MainActivity.kt after line 60
+    private fun testFirebaseConnectionDetailed() {
+        lifecycleScope.launch {
+            try {
+                Log.d("MainActivity", "🧪 Testing Firebase connection...")
+                val db = FirebaseFirestore.getInstance()
 
+                // Test 1: Check if we can read the collection
+                val testSnapshot = db.collection("listings").limit(1).get().await()
+                Log.d("MainActivity", "✅ Collection accessible: ${testSnapshot.metadata}")
+
+                // Test 2: Check available listings specifically
+                val availableSnapshot = db.collection("listings")
+                    .whereEqualTo("status", "Available")
+                    .limit(10)
+                    .get().await()
+
+                Log.d("MainActivity", "📊 Available listings: ${availableSnapshot.documents.size}")
+
+                // Test 3: List all unique statuses in your database
+                val allSnapshot = db.collection("listings").get().await()
+                val statuses = allSnapshot.documents.mapNotNull { it.getString("status") }.distinct()
+                Log.d("MainActivity", "📝 Found statuses in DB: $statuses")
+
+                // Test 4: Sample data
+                if (allSnapshot.documents.isNotEmpty()) {
+                    val sampleDoc = allSnapshot.documents.first()
+                    Log.d("MainActivity", "📄 Sample document structure:")
+                    sampleDoc.data?.forEach { (key, value) ->
+                        Log.d("MainActivity", "   $key: $value")
+                    }
+                }
+
+            } catch (e: Exception) {
+                Log.e("MainActivity", "💥 Firebase test failed: ${e.message}", e)
+                Toast.makeText(this@MainActivity,
+                    "Firebase Error: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
     private fun initViews() {
         bottomNav = findViewById(R.id.bottomNav)
         fabCreateListing = findViewById(R.id.fabCreateListing)

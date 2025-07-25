@@ -89,9 +89,12 @@ class BrowseFragment : Fragment() {
 
     // FR-3.2.1: Setup category chips
     private fun setupCategoryChips() {
-        Category.values().forEach { category ->
+        // Use Categories from your model instead of Category enum
+        val categories = listOf("All", "Electronics", "Clothing", "Home & Garden", "Sports", "Books", "Automotive", "Toys", "Other")
+
+        categories.forEach { categoryName ->
             val chip = Chip(requireContext())
-            chip.text = category.displayName
+            chip.text = categoryName
             chip.isCheckable = true
             chip.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
@@ -102,7 +105,7 @@ class BrowseFragment : Fragment() {
                             otherChip.isChecked = false
                         }
                     }
-                    viewModel.filterByCategory(category.displayName)
+                    viewModel.filterByCategory(categoryName)
                 } else if (binding.categoryChipGroup.checkedChipId == View.NO_ID) {
                     // If no chips are checked, show all
                     viewModel.filterByCategory("All")
@@ -169,30 +172,55 @@ class BrowseFragment : Fragment() {
     }
 
     private fun showFilterDialog() {
-        // Simple filter dialog for testing
-        val conditions = arrayOf("All", "New", "Like New", "Good", "Fair", "Poor")
+        // Simple filter dialog - works with existing code
+        val conditions = arrayOf("All Conditions", "New", "Like New", "Good", "Fair", "Poor")
 
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Filter by Condition")
+            .setTitle("🔍 Filter by Condition")
             .setItems(conditions) { _, which ->
                 val condition = if (which == 0) "" else conditions[which]
                 viewModel.applyConditionFilter(condition)
 
                 // Update filter button text
-                binding.filterButton.text = if (condition.isEmpty()) "Filter" else "Filter: $condition"
+                binding.filterButton.text = if (condition.isEmpty()) "🔍 Filter" else "🔍 Filter: $condition"
             }
             .show()
     }
+
+    private fun updateFilterButtonText(filterOptions: FilterOptions) {
+        val activeFilters = mutableListOf<String>()
+
+        if (filterOptions.category != "All") {
+            activeFilters.add(filterOptions.category)
+        }
+        if (filterOptions.condition.isNotEmpty()) {
+            activeFilters.add(filterOptions.condition)
+        }
+        if (filterOptions.minPrice > 0 || filterOptions.maxPrice < 10000000) {
+            activeFilters.add("Price")
+        }
+
+        val filterText = if (activeFilters.isEmpty()) {
+            "🔍 Filter"
+        } else {
+            "🔍 Filter (${activeFilters.size})"
+        }
+
+        binding.filterButton.text = filterText
+        binding.sortButton.text = "📊 ${filterOptions.sortOption.displayName}"
+    }
+
+
 
     private fun showSortDialog() {
         val sortOptions = SortOption.values()
         val items = sortOptions.map { it.displayName }.toTypedArray()
 
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Sort by")
+            .setTitle("📊 Sort by")
             .setItems(items) { _, which ->
                 viewModel.sortListings(sortOptions[which])
-                binding.sortButton.text = "Sort: ${sortOptions[which].displayName}"
+                binding.sortButton.text = "📊 ${sortOptions[which].displayName}"
             }
             .show()
     }
